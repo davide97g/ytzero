@@ -9,3 +9,6 @@ data/
 *.db-shm
 .DS_Store
 .claude
+.env
+.env.*
+!.env.example
