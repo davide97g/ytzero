@@ -202,6 +202,7 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
   const [screenshotQuality, setScreenshotQuality] = useState("0.92");
   const [screenshotFilename, setScreenshotFilename] = useState(DEFAULT_SCREENSHOT_FILENAME_TEMPLATE);
   const [autoFullscreen, setAutoFullscreen] = useState(false);
+  const [backgroundAudio, setBackgroundAudio] = useState(false);
   const [sbEnabled, setSbEnabled] = useState(false);
   const [sbCategories, setSbCategories] = useState<string[]>(["sponsor"]);
   const [deArrowTitlesEnabled, setDeArrowTitlesEnabled] = useState(false);
@@ -486,6 +487,7 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
       setScreenshotQuality(r.settings.player_screenshot_quality ?? "0.92");
       setScreenshotFilename(r.settings.player_screenshot_filename || DEFAULT_SCREENSHOT_FILENAME_TEMPLATE);
       setAutoFullscreen(r.settings.auto_fullscreen_landscape === "1");
+      setBackgroundAudio(r.settings.player_background_audio === "1");
       setSbEnabled(r.settings.sponsorblock_enabled === "1");
       setDeArrowTitlesEnabled(r.settings.dearrow_titles_enabled === "1");
       setDeArrowThumbnailsEnabled(r.settings.dearrow_thumbnails_enabled === "1");
@@ -1189,6 +1191,7 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
     appNameInput,
     appVersion,
     autoFullscreen,
+    backgroundAudio,
     canManageAdministrators,
     canManageArea,
     changeChildPin,
@@ -1307,6 +1310,7 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
     section,
     setAppNameInput,
     setAutoFullscreen,
+    setBackgroundAudio,
     setChannelCustomName,
     setChannelQuery,
     setChannelUrl,

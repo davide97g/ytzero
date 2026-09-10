@@ -253,6 +253,8 @@ export const SETTING_DEFAULTS: Record<string, string> = {
   player_screenshot_filename: "{channel}_{title}_{timestamp_ms}",
   // Mobile: rotating to landscape on the watch page enters fullscreen.
   auto_fullscreen_landscape: "0",
+  // Mobile: leaving the app or locking the screen hands playback to audio mode.
+  player_background_audio: "0",
   grid_size: "sm",
   // Portable per-profile UI preference; hover preserves the historical behaviour.
   video_card_actions: "hover", video_card_preview: "all", // Portable card hover controls and preview source policy.

@@ -22,6 +22,30 @@ of a playlist started in audio mode, but only in that browser and for that
 profile. It is not a server setting, does not follow the profile to another
 device, and is not included in backups.
 
+## Automatic hand-off in the background
+
+**Keep playing in the background (mobile)**, under Settings → Display →
+Playback, is disabled by default. When it is enabled, leaving the app or
+locking the screen switches a playing video to audio mode, and returning to the
+app switches back to the video player at the same position. Both directions
+reuse the regular position hand-off, so nothing is re-watched or skipped.
+
+The hand-off only runs on touch devices (`pointer: coarse`): a hidden desktop
+tab keeps playing video on its own. It also needs the video to be playing and
+audio mode to be available for it; a paused player, a Watch Together session,
+or content audio mode does not support is left alone.
+
+Pausing from the lock screen keeps audio mode after returning to the app,
+because remounting the video player would start playing again. Use the
+audio/video control to go back to video. An automatic hand-off never changes
+the remembered per-profile audio-mode choice, and it is forgotten when the
+watch page is left or reloaded.
+
+Switching to a new source cannot be gapless: the audio source is resolved when
+the hand-off happens, so playback pauses briefly before it resumes. iOS decides
+whether a newly mounted element may start while the page is hidden, so the
+hand-off can fail there and the first touch after returning restarts audio.
+
 ## Requirements and supported content
 
 For videos without a local copy, the YT Zero server must have a working

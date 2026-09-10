@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, type CSSProperties } from "react";
+import { lazy, Suspense, useCallback, useRef, useState, type CSSProperties } from "react";
 import "./WatchPage.css";
 import { emitToast } from "../events";
 import { Link } from "react-router-dom";
@@ -65,13 +65,30 @@ import { resolveWatchAudioSources } from "./watchAudioMode";
 import { useWatchPageController } from "./useWatchPageController";
 import WatchPlayerFeedback from "./WatchPlayerFeedback";
 import { useProfileAudioMode } from "../audioModePreference";
+import { useBackgroundAudioSwitch, type BackgroundAudioContext } from "./useBackgroundAudioSwitch";
 import { useAppliedVideoCardActionConfig } from "../videoCardActionConfig";
 const TranscriptDialog = lazy(() => import("../components/TranscriptDialog"));
 const AudioModePlayer = lazy(() => import("../components/AudioModePlayer"));
 
 export default function WatchPage() {
   const [transcriptOpen, setTranscriptOpen] = useState(false);
-  const [audioMode, setAudioMode] = useProfileAudioMode();
+  const [audioPreference, setAudioPreference] = useProfileAudioMode();
+  // Live watch state for the visibility hand-off. The controller below needs
+  // the resulting mode as its input, so it cannot be a hook argument.
+  const backgroundAudioContext = useRef<BackgroundAudioContext>({
+    audioActive: false,
+    audioModeAvailable: false,
+    capturePlaybackPosition: () => {},
+    enabled: false,
+    playerState: () => undefined,
+  });
+  const { backgroundAudioActive, releaseBackgroundAudio } = useBackgroundAudioSwitch(backgroundAudioContext);
+  // An automatic hand-off must not rewrite the remembered profile preference.
+  const audioMode = audioPreference || backgroundAudioActive;
+  const setAudioMode = useCallback((active: boolean) => {
+    releaseBackgroundAudio();
+    setAudioPreference(active);
+  }, [releaseBackgroundAudio, setAudioPreference]);
   const videoCardActionConfig = useAppliedVideoCardActionConfig();
   const showSchedulingRow = videoCardActionConfig.actions.some((action) => action.id === "schedule" && !action.hidden);
   const showSessionQueueAction = videoCardActionConfig.actions.some((action) => action.id === "sessionQueue" && !action.hidden);
@@ -209,6 +226,13 @@ export default function WatchPage() {
     youtubeError,
     ytWrapRef,
   } = controller;
+  backgroundAudioContext.current = {
+    audioActive,
+    audioModeAvailable,
+    capturePlaybackPosition,
+    enabled: settings?.player_background_audio === "1",
+    playerState: () => controller.playerRef.current?.getPlayerState?.(),
+  };
   const playbackSpeeds = resolvePlaybackSpeeds(settings?.player_speed_options, speed, video?.channel_playback_speed);
   const pendingVideoInfo = videoInfo ?? routePreview;
 

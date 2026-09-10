@@ -38,6 +38,7 @@ export function SettingsDisplayView({ controller, showToast }: { controller: Set
     appName,
     appNameInput,
     autoFullscreen,
+    backgroundAudio,
     canManageArea,
     changeDeArrowThumbnails,
     changeDeArrowTitles,
@@ -85,6 +86,7 @@ export function SettingsDisplayView({ controller, showToast }: { controller: Set
     screenshotQuality,
     setAppNameInput,
     setAutoFullscreen,
+    setBackgroundAudio,
     setKeyboardSeekSeconds,
     setLanguage,
     setPlayerCc,
@@ -416,6 +418,19 @@ export function SettingsDisplayView({ controller, showToast }: { controller: Set
               onCheckedChange={(next) => {
                 setAutoFullscreen(next);
                 savePlayer({ auto_fullscreen_landscape: next ? "1" : "0" });
+              }}
+            />
+          </SettingRow>
+
+          <SettingRow
+            label={t("backgroundAudioSwitch")}
+            description={<>{t("backgroundAudioSwitchHint")}<br />{t("backgroundAudioSwitchCaveat")}</>}
+          >
+            <Switch
+              checked={backgroundAudio}
+              onCheckedChange={(next) => {
+                setBackgroundAudio(next);
+                savePlayer({ player_background_audio: next ? "1" : "0" });
               }}
             />
           </SettingRow>

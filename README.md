@@ -125,6 +125,11 @@ Safari, playback can continue while YT Zero is in the background or the screen
 is locked. Media Session integration provides system play/pause and seeking
 controls where the browser supports them.
 
+Audio mode can also be handed over automatically: enable **Keep playing in the
+background (mobile)** under Settings → Display → Playback and leaving the app
+or locking the screen switches a playing video to audio, while returning to the
+app switches back to the video at the same position.
+
 Audio mode supports regular public videos and active public livestreams. It
 requires yt-dlp to be available on the YT Zero server, but the downloads plugin
 does not need to be enabled and no media file is kept on disk. The choice is
