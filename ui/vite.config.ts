@@ -1,8 +1,35 @@
-import { defineConfig } from "vite";
+import { readFileSync } from "node:fs";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 
+/**
+ * Identity of one build. An open installed app only picks up a deployment when
+ * the service worker script changes, so this value has to differ per build.
+ * The pipeline and the Docker build both pass the release labels; anything else
+ * (a local `bun run build`, a tarball install) falls back to the build time,
+ * which is always new.
+ */
+function resolveBuildId(): string {
+  const labels = [process.env.YTZERO_VERSION, process.env.YTZERO_COMMIT]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value) && value !== "dev" && value !== "unknown");
+  return labels.length > 0 ? labels.join("-") : `build-${Date.now()}`;
+}
+
+/** Emits `sw.js` from `sw.template.js` with the build id substituted. */
+function serviceWorker(buildId: string): Plugin {
+  return {
+    name: "ytzero:service-worker",
+    apply: "build",
+    generateBundle() {
+      const template = readFileSync(new URL("./sw.template.js", import.meta.url), "utf8");
+      this.emitFile({ type: "asset", fileName: "sw.js", source: template.replaceAll("__BUILD_ID__", buildId) });
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), serviceWorker(resolveBuildId())],
   build: {
     rollupOptions: {
       output: {

@@ -4,15 +4,12 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { I18nProvider } from "./i18n";
 import { applyStoredWatchedStyle } from "./watchedStyle";
+import { initPwaUpdates } from "./pwaUpdates";
 import "./styles.css";
 
 applyStoredWatchedStyle();
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
-  });
-}
+initPwaUpdates();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

@@ -284,6 +284,7 @@ Full documentation lives in the **[Wiki](https://github.com/Pelski/ytzero/wiki)*
 - **[Browser Extensions](https://github.com/Pelski/ytzero/wiki/Browser-Extensions)** — recommended companion extension and redirect helpers.
 - **[YT-DLP Integration](https://github.com/Pelski/ytzero/wiki/YT-DLP-Integration)** — downloads, offline playback, and retention.
 - **[Audio mode](docs/audio-mode.md)** — background audio playback for regular videos and active livestreams.
+- **[Installed app updates](docs/pwa-updates.md)** — how a deployment reaches an app that is already installed and open.
 - **[TubeArchivist Integration](https://github.com/Pelski/ytzero/wiki/TubeArchivist-Integration)** — use an existing archive in the normal feed and local player.
 - **[Backup & Updates](https://github.com/Pelski/ytzero/wiki/Backup-and-Updates)** — keeping your data safe.
 - **[How It Works](https://github.com/Pelski/ytzero/wiki/How-It-Works)** — what is fetched and stored.

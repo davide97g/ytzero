@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import type { Context } from "hono";
 import { serveStatic } from "hono/bun";
 import { api } from "./routes";
 import { db, getSetting, reloadSettingCache } from "./db";
@@ -98,8 +99,22 @@ app.get("/changelog.json", async (c) => {
   });
 });
 
-app.use("/*", serveStatic({ root: uiDir }));
-app.get("*", serveStatic({ path: `${uiDir}/index.html` }));
+// Hashed asset filenames change whenever their content does, so they can be
+// cached hard. Filenames that survive a deployment must not be: a cached
+// index.html or sw.js would keep an installed PWA on the previous build, and
+// the worker script is exactly what tells an open app that a build is live.
+const staticCacheHeaders = (path: string, c: Context) => {
+  if (path.endsWith(".html") || path.endsWith("/sw.js")) {
+    c.header("Cache-Control", "no-store, no-cache, must-revalidate");
+    c.header("Pragma", "no-cache");
+    c.header("Expires", "0");
+  } else if (path.includes("/assets/")) {
+    c.header("Cache-Control", "public, max-age=31536000, immutable");
+  }
+};
+
+app.use("/*", serveStatic({ root: uiDir, onFound: staticCacheHeaders }));
+app.get("*", serveStatic({ path: `${uiDir}/index.html`, onFound: staticCacheHeaders }));
 
 await migrateLegacyProfileAvatars()
   .catch((error) => log.warn("profile.avatar_migration_failed", { error: error instanceof Error ? error.message : String(error) }));
