@@ -552,6 +552,8 @@ export const hu: Locale = {
     tagNamePlaceholder: "Címke neve...",
     follow: "Követés",
     unfollow: "Követés megszüntetése",
+    unfollowChannelAction: "{channel} követésének megszüntetése",
+    channelUnfollowed: "{channel} követése megszüntetve",
     followAgain: "Követés újra",
     deleteChannel: "Csatorna törlése",
     allChannels: "az összes csatorna",

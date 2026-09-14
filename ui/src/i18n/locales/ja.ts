@@ -645,6 +645,8 @@ export const ja: Locale = {
     "tagNamePlaceholder": "タグ名...",
     "follow": "フォロー",
     "unfollow": "フォロー",
+    "unfollowChannelAction": "{channel} のフォローを解除",
+    "channelUnfollowed": "{channel} のフォローを解除しました",
     "followAgain": "再びフォローする",
     "deleteChannel": "チャネルの削除",
     "allChannels": "すべてのチャネル",

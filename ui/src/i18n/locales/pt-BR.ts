@@ -645,6 +645,8 @@ export const ptBR: Locale = {
     "tagNamePlaceholder": "Nome da etiqueta...",
     "follow": "Seguir",
     "unfollow": "Sem seguir",
+    "unfollowChannelAction": "Deixar de seguir {channel}",
+    "channelUnfollowed": "Você deixou de seguir {channel}",
     "followAgain": "Seguir novamente",
     "deleteChannel": "Apagar canal",
     "allChannels": "todos os canais",

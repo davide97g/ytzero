@@ -554,6 +554,8 @@ export const en = {
     tagNamePlaceholder: "Tag name...",
     follow: "Follow",
     unfollow: "Unfollow",
+    unfollowChannelAction: "Unfollow {channel}",
+    channelUnfollowed: "Unfollowed {channel}",
     followAgain: "Follow again",
     deleteChannel: "Delete channel",
     allChannels: "all channels",

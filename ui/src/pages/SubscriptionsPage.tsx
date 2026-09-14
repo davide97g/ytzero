@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./SubscriptionsPage.css";
 import { Link } from "react-router-dom";
-import { AlertTriangle, Clock3, LoaderCircle, Plus, RefreshCw, Search, Users, XCircle } from "lucide-react";
+import { AlertTriangle, Clock3, LoaderCircle, Plus, RefreshCw, Search, UserMinus, Users, XCircle } from "lucide-react";
 import { api, type Channel, type ChannelSyncJob, type ChannelSyncJobChannel, type Tag } from "../api";
 import { img } from "../img";
 import { useI18n } from "../i18n";
@@ -186,6 +186,7 @@ export default function SubscriptionsPage() {
   const [syncDialogChannelIds, setSyncDialogChannelIds] = useState<string[] | undefined>();
   const { job: syncJob, loading: syncActivityLoading, start: startChannelSync } = useChannelSyncActivity();
   const [dismissedSyncJobId, setDismissedSyncJobId] = useState<string | null>(null);
+  const [unfollowingChannelId, setUnfollowingChannelId] = useState<string | null>(null);
   const syncRunning = syncJob?.status === "running";
   const syncFinishedAt = Date.parse(syncJob?.finishedAt ?? "");
   const syncSummaryExpired = syncJob?.status === "completed" && syncJob.failed === 0
@@ -304,6 +305,25 @@ export default function SubscriptionsPage() {
       });
   };
 
+  const unfollowChannel = async (channel: Channel) => {
+    if (unfollowingChannelId) return;
+    const title = channel.title || channel.channel_id;
+    setUnfollowingChannelId(channel.channel_id);
+    try {
+      await api.followChannel(channel.channel_id, false);
+      // The page only lists followed channels, so drop the card right away
+      // instead of reloading the whole grid.
+      setChannels((current) => current.filter((item) => item.channel_id !== channel.channel_id));
+      emit("channels-changed");
+      emitToast(t("channelUnfollowed", { channel: title }), "success");
+    } catch (error) {
+      console.error(error);
+      emitToast(`${t("error")}: ${error instanceof Error ? error.message : error}`, "danger");
+    } finally {
+      setUnfollowingChannelId(null);
+    }
+  };
+
   const startSync = async (channelIds: string[]) => {
     await startChannelSync(channelIds);
     emitToast(t("channelSyncStarted"), "scheduled");
@@ -407,6 +427,16 @@ export default function SubscriptionsPage() {
                   icon={<RefreshCw className={syncState?.status === "running" ? "spin" : undefined} />}
                   disabled={!syncEnabled || syncActivityLoading}
                   onClick={() => openSyncDialog([ch.channel_id])}
+                />
+                <IconButton
+                  className="subs-card-unfollow-button"
+                  size="sm"
+                  variant="ghost"
+                  label={t("unfollowChannelAction", { channel: title })}
+                  title={t("unfollowChannelAction", { channel: title })}
+                  icon={<UserMinus />}
+                  disabled={unfollowingChannelId === ch.channel_id}
+                  onClick={() => void unfollowChannel(ch)}
                 />
               </div>
               {syncState && <ChannelSyncCardStatus channel={syncState} />}

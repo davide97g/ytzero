@@ -93,11 +93,16 @@
 }
 .subs-card-main { min-width: 0; flex: 1; display: flex; align-items: center; gap: 13px; color: inherit; text-decoration: none; }
 .subs-card-head { align-items: center; display: flex; gap: 7px; min-width: 0; }
-.subs-card-sync-button { flex: 0 0 auto; }
+.subs-card-sync-button,
+.subs-card-unfollow-button { flex: 0 0 auto; }
+.subs-card-unfollow-button:hover:not(:disabled) { color: #ff9da4; }
 @media (hover: hover) and (pointer: fine) {
-  .subs-card-sync-button { opacity: 0; pointer-events: none; transition: opacity .15s ease; }
+  .subs-card-sync-button,
+  .subs-card-unfollow-button { opacity: 0; pointer-events: none; transition: opacity .15s ease; }
   .subs-card:hover .subs-card-sync-button,
-  .subs-card:focus-within .subs-card-sync-button { opacity: 1; pointer-events: auto; }
+  .subs-card:focus-within .subs-card-sync-button,
+  .subs-card:hover .subs-card-unfollow-button,
+  .subs-card:focus-within .subs-card-unfollow-button { opacity: 1; pointer-events: auto; }
 }
 .subs-card-sync-result { align-items: flex-start; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .subs-card-sync-status { align-self: flex-start; gap: 4px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
@@ -154,7 +159,8 @@
   .subscriptions-spin {
     animation: none;
   }
-  .subs-card-sync-button {
+  .subs-card-sync-button,
+  .subs-card-unfollow-button {
     transition: none;
   }
   .swipe-wrap,

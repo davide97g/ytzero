@@ -645,6 +645,8 @@ export const ru: Locale = {
     "tagNamePlaceholder": "Тэг Имя...",
     "follow": "Следить",
     "unfollow": "Не следовать",
+    "unfollowChannelAction": "Отписаться от канала {channel}",
+    "channelUnfollowed": "Вы отписались от канала {channel}",
     "followAgain": "Следуйте снова",
     "deleteChannel": "Удалить канал",
     "allChannels": "Все каналы",

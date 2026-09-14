@@ -554,6 +554,8 @@ export const de: Locale = {
     tagNamePlaceholder: "Tag-Name...",
     follow: "Folgen",
     unfollow: "Entfolgen",
+    unfollowChannelAction: "{channel} entfolgen",
+    channelUnfollowed: "{channel} wird nicht mehr gefolgt",
     followAgain: "Wieder folgen",
     deleteChannel: "Kanal löschen",
     allChannels: "alle Kanäle",
