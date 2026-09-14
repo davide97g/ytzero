@@ -751,6 +751,10 @@ async function runChannelSync(channelId: string, userId?: number): Promise<Chann
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(video_id) DO UPDATE SET
       title = excluded.title,
+      -- The scrape carries no description and RSS may only list the video some
+      -- time after it appears on the channel page. Fill the gap whenever the
+      -- feed finally provides one, without overwriting a richer stored text.
+      description = CASE WHEN TRIM(videos.description) = '' THEN excluded.description ELSE videos.description END,
       thumbnail = CASE WHEN TRIM(excluded.thumbnail) != '' THEN excluded.thumbnail ELSE videos.thumbnail END,
       published_at = CASE
         WHEN excluded.published_at IS NULL OR excluded.published_at = '' THEN videos.published_at
@@ -765,6 +769,7 @@ async function runChannelSync(channelId: string, userId?: number): Promise<Chann
       END,
       members_only = excluded.members_only,
       views = COALESCE(excluded.views, videos.views),
+      likes = COALESCE(excluded.likes, videos.likes),
       duration = COALESCE(excluded.duration, videos.duration),
       is_private = 0,
       is_unavailable = 0,

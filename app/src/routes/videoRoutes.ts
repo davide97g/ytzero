@@ -13,7 +13,7 @@ import { ageMs, CHAPTERS_DB_TTL, CREATORS_DB_TTL } from "../routeCache";
 import { videoExistsStmt, videoSelect, type VideoRow } from "../videoRoutesSupport";
 import { registerVideoCommentRoutes } from "./videoCommentRoutes";
 import { importExternalVideoInfo, type VideoInfoImportResult } from "../externalVideoInfoImport";
-import { refreshExternalWatchVideo } from "../externalVideoRefresh";
+import { refreshWatchVideoMetadata } from "../watchVideoMetadata";
 import { isYouTubeRefusalError, youtubeRefusalGate } from "../youtubeRateLimit";
 import { AsyncTtlCache } from "../asyncTtlCache";
 import { resolveYouTubeLanguage } from "../youtubeRequestLanguage";
@@ -391,7 +391,7 @@ api.get("/videos/:id", async (c) => {
     .get(c.req.param("id")) as VideoRow | null;
   if (!row) return c.json({ error: "not found" }, 404);
 
-  row = await refreshExternalWatchVideo(row, uid);
+  row = await refreshWatchVideoMetadata(row, uid);
   if (childHidesLive(uid) && (row.live_status === "live" || row.live_status === "upcoming")) {
     return c.json({ error: "live streams are disabled for this profile" }, 403);
   }

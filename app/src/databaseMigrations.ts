@@ -510,6 +510,21 @@ export const DATABASE_MIGRATIONS: readonly DatabaseMigration[] = [
       { kind: "sql", statement: "CREATE INDEX IF NOT EXISTS idx_public_shares_owner ON public_shares(owner_user_id, created_at DESC)" },
     ],
   },
+  {
+    version: 116,
+    name: "watch-open-metadata-backfill",
+    schemaHashes: {
+      "app/src/schema.sql": "7cc9b23b227d3cc3be8ec33051d4f943dda4df2a29e7d3e3c62edd8775100a9a",
+      "app/src/channelPostsSchema.sql": "70a7df33bf373524cf6cd0687e46d7987a7cd90a2619fd9586d12d6f940d45a5",
+      "app/src/tubeArchivistSchema.sql": "31e77b7af023276f38d1075b0a5a2197fef150513f010b90bab5909971871056",
+    },
+    sqlite: [
+      { kind: "add-column", table: "videos", column: "info_fetched_at", definition: "TEXT" },
+    ],
+    postgres: [
+      { kind: "add-column", table: "videos", column: "info_fetched_at", definition: "TEXT" },
+    ],
+  },
 ];
 
 function quoteIdentifier(identifier: string): string {
