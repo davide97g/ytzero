@@ -4,7 +4,7 @@ import { emit } from "../../events";
 import { useI18n } from "../../i18n";
 import { queueSettingWrite, scheduleSettingWrite } from "../../settingsWriteQueue";
 import { parseCoordinate } from "../../sunBackdrop";
-import { Field, Input, SettingRow, Switch } from "../ui";
+import { Button, Field, Input, SettingRow, Switch } from "../ui";
 import "./SunBackdropSettings.css";
 
 /** The opt-in ambient sun layer. The switch is per profile; the coordinates
@@ -16,6 +16,8 @@ export function SunBackdropSettings({ isPrimary, showToast }: { isPrimary: boole
   const [longitude, setLongitude] = useState("");
   const [meta, setMeta] = useState<SettingsMeta | null>(null);
   const [ready, setReady] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [locationNote, setLocationNote] = useState<string | null>(null);
 
   useEffect(() => {
     api.settings().then((result) => {
@@ -44,6 +46,45 @@ export function SunBackdropSettings({ isPrimary, showToast }: { isPrimary: boole
   };
 
   const placeholder = (value: number | null) => value == null ? "" : String(value);
+
+  // Four decimals is about ten metres: enough to place the sun to the minute,
+  // and no more of the operator's home than the backdrop actually needs.
+  const round = (value: number) => String(Math.round(value * 10_000) / 10_000);
+
+  const geolocationError = (error: GeolocationPositionError) => {
+    if (error.code === error.PERMISSION_DENIED) return t("sunBackdropLocationDenied");
+    if (error.code === error.TIMEOUT) return t("sunBackdropLocationTimeout");
+    return t("sunBackdropLocationUnavailable");
+  };
+
+  /** Asks the browser, which asks the person: nothing is read without that
+   * prompt being answered, and the answer is remembered by the browser. */
+  const detectLocation = () => {
+    setLocationNote(null);
+    // Browsers only offer a location over HTTPS or on localhost, and a
+    // self-hosted install on a plain LAN address is neither.
+    if (!window.isSecureContext) { setLocationNote(t("sunBackdropLocationInsecure")); return; }
+    if (!navigator.geolocation) { setLocationNote(t("sunBackdropLocationUnsupported")); return; }
+
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const nextLatitude = round(position.coords.latitude);
+        const nextLongitude = round(position.coords.longitude);
+        setLatitude(nextLatitude);
+        setLongitude(nextLongitude);
+        setLocating(false);
+        // One toast for the pair: the second write carries it.
+        queueSettingWrite("location_latitude", { location_latitude: nextLatitude }, { onError: failed });
+        queueSettingWrite("location_longitude", { location_longitude: nextLongitude }, { onSaved: saved, onError: failed });
+      },
+      (error) => {
+        setLocating(false);
+        setLocationNote(geolocationError(error));
+      },
+      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
+    );
+  };
 
   return (
     <>
@@ -86,6 +127,12 @@ export function SunBackdropSettings({ isPrimary, showToast }: { isPrimary: boole
                 }}
               />
             </Field>
+          </div>
+          <div className="sun-backdrop-locate">
+            <Button size="sm" onClick={detectLocation} disabled={locating}>
+              {locating ? t("sunBackdropLocating") : t("sunBackdropUseMyLocation")}
+            </Button>
+            {locationNote && <p className="ui-control-description">{locationNote}</p>}
           </div>
         </SettingRow>
       )}

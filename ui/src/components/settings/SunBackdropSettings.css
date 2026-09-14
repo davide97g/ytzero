@@ -7,3 +7,16 @@
 @media (max-width: 480px) {
   .sun-backdrop-coordinates { grid-template-columns: 1fr; }
 }
+
+/* The detect button sits under the pair of fields; its note wraps to the width
+   the coordinates already take. */
+.sun-backdrop-locate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  max-width: 340px;
+}
+
+.sun-backdrop-locate .ui-control-description { margin: 0; }

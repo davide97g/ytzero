@@ -212,9 +212,9 @@ archive with no such capability restores with public sharing denied.
   host or browser timezone.
   The installation coordinates (`location_latitude`, `location_longitude`) are
   portable instance configuration in the same class: they describe where the
-  installation is, not the machine it runs on, and only position the ambient sun
-  backdrop. Both are optional; when empty the backdrop falls back to the
-  coordinates implied by the configured timezone. They are app-wide and are
+  installation is, not the machine it runs on, and only position the sun and the
+  moon in the ambient backdrop. Both are optional; when empty the backdrop falls
+  back to the coordinates implied by the configured timezone. They are app-wide and are
   never written into a profile archive.
   When the machine-bound `TZ` environment variable contains a valid IANA zone,
   it overrides this portable value at runtime and the saved value remains

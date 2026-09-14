@@ -1,21 +1,23 @@
 /* Decorative ambient layer behind the entire shell. It sits under every
-   surface, never receives input, and stays far below the contrast of content. */
+   surface, never receives input, and stays far below the contrast of content.
+   Each body carries its own strength: the sun's ramp must not dim the stars. */
 .sun-backdrop {
+  --moon-size: min(30vw, 190px);
   position: fixed;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  opacity: var(--sun-opacity, 0.2);
-  transition: opacity 1.2s ease;
 }
 
 .sun-backdrop__sky {
   position: absolute;
   inset: -10%;
+  opacity: var(--sun-opacity, 0.2);
   background:
     radial-gradient(120% 90% at var(--sun-x, 50%) var(--sun-y, 50%), var(--sun-sky, #1a2340) 0%, transparent 70%),
     linear-gradient(180deg, var(--sun-sky, #1a2340) 0%, transparent 65%);
+  transition: opacity 1.2s ease;
 }
 
 /* One soft disc rather than a hard circle plus a blur filter: a large radial
@@ -29,17 +31,78 @@
   max-width: 100%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
+  opacity: var(--sun-opacity, 0.2);
   background: radial-gradient(circle, var(--sun-glow, #ffd696) 0%, color-mix(in srgb, var(--sun-glow, #ffd696) 45%, transparent) 38%, transparent 68%);
-  transition: left 2s ease, top 2s ease, background 2s ease;
+  transition: left 2s ease, top 2s ease, background 2s ease, opacity 1.2s ease;
+}
+
+/* The stars sit furthest back and fade in with the depth of twilight. */
+.sun-backdrop__stars {
+  position: absolute;
+  inset: 0;
+  /* Held short of full white: the stars should be worth looking for, never
+     bright enough to read as content. */
+  opacity: calc(var(--star-opacity, 0) * 0.8);
+  /* The moon is not made of glass: punch it out of the field instead of letting
+     the stars behind it shine through a half-transparent disc. */
+  -webkit-mask-image: radial-gradient(circle calc(var(--moon-size) / 2) at var(--moon-x, 50%) var(--moon-y, 50%), transparent 92%, #000 100%);
+  mask-image: radial-gradient(circle calc(var(--moon-size) / 2) at var(--moon-x, 50%) var(--moon-y, 50%), transparent 92%, #000 100%);
+  transition: opacity 4s ease;
+}
+
+.sun-backdrop__star {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(232, 238, 255, 0.85);
+  box-shadow: 0 0 4px rgba(190, 210, 255, 0.55);
+  transform: translate(-50%, -50%);
+  animation-name: sun-backdrop-twinkle;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes sun-backdrop-twinkle {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+  50% { transform: translate(-50%, -50%) scale(0.72); filter: brightness(0.55); }
+}
+
+/* The moon keeps a plain disc under the lit part so the dark limb still reads
+   against the stars, and turns as a whole so its lit side faces the sun. */
+.sun-backdrop__moon {
+  position: absolute;
+  left: var(--moon-x, 50%);
+  top: var(--moon-y, 50%);
+  width: var(--moon-size);
+  aspect-ratio: 1;
+  overflow: visible;
+  opacity: var(--moon-opacity, 0);
+  transform: translate(-50%, -50%) rotate(var(--moon-tilt, 0deg));
+  transition: left 2s ease, top 2s ease, opacity 2s ease, transform 2s ease;
+}
+
+.sun-backdrop__moon-dark {
+  fill: #10131f;
+  stroke: rgba(150, 168, 214, 0.28);
+  stroke-width: 1;
+}
+
+.sun-backdrop__moon-lit {
+  fill: #e7ecfb;
+  filter: drop-shadow(0 0 14px rgba(200, 216, 255, 0.45));
 }
 
 @media (max-width: 760px) {
+  .sun-backdrop { --moon-size: min(44vw, 150px); }
   .sun-backdrop__disc { width: min(120vw, 560px); }
 }
 
 /* Motion here only ever explains the passage of the day, so removing it costs
-   nothing: the sun still sits in the right place, it just stops sliding. */
+   nothing: the sun still sits in the right place, it just stops sliding, and
+   the stars hold a steady brightness. */
 @media (prefers-reduced-motion: reduce) {
-  .sun-backdrop,
+  .sun-backdrop__sky,
+  .sun-backdrop__stars,
+  .sun-backdrop__moon,
   .sun-backdrop__disc { transition: none; }
+  .sun-backdrop__star { animation: none; }
 }

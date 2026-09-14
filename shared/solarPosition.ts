@@ -22,7 +22,16 @@ function normalizeDegrees(value: number): number {
   return ((value % 360) + 360) % 360;
 }
 
-export function solarPosition(atMs: number, latitude: number, longitude: number): SolarPosition {
+interface SolarEcliptic {
+  apparentLongitudeDeg: number;
+  obliquityDeg: number;
+  declinationDeg: number;
+  equationOfTimeMin: number;
+}
+
+/** The parts of the sun's orbit that depend on the instant alone. Kept apart so
+ * the moon can be phased against the same sun the backdrop draws. */
+function solarEcliptic(atMs: number): SolarEcliptic {
   const century = julianCentury(atMs);
 
   const meanLongitude = normalizeDegrees(280.46646 + century * (36_000.76983 + century * 0.0003032));
@@ -50,6 +59,34 @@ export function solarPosition(atMs: number, latitude: number, longitude: number)
     - 0.5 * varY * varY * Math.sin(4 * meanLongitude * DEGREES)
     - 1.25 * eccentricity * eccentricity * Math.sin(2 * meanAnomaly * DEGREES)
   ) / DEGREES;
+
+  return {
+    apparentLongitudeDeg: apparentLongitude,
+    obliquityDeg: obliquity,
+    declinationDeg: declination,
+    equationOfTimeMin: equationOfTime,
+  };
+}
+
+export interface EquatorialPosition {
+  /** Degrees east along the celestial equator from the vernal equinox. */
+  rightAscensionDeg: number;
+  /** Degrees north of the celestial equator. */
+  declinationDeg: number;
+}
+
+/** Where the sun sits on the celestial sphere, independent of any observer. */
+export function solarEquatorial(atMs: number): EquatorialPosition {
+  const { apparentLongitudeDeg, obliquityDeg, declinationDeg } = solarEcliptic(atMs);
+  const rightAscensionDeg = normalizeDegrees(Math.atan2(
+    Math.cos(obliquityDeg * DEGREES) * Math.sin(apparentLongitudeDeg * DEGREES),
+    Math.cos(apparentLongitudeDeg * DEGREES),
+  ) / DEGREES);
+  return { rightAscensionDeg, declinationDeg };
+}
+
+export function solarPosition(atMs: number, latitude: number, longitude: number): SolarPosition {
+  const { declinationDeg: declination, equationOfTimeMin: equationOfTime } = solarEcliptic(atMs);
 
   const minutesUtc = (atMs / 60_000) % 1440;
   const trueSolarTime = ((minutesUtc + equationOfTime + 4 * longitude) % 1440 + 1440) % 1440;
