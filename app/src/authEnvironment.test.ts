@@ -20,4 +20,12 @@ describe("environment authentication policy", () => {
     expect(environmentAuthPasswordConfigured({ YTZERO_AUTH_PASSWORD: "" })).toBe(false);
     expect(await verifyEnvironmentAuthPassword("", { YTZERO_AUTH_PASSWORD: "" })).toBe(false);
   });
+
+  // Bun loads a developer's .env into every test process, and the harnesses
+  // inherit it. An instance configured for shared auth there would answer 401
+  // to every harness request; .env.test blanks those keys for the test run.
+  test("ignores the instance configuration a developer keeps in .env", () => {
+    expect(environmentAuthMethod()).toBeNull();
+    expect(environmentAuthPasswordConfigured()).toBe(false);
+  });
 });
