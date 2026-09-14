@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   CirclePlay,
+  Clock,
   RefreshCw,
   Tag,
   UsersRound,
@@ -17,13 +18,22 @@ import VideoCard from "../components/VideoCard";
 import { VideoGridSkeleton } from "../components/LoadingState";
 import EmptyArt from "../components/illustrations/EmptyArt";
 import { Alert, Button, EmptyState, IconButton } from "../components/ui";
-import { useI18n } from "../i18n";
+import { useI18n, type I18nKey } from "../i18n";
+import type { DaypartId } from "../../../shared/dailyRotation";
 import { useDocumentTitle } from "../useDocumentTitle";
 import { readGridSize, type GridSize } from "../gridSize";
 import { mergeRecommendationVideos, prepareRecommendationVideos } from "./recommendationsPageLogic";
 import type { PlayVideo, PlaybackQueueContext } from "../playbackQueue";
 
 const PAGE_SIZE = 40;
+
+const DAYPART_LABEL: Record<DaypartId, I18nKey> = {
+  morning: "dailyRotationMorning",
+  midday: "dailyRotationMidday",
+  afternoon: "dailyRotationAfternoon",
+  evening: "dailyRotationEvening",
+  night: "dailyRotationNight",
+};
 
 export type LoadRecommendations = (request: RecommendationsRequest) => Promise<RecommendationsResponse>;
 
@@ -135,6 +145,15 @@ export default function RecommendationsPage({ onPlay, loadRecommendations }: Rec
         <div className="recommendations-signals" aria-label={t("recommendationsWhyTitle")}>
           <span className="recommendations-signals__label">{t("recommendationsWhyTitle")}</span>
           <div className="recommendations-signals__items">
+            {summary?.rotation && (
+              <div className="recommendations-signal">
+                <Clock aria-hidden="true" />
+                <span className="recommendations-signal__copy">
+                  <strong>{t(DAYPART_LABEL[summary.rotation.daypart])}</strong>
+                  <small>{summary.rotation.tags.map((tag) => tag.name).join(" · ")}</small>
+                </span>
+              </div>
+            )}
             {pulseTags.map((tag) => (
               <div key={tag.id} className="recommendations-signal">
                 <Tag aria-hidden="true" />

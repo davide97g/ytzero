@@ -13,6 +13,16 @@ import { removeRoleFromExternalMappings } from "../externalRoleMappings";
 import { normalizeYouTubeTitleLanguage } from "../youtubeRequestLanguage";
 import { normalizePlaybackSpeed, normalizePlaybackSpeedOptionsSetting } from "../../../shared/playbackSpeeds";
 import { isWatchCommentsSetting, normalizeWatchCommentsMode } from "../../../shared/watchComments";
+import { normalizeDailyRotationConfig, serializeDailyRotationConfig } from "../../../shared/dailyRotation";
+import { timeZoneCoordinates } from "../timeZoneCoordinates";
+
+/** Latitude and longitude are optional: an empty value means the backdrop falls
+ * back to the coordinates implied by the configured timezone. */
+function isCoordinate(value: unknown, limit: number): boolean {
+  if (value === "" || value == null) return true;
+  const number = Number(value);
+  return Number.isFinite(number) && Math.abs(number) <= limit;
+}
 
 type ApiEnvironment = { Variables: { userId: number; sessionAdmin?: boolean; profileAdmin?: boolean } };
 type Api = Hono<ApiEnvironment>; type ApiContext = Context<ApiEnvironment>;
@@ -230,7 +240,18 @@ api.get("/settings", (c) => {
       : (getUserSetting(uid, key) ?? SETTING_DEFAULTS[key]);
   }
   settings.timezone = configuredTimeZone();
-  return c.json({ settings, settings_meta: { timezone_locked: timeZoneIsEnvironmentLocked() } });
+  const derived = timeZoneCoordinates(settings.timezone);
+  return c.json({
+    settings,
+    settings_meta: {
+      timezone_locked: timeZoneIsEnvironmentLocked(),
+      // Lets Settings show the timezone's coordinates as a placeholder without
+      // shipping the whole zone table to the browser.
+      location_default: derived
+        ? { latitude: derived.latitude, longitude: derived.longitude, source: "timezone" as const }
+        : { latitude: null, longitude: null, source: "unset" as const },
+    },
+  });
 });
 
 api.put("/settings", async (c) => {
@@ -255,6 +276,11 @@ api.put("/settings", async (c) => {
   if ("watch_show_comments" in body && !isWatchCommentsSetting(body.watch_show_comments)) {
     return c.json({ error: "invalid watch comments mode" }, 400);
   }
+  if ("daily_rotation" in body && normalizeDailyRotationConfig(body.daily_rotation) === null) {
+    return c.json({ error: "invalid daily rotation settings" }, 400);
+  }
+  if ("location_latitude" in body && !isCoordinate(body.location_latitude, 90)) return c.json({ error: "invalid latitude" }, 400);
+  if ("location_longitude" in body && !isCoordinate(body.location_longitude, 180)) return c.json({ error: "invalid longitude" }, 400);
   for (const key of Object.keys(SETTING_DEFAULTS)) {
     if (key === "child_lock_pin_hash" || key === "child_lock_enabled") continue;
     if (!(key in body)) continue;
@@ -270,7 +296,9 @@ api.put("/settings", async (c) => {
             ? normalizePlaybackSpeedOptionsSetting(body[key])!
             : key === "watch_show_comments"
               ? normalizeWatchCommentsMode(body[key])
-              : normalizeVideoCardSetting(key, body[key]);
+              : key === "daily_rotation"
+                ? serializeDailyRotationConfig(normalizeDailyRotationConfig(body[key])!)
+                : normalizeVideoCardSetting(key, body[key]);
       await setUserSetting(uid, key, value);
     }
   }

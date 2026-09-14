@@ -2,6 +2,7 @@ import type { I18nKey } from "./i18n";
 import type { EmojiSkinTone } from "./emojiSkinTone";
 import type { PlaybackQueueContext } from "./playbackQueue";
 import type { WatchCommentsSetting } from "../../shared/watchComments";
+import type { DaypartId } from "../../shared/dailyRotation";
 export { DEFAULT_PLAYBACK_SPEEDS as PLAYBACK_SPEEDS } from "../../shared/playbackSpeeds";
 export interface Tag {
   id: number;
@@ -287,6 +288,8 @@ export interface AppSettings {
   profile_admin_only_areas: string;
   app_name: string;
   timezone: string;
+  location_latitude: string;
+  location_longitude: string;
   app_icon_color: string;
   shorts_tab: string;
   show_top_channels: string;
@@ -310,6 +313,9 @@ export interface AppSettings {
   feed_autoplay_behavior: string;
   feed_autoplay_direction: string;
   feed_sort: string;
+  /** Serialized DailyRotationConfig from shared/dailyRotation. */
+  daily_rotation: string;
+  sun_backdrop: string;
 }
 export interface AppNotification {
   id: number;
@@ -605,11 +611,31 @@ export type DiscoveryRecommendation =
 
 export type RecommendationTimeOfDay = "night" | "morning" | "afternoon" | "evening";
 
+export interface RotationTag {
+  id: number;
+  /** Portable identifier; what a daypart stores and the editor selects. */
+  uuid: string;
+  name: string;
+  color: string;
+}
+
+export interface DailyRotationOptions {
+  tags: RotationTag[];
+  suggestions: Record<DaypartId, RotationTag[]>;
+}
+
+export interface SettingsMeta {
+  timezone_locked: boolean;
+  /** Coordinates implied by the configured timezone, shown as a placeholder. */
+  location_default: { latitude: number | null; longitude: number | null; source: "timezone" | "unset" };
+}
+
 export interface RecommendationSummary {
   top_channels: Array<{ channel_id: string; title: string; count: number; seconds: number }>;
   top_tags: Array<Pick<Tag, "id" | "name" | "color"> & { count: number; seconds: number }>;
   time_of_day: RecommendationTimeOfDay | null;
   current_hour: number | null;
+  rotation: { daypart: DaypartId; tags: RotationTag[]; learned: boolean } | null;
   watch_count: number;
   partial_count: number;
   based_on: string[];

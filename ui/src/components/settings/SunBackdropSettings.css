@@ -1,0 +1,9 @@
+.sun-backdrop-coordinates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(110px, 160px));
+  gap: var(--space-3);
+}
+
+@media (max-width: 480px) {
+  .sun-backdrop-coordinates { grid-template-columns: 1fr; }
+}

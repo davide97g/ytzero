@@ -4,6 +4,7 @@ import { type Video } from "../api";
 import AppRoutes from "../AppRoutes";
 import ChildLockScreen from "../components/ChildLockScreen";
 import ChildNowWatching from "../components/ChildNowWatching";
+import SunBackdrop from "../components/SunBackdrop";
 import { Toast } from "../components/ui";
 import { DeArrowProvider } from "../dearrow";
 import { ENHANCE_CONFIGURATION_ELEMENT_ID, serializeEnhanceConfiguration } from "../enhanceBridge";
@@ -67,6 +68,7 @@ export default function AppShell({ isAdmin }: { isAdmin: boolean }) {
           </script>
         )}
         <div className="layout">
+          <SunBackdrop />
           <AppTopBar
             appName={preferences.appName}
             appIconColor={preferences.appIconColor}

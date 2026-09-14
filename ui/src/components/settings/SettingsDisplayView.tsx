@@ -15,6 +15,8 @@ import { SidebarNavEditor, VideoCardActionEditor } from "./SettingsEditors"; imp
 import PlaybackSpeedOptionsSetting from "./PlaybackSpeedOptionsSetting";
 import { resolvePlaybackSpeeds, serializeCustomPlaybackSpeeds } from "../../../../shared/playbackSpeeds";
 const VideoCardSwipeSetting = lazy(() => import("./VideoCardSwipeSetting").then((module) => ({ default: module.VideoCardSwipeSetting })));
+const DailyRotationSettings = lazy(() => import("./DailyRotationSettings").then((module) => ({ default: module.DailyRotationSettings })));
+const SunBackdropSettings = lazy(() => import("./SunBackdropSettings").then((module) => ({ default: module.SunBackdropSettings })));
 const FeedBuilderSettings = (import.meta as ImportMeta & { env: { DEV: boolean } }).env.DEV
   ? lazy(() => import("./FeedBuilderSettings").then((module) => ({ default: module.FeedBuilderSettings })))
   : null;
@@ -173,6 +175,8 @@ export function SettingsDisplayView({ controller, showToast }: { controller: Set
             <Text tone="secondary">{t("primaryOnlyHint")}</Text>
           )}
 
+          <Suspense fallback={null}><SunBackdropSettings isPrimary={isPrimary} showToast={showToast} /></Suspense>
+
           <SettingRow label={t("uiLanguage")}>
             <SelectMenu
               label={t("uiLanguage")}
@@ -284,6 +288,9 @@ export function SettingsDisplayView({ controller, showToast }: { controller: Set
           }
           {FeedBuilderSettings && displaySubTab === "feed" && canManageArea("feed") && (
             <Suspense fallback={null}><FeedBuilderSettings showToast={showToast} /></Suspense>
+          )}
+          {displaySubTab === "rotation" && canManageArea("feed") && (
+            <Suspense fallback={null}><DailyRotationSettings showToast={showToast} /></Suspense>
           )}
           {displaySubTab === "playback" && canManageArea("playback") && <SettingsSection title={t("displayPlayback")} className="settings-display-group">
           <SettingRow label={t("videoCardActionsLabel")} description={t("videoCardActionsHint")}>

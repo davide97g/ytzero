@@ -92,7 +92,7 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
   const section = searchParams.get("section");
   const channelSubTab: "list" | "playlists" | "filters" = section === "filters" || section === "playlists" ? section : "list";
   const tagSubTab: "list" | "rules" = section === "rules" ? "rules" : "list";
-  const displaySubTab: "appearance" | "feed" | "navigation" | "playback" | "subtitles" | "screenshots" | "privacy" = section === "feed" || section === "navigation" || section === "playback" || section === "subtitles" || section === "screenshots" || section === "privacy" ? section : section === "sponsorblock" ? "privacy" : "appearance";
+  const displaySubTab: "appearance" | "feed" | "rotation" | "navigation" | "playback" | "subtitles" | "screenshots" | "privacy" = section === "feed" || section === "rotation" || section === "navigation" || section === "playback" || section === "subtitles" || section === "screenshots" || section === "privacy" ? section : section === "sponsorblock" ? "privacy" : "appearance";
   const advancedSubTab: "external" | "logs" | "changelog" | "dangerous" = section === "external" || section === "logs" || section === "dangerous" ? section : "changelog";
   const setSettingsRoute = (nextTab: Tab, nextSection?: string) => {
     const next = new URLSearchParams();
@@ -103,7 +103,7 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
   const setTab = (nextTab: Tab) => setSettingsRoute(nextTab);
   const setChannelSubTab = (nextSection: "list" | "playlists" | "filters") => setSettingsRoute("channels", nextSection === "list" ? undefined : nextSection);
   const setTagSubTab = (nextSection: "list" | "rules") => setSettingsRoute("tags", nextSection === "list" ? undefined : nextSection);
-  const setDisplaySubTab = (nextSection: "appearance" | "feed" | "navigation" | "playback" | "subtitles" | "screenshots" | "privacy") => setSettingsRoute("display", nextSection === "appearance" ? undefined : nextSection);
+  const setDisplaySubTab = (nextSection: "appearance" | "feed" | "rotation" | "navigation" | "playback" | "subtitles" | "screenshots" | "privacy") => setSettingsRoute("display", nextSection === "appearance" ? undefined : nextSection);
   const setAdvancedSubTab = (nextSection: "external" | "logs" | "changelog" | "dangerous") => setSettingsRoute("advanced", nextSection === "changelog" ? undefined : nextSection);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -1066,9 +1066,12 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
     ...(canManageArea("followed_playlists") ? [{ value: "playlists" as const, label: t("followedPlaylists"), count: followedPlaylists.length }] : []),
     ...(canManageArea("filters") ? [{ value: "filters" as const, label: t("filters"), count: filterRules.length }] : []),
   ];
-  const displaySubTabOptions: { value: "appearance" | "feed" | "navigation" | "playback" | "subtitles" | "screenshots" | "privacy"; label: string }[] = [
+  const displaySubTabOptions: { value: "appearance" | "feed" | "rotation" | "navigation" | "playback" | "subtitles" | "screenshots" | "privacy"; label: string }[] = [
     ...(canManageArea("appearance") ? [{ value: "appearance" as const, label: t("displayAppearance") }] : []),
-    ...(canManageArea("feed") ? [{ value: "feed" as const, label: t("displayFeed") }] : []),
+    ...(canManageArea("feed") ? [
+      { value: "feed" as const, label: t("displayFeed") },
+      { value: "rotation" as const, label: t("dailyRotationNav") },
+    ] : []),
     ...(canManageArea("navigation") ? [{ value: "navigation" as const, label: t("displayNavigation") }] : []),
     ...(canManageArea("playback") ? [
       { value: "playback" as const, label: t("displayPlayback") },
@@ -1080,7 +1083,7 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
   const currentPermissionArea = tab === "channels"
     ? channelSubTab === "playlists" ? "followed_playlists" : channelSubTab === "filters" ? "filters" : "channels"
     : tab === "display"
-      ? displaySubTab === "appearance" || displaySubTab === "feed" || displaySubTab === "navigation" ? displaySubTab : "playback"
+      ? displaySubTab === "appearance" || displaySubTab === "feed" || displaySubTab === "navigation" ? displaySubTab : displaySubTab === "rotation" ? "feed" : "playback"
     : tab === "profiles" && activeAuthMethod === "per_profile" && !canManageArea("profiles") ? null
     : permissionAreaForTab(tab);
   const isCurrentTabLocked = childLock.enabled

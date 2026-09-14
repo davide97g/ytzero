@@ -217,6 +217,70 @@ describe("portable backup classification and restore", () => {
     expect(tagFilterVisibility.hiddenFilterTagUuids(1).has(tagUuid)).toBe(true);
   });
 
+  test("round-trips the daily rotation by tag uuid and drops unknown tags", async () => {
+    const profile = (await backup.backupOptions()).profiles[0];
+    const knownUuid = crypto.randomUUID();
+    const strangerUuid = crypto.randomUUID();
+    db.prepare("INSERT INTO tags(name,color,user_id,portable_uuid) VALUES('Coffee','#f2a33a',1,?)").run(knownUuid);
+    const rotation = {
+      version: 1,
+      enabled: true,
+      strength: 80,
+      dayparts: [
+        { id: "morning", startHour: 6, enabled: true, source: "manual", tagUuids: [knownUuid, strangerUuid] },
+        { id: "midday", startHour: 11, enabled: true, source: "learned", tagUuids: [] },
+        { id: "afternoon", startHour: 14, enabled: false, source: "learned", tagUuids: [] },
+        { id: "evening", startHour: 18, enabled: true, source: "learned", tagUuids: [] },
+        { id: "night", startHour: 23, enabled: true, source: "learned", tagUuids: [] },
+      ],
+    };
+    await setUserSetting(1, "daily_rotation", JSON.stringify(rotation));
+    await setUserSetting(1, "sun_backdrop", "1");
+    const zip = await backup.createPortableBackup({ preset: "setup", profiles: [profile.id] });
+
+    await setUserSetting(1, "daily_rotation", SETTING_DEFAULTS.daily_rotation);
+    await setUserSetting(1, "sun_backdrop", "0");
+
+    const analyzed = await backup.analyzePortableBackup(1, zip);
+    const plan = await backup.planPortableRestore(1, analyzed.sessionId, {
+      mappings: { [profile.id]: { action: "merge" as const, targetProfileId: 1 } },
+      sections: analyzed.manifest.sections.map((item) => item.id),
+      strategy: "merge",
+    });
+    await backup.commitPortableRestore(1, analyzed.sessionId, plan.planRevision);
+
+    const restored = JSON.parse(getUserSetting(1, "daily_rotation")!);
+    expect(restored.enabled).toBe(true);
+    expect(restored.strength).toBe(80);
+    const morning = restored.dayparts.find((daypart: any) => daypart.id === "morning");
+    // Both uuids survive the archive; a uuid with no local tag is ignored only
+    // when the rotation is resolved, so the document stays intact for a later
+    // restore of the missing tag.
+    expect(morning.tagUuids).toEqual([knownUuid, strangerUuid]);
+    expect(morning.source).toBe("manual");
+    expect(restored.dayparts.find((daypart: any) => daypart.id === "afternoon").enabled).toBe(false);
+    expect(getUserSetting(1, "sun_backdrop")).toBe("1");
+
+    const { activeRotation } = await import("./dailyRotationTags");
+    const active = await activeRotation(1, 8);
+    expect(active?.daypart).toBe("morning");
+    expect(active?.tags.map((tag) => tag.name)).toEqual(["Coffee"]);
+  });
+
+  test("keeps the installation coordinates out of a profile archive", async () => {
+    const profile = (await backup.backupOptions()).profiles[0];
+    await setSetting("location_latitude", "52.23");
+    await setSetting("location_longitude", "21.01");
+    const zip = await backup.createPortableBackup({ preset: "setup", profiles: [profile.id] });
+    const entries = backup.readPortableZip(zip);
+    const manifest = JSON.parse(decoder.decode(entries.get("manifest.json")!));
+    const profileSettings = manifest.sections.find((item: any) => item.id === "profile.settings" && item.profileId === profile.id);
+    const document = decoder.decode(entries.get(profileSettings.path)!);
+    // Coordinates describe the installation, not the profile.
+    expect(document).not.toContain("location_latitude");
+    expect(document).not.toContain("52.23");
+  });
+
   test("round-trips resume playback context with portable tag identifiers", async () => {
     const options = await backup.backupOptions();
     const profile = options.profiles[0];
@@ -476,7 +540,7 @@ describe("portable backup classification and restore", () => {
     const exportedEntries = backup.readPortableZip(zip);
     const exportedManifest = JSON.parse(decoder.decode(exportedEntries.get("manifest.json")!));
     const profileSettingsSection = exportedManifest.sections.find((section: any) => section.id === "profile.settings");
-    expect(profileSettingsSection.schemaVersion).toBe(10);
+    expect(profileSettingsSection.schemaVersion).toBe(11);
     expect(JSON.parse(decoder.decode(exportedEntries.get(profileSettingsSection.path)!)).settings.watch_show_comments).toBe("auto");
     const followedSection = exportedManifest.sections.find((section: any) => section.id === "profile.followed-playlists");
     expect(followedSection.schemaVersion).toBe(3);

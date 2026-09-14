@@ -1,6 +1,7 @@
 import { localeFormats } from "../localeFormats";
 import { surfaceMessages } from "./surfaceMessages";
 import { feedBuilderMessages } from "./feedBuilder";
+import { dailyRotationMessages } from "./dailyRotation";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 import type { Locale } from "../types";
@@ -9,6 +10,7 @@ export const es: Locale = {
   messages: {
     ...surfaceMessages.es,
     ...feedBuilderMessages.es,
+    ...dailyRotationMessages.es,
     ...clusterMessages.es,
     ...notificationMessages.es,
     navToday: "Inicio",

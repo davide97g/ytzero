@@ -24,10 +24,12 @@ addChannel.run("UC-rec-a", "Channel A", "https://youtube.com/channel/UC-rec-a", 
 addChannel.run("UC-rec-b", "Channel B", "https://youtube.com/channel/UC-rec-b", "b.jpg", 0);
 addChannel.run("UC-rec-other", "Other profile only", "https://youtube.com/channel/UC-rec-other", "other.jpg", 0);
 addChannel.run("UC-rec-unowned", "Unowned", "https://youtube.com/channel/UC-rec-unowned", "unowned.jpg", 0);
+addChannel.run("UC-rec-rot", "Rotation channel", "https://youtube.com/channel/UC-rec-rot", "rot.jpg", 0);
 
 const follow = db.prepare("INSERT INTO user_channels(user_id, channel_id, followed) VALUES(?, ?, 1)");
 follow.run(primaryId, "UC-rec-a");
 follow.run(primaryId, "UC-rec-b");
+follow.run(primaryId, "UC-rec-rot");
 follow.run(secondary.id, "UC-rec-other");
 follow.run(child.id, "UC-rec-b");
 follow.run(downloadsChild.id, "UC-rec-b");
@@ -73,12 +75,24 @@ video("rec-private", "UC-rec-a", { private: 1 });
 video("rec-incomplete", "UC-rec-a", { thumbnail: "" });
 video("rec-other-profile", "UC-rec-other");
 video("rec-unowned", "UC-rec-unowned");
+// Deliberately stale, so it can only reach the top of the list when the daily
+// rotation raises it.
+db.prepare(`
+  INSERT INTO videos(video_id, channel_id, title, thumbnail, published_at, is_short, live_status, is_private, external)
+  VALUES (?, ?, ?, ?, ?, 0, 'none', 0, 0)
+`).run("rec-rotation", "UC-rec-rot", "Rotation video", "rot-video.jpg", new Date(Date.now() - 200 * 86_400_000).toISOString());
 
 const tag = db.prepare(
   "INSERT INTO tags(name, color, user_id, portable_uuid) VALUES(?, ?, ?, ?) RETURNING id",
 ).get("Engineering", "#20c45a", primaryId, crypto.randomUUID()) as { id: number };
 db.prepare("INSERT INTO channel_tags(channel_id, tag_id) VALUES(?, ?)").run("UC-rec-a", tag.id);
 db.prepare("INSERT INTO channel_tags(channel_id, tag_id) VALUES(?, ?)").run("UC-rec-b", tag.id);
+
+const rotationTagUuid = crypto.randomUUID();
+const rotationTag = db.prepare(
+  "INSERT INTO tags(name, color, user_id, portable_uuid) VALUES(?, ?, ?, ?) RETURNING id",
+).get("Lofi", "#8b5cf6", primaryId, rotationTagUuid) as { id: number };
+db.prepare("INSERT INTO channel_tags(channel_id, tag_id) VALUES(?, ?)").run("UC-rec-rot", rotationTag.id);
 
 const addHistory = db.prepare("INSERT INTO history(video_id, user_id, watched_at) VALUES(?, ?, datetime('now'))");
 addHistory.run("rec-seed", primaryId);
@@ -125,6 +139,45 @@ db.prepare("INSERT INTO downloads(video_id, status, source) VALUES(?, 'done', 'm
 db.prepare("INSERT INTO download_owners(user_id, video_id, source) VALUES(?, ?, 'manual')").run(downloadsChild.id, "rec-fresh-b");
 const downloadsOnlyAfter = await (await request(downloadsChild.id, "/recommendations?limit=60")).json() as any;
 const recommendationStateRows = (db.prepare("SELECT count(*) AS count FROM discovery_recommendations").get() as { count: number }).count;
+
+// ---------- daily rotation ----------
+const rotationBaselineIds = full.videos.map((item: any) => item.video_id);
+const manualRotation = (strength: number) => JSON.stringify({
+  version: 1,
+  enabled: true,
+  strength,
+  // Every daypart is manual and points at the same tag, so the scenario does
+  // not depend on the hour the suite happens to run at.
+  dayparts: ["morning", "midday", "afternoon", "evening", "night"].map((id, index) => ({
+    id, startHour: index * 4, enabled: true, source: "manual", tagUuids: [rotationTagUuid],
+  })),
+});
+
+await setUserSetting(primaryId, "daily_rotation", manualRotation(100));
+const rotatedResponse = await request(primaryId, "/recommendations?limit=60");
+const rotated = await rotatedResponse.json() as any;
+
+// Strength 0 means "configured but not steering", and must rank exactly as
+// an unconfigured profile does.
+await setUserSetting(primaryId, "daily_rotation", manualRotation(0));
+const rotationOffIds = ((await (await request(primaryId, "/recommendations?limit=60")).json()) as any)
+  .videos.map((item: any) => item.video_id);
+
+// A learned daypart takes its tags from Pulse instead of the stored list.
+await setUserSetting(primaryId, "daily_rotation", JSON.stringify({
+  version: 1, enabled: true, strength: 100,
+  dayparts: ["morning", "midday", "afternoon", "evening", "night"].map((id, index) => ({
+    id, startHour: index * 4, enabled: true, source: "learned", tagUuids: [],
+  })),
+}));
+const learned = await (await request(primaryId, "/recommendations?limit=60")).json() as any;
+
+const suggestionsResponse = await request(primaryId, "/daily-rotation/suggestions");
+const suggestions = await suggestionsResponse.json() as any;
+
+await setUserSetting(primaryId, "daily_rotation", JSON.stringify({ version: 1, enabled: false, strength: 60, dayparts: [] }));
+const afterDisable = await (await request(primaryId, "/recommendations?limit=60")).json() as any;
+
 await setPluginEnabled("discovery", false);
 const disabled = await (await request(primaryId, "/recommendations?limit=60")).json() as any;
 
@@ -151,6 +204,19 @@ console.log("RESULT " + JSON.stringify({
   childIds: childData.videos.map((item: any) => item.video_id),
   downloadsOnlyBefore: downloadsOnlyBefore.videos.map((item: any) => item.video_id),
   downloadsOnlyAfter: downloadsOnlyAfter.videos.map((item: any) => item.video_id),
+  rotationBaselineFirstId: rotationBaselineIds[0],
+  rotationBaselineIds,
+  rotationStatus: rotatedResponse.status,
+  rotationIds: rotated.videos.map((item: any) => item.video_id),
+  rotationSummary: rotated.summary.rotation,
+  rotationBasedOn: rotated.summary.based_on,
+  rotationOffIds,
+  learnedRotation: learned.summary.rotation,
+  learnedFirstId: learned.videos[0]?.video_id,
+  suggestionsStatus: suggestionsResponse.status,
+  suggestions: suggestions.suggestions,
+  disabledRotationSummary: afterDisable.summary.rotation,
+  disabledRotationIds: afterDisable.videos.map((item: any) => item.video_id),
 }));
 
 db.close();

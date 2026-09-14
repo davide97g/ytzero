@@ -10,6 +10,7 @@ import { migrateSQLiteToPostgres } from "./postgresMigration";
 import { applyDatabaseMigrations } from "./databaseMigrations";
 import { applyCanonicalSQLiteSchema } from "./canonicalSchema";
 import { DEFAULT_VIDEO_CARD_ACTION_CONFIG } from "../../shared/videoCardActions";
+import { defaultDailyRotationConfig, serializeDailyRotationConfig } from "../../shared/dailyRotation";
 export const DB_PATH = process.env.DB_PATH ?? resolve(import.meta.dir, "../../data/db/ytzero.db");
 mkdirSync(dirname(DB_PATH), { recursive: true });
 export const db = new Database(DB_PATH, { create: true });
@@ -270,6 +271,10 @@ export const SETTING_DEFAULTS: Record<string, string> = {
   // One instance-wide IANA timezone drives logs, daily rotation, child limits,
   // and Insights/Pulse independently of the container or browser timezone.
   timezone: "UTC",
+  // Where this installation is, used to place the sun in the ambient backdrop.
+  // Empty means "derive it from the configured timezone".
+  location_latitude: "",
+  location_longitude: "",
   shorts_tab: "1",
   show_top_channels: "1",
   // How far back the main feed reaches. Videos older than this stay in the
@@ -303,6 +308,10 @@ export const SETTING_DEFAULTS: Record<string, string> = {
   feed_autoplay_direction: "newest", // newest = list order | oldest = reverse
   // Main-feed chronology is a portable per-profile viewing preference.
   feed_sort: "published", // published | arrival
+  // Dayparts that steer the Recommendations shelf through the day.
+  daily_rotation: serializeDailyRotationConfig(defaultDailyRotationConfig()),
+  // Ambient sun backdrop behind the app shell; decorative and opt-in.
+  sun_backdrop: "0",
   // ---------- authentication (all app-wide, owned by the primary profile) ----------
   // none | shared | per_profile | oidc | proxy_header
   auth_method: "none",
@@ -340,6 +349,8 @@ export const GLOBAL_SETTING_KEYS = new Set([
   "app_name",
   "app_icon_color",
   "timezone",
+  "location_latitude",
+  "location_longitude",
   "auth_method",
   "auth_hide_other_profiles",
   "auth_shared_username",

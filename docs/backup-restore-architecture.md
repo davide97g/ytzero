@@ -210,6 +210,12 @@ archive with no such capability restores with public sharing denied.
   displayed dates, scheduling, local log timestamps, daily rotation, child
   limits, and Insights/Pulse day and hour aggregation without depending on the
   host or browser timezone.
+  The installation coordinates (`location_latitude`, `location_longitude`) are
+  portable instance configuration in the same class: they describe where the
+  installation is, not the machine it runs on, and only position the ambient sun
+  backdrop. Both are optional; when empty the backdrop falls back to the
+  coordinates implied by the configured timezone. They are app-wide and are
+  never written into a profile archive.
   When the machine-bound `TZ` environment variable contains a valid IANA zone,
   it overrides this portable value at runtime and the saved value remains
   dormant for a future start without `TZ`. The environment override itself is
@@ -251,6 +257,21 @@ archive with no such capability restores with public sharing denied.
   opt-in presentation preference for Community Posts on channel pages. Comment
   payloads remain transient; the persisted Community Post catalog and its
   synchronization state are rebuildable cache data. Neither is exported.
+  The daily rotation is portable per-profile configuration. It stores a
+  bounded document: an enable flag, a 0-100 strength, and one entry per daypart
+  (`morning`, `midday`, `afternoon`, `evening`, `night`) holding a start hour, an
+  enable flag, whether the tags are learned from Pulse or chosen by hand, and at
+  most eight portable tag UUIDs. Tags are referenced by UUID rather than local
+  id, so a restored rotation keeps pointing at the right tags; a UUID with no
+  matching tag on this installation is ignored when the rotation is resolved and
+  is deliberately kept in the document, so restoring the missing tag later
+  revives it. A damaged or unreadable document restores as the default (disabled)
+  rotation. The rotation is recorded by `profile.settings` schema v11; schemas
+  1-10 remain readable and use the default when the key is absent. The Pulse
+  aggregates a learned daypart reads (`watch_tag_time_log`) remain portable
+  personal state in `profile.analytics` and are not duplicated here.
+  The ambient sun backdrop switch is a portable per-profile presentation
+  preference recorded by the same schema, and defaults to off.
   Feed-builder configuration is portable personal configuration in the separate versioned `profile.feed-builder` section. It references portable tag and personal-playlist UUIDs plus channel and followed-playlist IDs, so that section depends on the corresponding organization sections. Its revision is preserved for optimistic concurrency; expired composed-feed session snapshots are rebuildable cache and are never exported.
   The visibility of the child-watching shortcut is also a portable per-profile
   presentation preference. It defaults to visible; live child activity remains

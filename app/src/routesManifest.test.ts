@@ -43,6 +43,7 @@ describe("HTTP route manifest", () => {
     const ytdlpConfigRoute = "PUT /downloads/ytdlp/config";
     const ytdlpUpdateRoute = "POST /downloads/ytdlp/update";
     const importVideoRoute = "POST /videos/:id/import";
+    const dailyRotationRoute = "GET /daily-rotation/suggestions";
     const sessionPlaylistRoute = "POST /playlists/from-session-queue";
     const clearVideoBookmarksRoute = "DELETE /videos/:id/bookmark";
     const clusterStatusRoute = "GET /cluster/status";
@@ -68,7 +69,7 @@ describe("HTTP route manifest", () => {
       "GET /public-shares", "PUT /public-shares/policy", "POST /public-shares",
       "PATCH /public-shares/:id", "POST /public-shares/:id/rotate", "DELETE /public-shares/:id",
     ];
-    expect(routes).toHaveLength(266);
+    expect(routes).toHaveLength(267);
     expect(routes).toContain(transcriptRoute);
     expect(routes).toContain(playbackAdjacentRoute);
     expect(routes).toContain(liveAudioRoute);
@@ -78,6 +79,7 @@ describe("HTTP route manifest", () => {
     expect(routes).toContain(ytdlpConfigRoute);
     expect(routes).toContain(ytdlpUpdateRoute);
     expect(routes).toContain(importVideoRoute);
+    expect(routes).toContain(dailyRotationRoute);
     expect(routes).toContain(sessionPlaylistRoute);
     expect(routes).toContain(clearVideoBookmarksRoute);
     expect(routes).toContain(clusterStatusRoute);
@@ -88,7 +90,7 @@ describe("HTTP route manifest", () => {
     for (const route of publicShareManagementRoutes) expect(routes).toContain(route);
     expect(routes).toContain("GET /plugins/tubearchivist/config");
     expect(routes).toContain("POST /plugins/tubearchivist/sync");
-    const legacyRoutes = routes.filter((route) => route !== transcriptRoute && route !== playbackAdjacentRoute && route !== liveAudioRoute && route !== vodAudioRoute && route !== retryAudioRoute && route !== directStreamRoute && route !== ytdlpConfigRoute && route !== ytdlpUpdateRoute && route !== importVideoRoute && route !== sessionPlaylistRoute && route !== clearVideoBookmarksRoute && route !== clusterStatusRoute && route !== followedPlaylistOfflinePolicyRoute && !feedBuilderRoutes.includes(route) && !accessControlRoutes.includes(route) && !notificationPreferenceRoutes.includes(route) && !publicShareManagementRoutes.includes(route));
+    const legacyRoutes = routes.filter((route) => route !== transcriptRoute && route !== playbackAdjacentRoute && route !== liveAudioRoute && route !== vodAudioRoute && route !== retryAudioRoute && route !== directStreamRoute && route !== ytdlpConfigRoute && route !== ytdlpUpdateRoute && route !== importVideoRoute && route !== dailyRotationRoute && route !== sessionPlaylistRoute && route !== clearVideoBookmarksRoute && route !== clusterStatusRoute && route !== followedPlaylistOfflinePolicyRoute && !feedBuilderRoutes.includes(route) && !accessControlRoutes.includes(route) && !notificationPreferenceRoutes.includes(route) && !publicShareManagementRoutes.includes(route));
     expect(createHash("sha256").update(legacyRoutes.join("\n")).digest("hex"))
       .toBe("80c5a76e8b9e73067474352689dee5912762cbd8933feb23ceb68592f592158b");
   });

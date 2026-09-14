@@ -85,6 +85,44 @@ describe("recommendations route", () => {
     expect(result.summary.based_on).toEqual(expect.arrayContaining(["watch_history", "channels", "tags", "time_of_day", "unfinished"]));
   });
 
+  test("a manual daypart raises its tagged videos to the top", () => {
+    expect(result.rotationStatus).toBe(200);
+    // Stale, from a channel with no watch history: it carries no other signal
+    // and so does not place at all until the daypart asks for its tag.
+    expect(result.rotationBaselineIds).not.toContain("rec-rotation");
+    expect(result.rotationIds[0]).toBe("rec-rotation");
+  });
+
+  test("explains the active daypart in the summary", () => {
+    expect(result.rotationSummary).toMatchObject({ learned: false });
+    expect(result.rotationSummary.tags).toContainEqual(expect.objectContaining({ name: "Lofi" }));
+    expect(result.rotationBasedOn).toContain("daily_rotation");
+  });
+
+  test("zero strength ranks exactly like no rotation at all", () => {
+    expect(result.rotationOffIds).toEqual(result.rotationBaselineIds);
+  });
+
+  test("a learned daypart takes its tags from Pulse", () => {
+    expect(result.learnedRotation).toMatchObject({ learned: true });
+    expect(result.learnedRotation.tags).toContainEqual(expect.objectContaining({ name: "Engineering" }));
+    // Engineering covers the recently watched channels, not the stale upload.
+    expect(result.learnedFirstId).not.toBe("rec-rotation");
+  });
+
+  test("suggests a tag set for every daypart", () => {
+    expect(result.suggestionsStatus).toBe(200);
+    expect(Object.keys(result.suggestions).sort())
+      .toEqual(["afternoon", "evening", "midday", "morning", "night"]);
+    const suggested = Object.values(result.suggestions as Record<string, { name: string }[]>).flat();
+    expect(suggested.some((tag) => tag.name === "Engineering")).toBe(true);
+  });
+
+  test("switching the rotation off restores the untouched ranking", () => {
+    expect(result.disabledRotationSummary).toBeNull();
+    expect(result.disabledRotationIds).toEqual(result.rotationBaselineIds);
+  });
+
   test("keeps core local recommendations available for child profiles and honors downloads-only", () => {
     expect(result.childStatus).toBe(200);
     expect(result.childEnabled).toBe(true);

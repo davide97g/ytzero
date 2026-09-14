@@ -1,0 +1,45 @@
+/* Decorative ambient layer behind the entire shell. It sits under every
+   surface, never receives input, and stays far below the contrast of content. */
+.sun-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: var(--sun-opacity, 0.2);
+  transition: opacity 1.2s ease;
+}
+
+.sun-backdrop__sky {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(120% 90% at var(--sun-x, 50%) var(--sun-y, 50%), var(--sun-sky, #1a2340) 0%, transparent 70%),
+    linear-gradient(180deg, var(--sun-sky, #1a2340) 0%, transparent 65%);
+}
+
+/* One soft disc rather than a hard circle plus a blur filter: a large radial
+   gradient is cheaper to composite and never banding-clips on wide screens. */
+.sun-backdrop__disc {
+  position: absolute;
+  left: var(--sun-x, 50%);
+  top: var(--sun-y, 50%);
+  width: min(96vw, 900px);
+  aspect-ratio: 1;
+  max-width: 100%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--sun-glow, #ffd696) 0%, color-mix(in srgb, var(--sun-glow, #ffd696) 45%, transparent) 38%, transparent 68%);
+  transition: left 2s ease, top 2s ease, background 2s ease;
+}
+
+@media (max-width: 760px) {
+  .sun-backdrop__disc { width: min(120vw, 560px); }
+}
+
+/* Motion here only ever explains the passage of the day, so removing it costs
+   nothing: the sun still sits in the right place, it just stops sliding. */
+@media (prefers-reduced-motion: reduce) {
+  .sun-backdrop,
+  .sun-backdrop__disc { transition: none; }
+}

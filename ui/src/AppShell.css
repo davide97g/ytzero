@@ -22,8 +22,12 @@
   .app-bootstrap-mark { animation: none; opacity: .72; }
 }
 
-.layout { display: flex; flex-direction: column; min-height: 100dvh; }
-.layout-body { display: flex; flex: 1; }
+/* `isolation` keeps the decorative sun backdrop, which is the shell's first
+   child, from stacking above anything inside the layout. */
+.layout { display: flex; flex-direction: column; min-height: 100dvh; position: relative; isolation: isolate; }
+/* The top bar carries its own sticky z-index; only the static body needs
+   lifting above the backdrop's stacking level. */
+.layout-body { display: flex; flex: 1; position: relative; z-index: 1; }
 
 /* ---------- sidebar ---------- */
 .sidebar {

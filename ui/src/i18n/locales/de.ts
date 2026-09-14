@@ -5,12 +5,14 @@ import { surfaceMessages } from "./surfaceMessages";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 import { feedBuilderMessages } from "./feedBuilder";
+import { dailyRotationMessages } from "./dailyRotation";
 export const de: Locale = {
   messages: {
     ...surfaceMessages.de,
     ...clusterMessages.de,
     ...notificationMessages.de,
     ...feedBuilderMessages.de,
+    ...dailyRotationMessages.de,
     navToday: "Start",
     navSocial: "Social",
     navDiscovery: "Entdecken",

@@ -28,6 +28,7 @@ import { NOTIFICATION_CATEGORIES } from "./notificationPreferences";
 import { normalizeFeedBuilderConfig } from "../../shared/feedBuilder";
 import { isDownloadQuality, type DownloadQuality } from "./downloadSettings";
 import { normalizeWatchCommentsMode } from "../../shared/watchComments";
+import { defaultDailyRotationConfig, normalizeDailyRotationConfig, serializeDailyRotationConfig } from "../../shared/dailyRotation";
 export const BACKUP_FORMAT = "ytzero.portable-backup"; export const BACKUP_FORMAT_VERSION = 1;
 export const BACKUP_TTL_MS = 30 * 60_000;
 const SESSION_DIR = process.env.RESTORE_SESSION_DIR ?? resolve(import.meta.dir, "../../data/restore-sessions");
@@ -54,7 +55,7 @@ export const BACKUP_SECTIONS: readonly BackupSectionDefinition[] = [
   { id: "instance.channels", schemaVersion: 4, scope: "instance", sensitivity: "normal", dependencies: [], category: "organization", path: () => "instance/channels.jsonl" },
   { id: "profiles.index", schemaVersion: 1, scope: "instance", sensitivity: "normal", dependencies: [], category: "profiles", path: () => "profiles/index.json" },
   { id: "profile.avatar", schemaVersion: 1, scope: "profile", sensitivity: "normal", dependencies: ["profiles.index"], category: "profiles", optional: true, path: (uuid = "") => `assets/avatars/${uuid}` },
-  { id: "profile.settings", schemaVersion: 10, scope: "profile", sensitivity: "normal", dependencies: ["profiles.index"], category: "configuration", path: profilePath("settings.json") },
+  { id: "profile.settings", schemaVersion: 11, scope: "profile", sensitivity: "normal", dependencies: ["profiles.index"], category: "configuration", path: profilePath("settings.json") },
   { id: "profile.feed-builder", schemaVersion: 1, scope: "profile", sensitivity: "normal", dependencies: ["profiles.index", "profile.subscriptions", "profile.followed-playlists", "profile.tags", "profile.playlists"], category: "configuration", path: profilePath("feed-builder.json") },
   { id: "profile.notification-preferences", schemaVersion: 1, scope: "profile", sensitivity: "normal", dependencies: ["profiles.index"], category: "configuration", path: profilePath("notification-preferences.jsonl") },
   { id: "profile.access-control", schemaVersion: 1, scope: "profile", sensitivity: "normal", dependencies: ["profiles.index", "instance.access-control"], category: "configuration", path: profilePath("access-control.json") },
@@ -96,6 +97,13 @@ function portableUserSettingValue(key: string, value: unknown): string {
   if (key === "keyboard_shortcuts") return normalizeKeyboardShortcutSetting(value) ?? SETTING_DEFAULTS.keyboard_shortcuts; if (key.startsWith("video_card_")) return normalizeVideoCardSetting(key, value);
   if (key === "show_shorts") return value === "disabled" || value === "1" || value === "selected" ? value : "0";
   if (key === "watch_show_comments") return normalizeWatchCommentsMode(value);
+  // Dayparts reference tags by portable uuid, so the document restores as-is;
+  // uuids with no matching tag on this installation are simply ignored when the
+  // rotation is read. A damaged document falls back to the default rotation.
+  if (key === "daily_rotation") {
+    return serializeDailyRotationConfig(normalizeDailyRotationConfig(value) ?? defaultDailyRotationConfig());
+  }
+  if (key === "sun_backdrop") return value === "1" || value === 1 || value === true ? "1" : "0";
   return String(value);
 }
 export interface BackupManifestSection {

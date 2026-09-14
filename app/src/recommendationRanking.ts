@@ -25,6 +25,7 @@ export interface RecommendationCandidate {
   channel_watch_seconds?: number | null;
   channel_time_seconds?: number | null;
   playlist_hits?: number | null;
+  rotation_hits?: number | null;
 }
 
 export interface RankedRecommendation<T extends RecommendationCandidate = RecommendationCandidate> {
@@ -92,6 +93,14 @@ export function scoreRecommendationCandidate<T extends RecommendationCandidate>(
     score += points;
     reasons.push(reason);
   };
+
+  // Daily rotation is the only signal the viewer states outright, so it sits
+  // above everything Pulse merely inferred. Strength scales it down to nothing
+  // at 0, which is how a rotation is softened rather than switched off.
+  const rotationStrength = numeric(settings.rotation_strength);
+  if (numeric(video.rotation_hits) > 0 && rotationStrength > 0) {
+    add(20_000 * (rotationStrength / 100), "daily rotation");
+  }
 
   // Pulse stores heartbeat seconds per tag and hour. Large tier bases encode a
   // lexicographic preference without adding another persistent user setting:

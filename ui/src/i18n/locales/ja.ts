@@ -2,6 +2,7 @@ import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
 import { surfaceMessages } from "./surfaceMessages";
 import { feedBuilderMessages } from "./feedBuilder";
+import { dailyRotationMessages } from "./dailyRotation";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 
@@ -9,6 +10,7 @@ export const ja: Locale = {
   messages: {
     ...surfaceMessages.ja,
     ...feedBuilderMessages.ja,
+    ...dailyRotationMessages.ja,
     ...clusterMessages.ja,
     ...notificationMessages.ja,
     "navToday": "メインページ",

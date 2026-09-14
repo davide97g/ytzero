@@ -19,6 +19,8 @@ import {
   scoreRecommendationCandidate,
   type RecommendationTimeOfDay,
 } from "./recommendationRanking";
+import { activeRotation, type ActiveRotation, type RotationTag } from "./dailyRotationTags";
+import type { DaypartId } from "../../shared/dailyRotation";
 import {
   DISCOVERY_SETTINGS,
   NOTIFICATION_PROVIDER_SETTINGS,
@@ -471,7 +473,7 @@ async function localRecommendations(
   uid: number,
   limit: number,
   settings: Record<string, number>,
-  options: { allowExternal?: boolean; downloadsOnly?: boolean } = {},
+  options: { allowExternal?: boolean; downloadsOnly?: boolean; rotation?: ActiveRotation | null } = {},
 ): Promise<DiscoveryRecommendation[]> {
   const local = zonedDayHour();
   const nearbyHours = recommendationHoursNear(local.hour).join(",");
@@ -492,6 +494,21 @@ async function localRecommendations(
   const downloadsWhere = options.downloadsOnly
     ? `AND EXISTS (SELECT 1 FROM downloads allowed_download JOIN download_owners allowed_owner ON allowed_owner.video_id=allowed_download.video_id WHERE allowed_owner.user_id=${uid} AND allowed_download.video_id = v.video_id AND allowed_download.status = 'done')`
     : "";
+  // The active daypart's tags. Ids come from the tags table, so inlining them
+  // matches how the rest of this query inlines the profile id.
+  const rotationTagIds = (options.rotation?.tagIds ?? []).filter((id) => Number.isSafeInteger(id)).join(",");
+  const rotationJoin = rotationTagIds
+    ? `LEFT JOIN (
+      SELECT candidate.video_id, count(*) AS rotation_hits
+      FROM effective_video_tags candidate
+      WHERE candidate.user_id = ${uid} AND candidate.tag_id IN (${rotationTagIds})
+      GROUP BY candidate.video_id
+    ) rothit ON rothit.video_id = v.video_id`
+    : "";
+  const rotationSelect = rotationTagIds ? "COALESCE(rothit.rotation_hits, 0)" : "0";
+  // The pool is capped at 300 rows before anything is scored, so without this
+  // an older video the rotation would have raised never reaches the scorer.
+  const rotationOrder = rotationTagIds ? `${rotationSelect} > 0 DESC, ` : "";
 
   const rows = await database.prepare(`${effectiveVideoTagsCte}
     SELECT v.video_id, v.channel_id, v.title, v.description, v.thumbnail, v.published_at,
@@ -506,7 +523,8 @@ async function localRecommendations(
            COALESCE(taghit.tag_hits, 0) AS tag_hits,
            COALESCE(tagwatch.tag_watch_count, 0) AS tag_watch_count,
            COALESCE(tagtime.time_seconds, 0) AS tag_time_seconds,
-           COALESCE(plhit.playlist_hits, 0) AS playlist_hits
+           COALESCE(plhit.playlist_hits, 0) AS playlist_hits,
+           ${rotationSelect} AS rotation_hits
     FROM videos v
     JOIN channels c ON c.channel_id = v.channel_id
     LEFT JOIN user_videos uv ON uv.video_id = v.video_id AND uv.user_id = ${uid}
@@ -569,6 +587,7 @@ async function localRecommendations(
       WHERE candidate.user_id = ${uid}
       GROUP BY candidate.video_id
     ) tagtime ON tagtime.video_id = v.video_id
+    ${rotationJoin}
     WHERE v.is_short = 0
       AND v.live_status = 'none'
       AND COALESCE(v.is_private, 0) = 0
@@ -587,7 +606,7 @@ async function localRecommendations(
         SELECT 1 FROM recommendation_feedback rf
         WHERE rf.user_id = ${uid} AND rf.video_id = v.video_id AND rf.action = 'dismiss'
       )
-    ORDER BY v.published_at DESC, v.video_id DESC
+    ORDER BY ${rotationOrder}v.published_at DESC, v.video_id DESC
     LIMIT 300
   `).all() as any[];
 
@@ -890,9 +909,10 @@ export interface RecommendationSummary {
   top_tags: { id: number; name: string; color: string; count: number; seconds: number }[];
   time_of_day: RecommendationTimeOfDay | null;
   current_hour: number | null;
+  rotation: { daypart: DaypartId; tags: RotationTag[]; learned: boolean } | null;
   watch_count: number;
   partial_count: number;
-  based_on: ("watch_history" | "channels" | "tags" | "time_of_day" | "likes" | "unfinished")[];
+  based_on: ("watch_history" | "channels" | "tags" | "time_of_day" | "likes" | "unfinished" | "daily_rotation")[];
 }
 
 async function recommendationSummary(uid: number): Promise<RecommendationSummary> {
@@ -981,7 +1001,9 @@ async function recommendationSummary(uid: number): Promise<RecommendationSummary
   const partialCount = Number(stats.partial_count) || 0;
   const likedCount = Number(stats.liked_count) || 0;
   const hasCurrentTimeSignal = (Number(clock.seconds) || 0) > 0;
+  const rotation = await activeRotation(uid, local.hour);
   const basedOn: RecommendationSummary["based_on"] = [];
+  if (rotation) basedOn.push("daily_rotation");
   if (watchCount > 0) basedOn.push("watch_history");
   if (topChannels.length > 0) basedOn.push("channels");
   if (topTags.length > 0) basedOn.push("tags");
@@ -994,6 +1016,7 @@ async function recommendationSummary(uid: number): Promise<RecommendationSummary
     top_tags: topTags,
     time_of_day: hasCurrentTimeSignal ? current : null,
     current_hour: hasCurrentTimeSignal ? local.hour : null,
+    rotation: rotation ? { daypart: rotation.daypart, tags: rotation.tags, learned: rotation.learned } : null,
     watch_count: watchCount,
     partial_count: partialCount,
     based_on: basedOn,
@@ -1011,10 +1034,15 @@ export interface RecommendationFeedOptions {
 async function rankedRecommendationQueue(uid: number, options: Pick<RecommendationFeedOptions, "downloadsOnly"> = {}): Promise<DiscoveryRecommendation[]> {
   if (!pluginEnabled("discovery")) return [];
   const settings = await discoverySettings(uid);
-  const local = await localRecommendations(uid, 300, settings, {
-    allowExternal: false,
-    downloadsOnly: options.downloadsOnly,
-  });
+  const rotation = await activeRotation(uid, zonedDayHour().hour);
+  const local = await localRecommendations(
+    uid,
+    300,
+    // The scorer stays a pure function of (video, settings); the rotation
+    // reaches it as one more tuning value rather than as extra state.
+    { ...settings, rotation_strength: rotation?.strength ?? 0 },
+    { allowExternal: false, downloadsOnly: options.downloadsOnly, rotation },
+  );
   return mixRecommendations(local, 300, settings);
 }
 

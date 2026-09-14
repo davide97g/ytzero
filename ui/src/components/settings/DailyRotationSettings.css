@@ -1,0 +1,46 @@
+/* One block per daypart. Structure comes from spacing and one surface step, so
+   nothing here needs a border. */
+.daily-rotation-dayparts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.daily-rotation-daypart {
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: var(--space-4);
+}
+
+.daily-rotation-daypart__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.daily-rotation-daypart__identity {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.daily-rotation-daypart__name { font-weight: 600; }
+
+.daily-rotation-daypart__controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.daily-rotation-daypart__suggestions { flex-wrap: wrap; }
+
+@media (max-width: 760px) {
+  .daily-rotation-daypart { padding: var(--space-3); }
+  .daily-rotation-daypart__controls { grid-template-columns: 1fr; }
+}

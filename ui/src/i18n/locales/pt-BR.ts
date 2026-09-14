@@ -2,6 +2,7 @@ import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
 import { surfaceMessages } from "./surfaceMessages";
 import { feedBuilderMessages } from "./feedBuilder";
+import { dailyRotationMessages } from "./dailyRotation";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 
@@ -9,6 +10,7 @@ export const ptBR: Locale = {
   messages: {
     ...surfaceMessages["pt-BR"],
     ...feedBuilderMessages["pt-BR"],
+    ...dailyRotationMessages["pt-BR"],
     ...clusterMessages["pt-BR"],
     ...notificationMessages["pt-BR"],
     "navToday": "Principal",
