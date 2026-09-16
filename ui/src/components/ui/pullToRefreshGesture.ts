@@ -5,8 +5,14 @@ export const PULL_MAX_DISTANCE = 120;
 export const PULL_REST_DISTANCE = 56;
 /** Finger travel absorbed before a touch counts as a pull. */
 export const PULL_START_SLOP = 8;
+/**
+ * How long the release plays before the dial gets out of the way. The refresh
+ * itself is reported by the top bar, so this is tied to the animation and not
+ * to the request.
+ */
+export const PULL_COMMIT_DURATION = 420;
 
-export type PullPhase = "idle" | "pulling" | "armed" | "refreshing";
+export type PullPhase = "idle" | "pulling" | "armed" | "committing";
 
 /**
  * Damp the finger travel so the indicator starts out tracking the touch and

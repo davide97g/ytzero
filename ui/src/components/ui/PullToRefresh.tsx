@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { createPortal } from "react-dom";
+import { ArrowDown } from "lucide-react";
 import {
   dampPullDistance,
   isAbandonedPull,
   isPullGesture,
   pullProgress,
   resolvePullPhase,
+  PULL_COMMIT_DURATION,
   PULL_REST_DISTANCE,
   PULL_START_SLOP,
   type PullPhase,
@@ -23,9 +25,15 @@ function startsInsideScrolledRegion(target: EventTarget | null): boolean {
 }
 
 /**
- * Pull-down-to-refresh for the window scroller. Renders only its indicator: it
- * slides out from under the top bar, winds its glyph as the pull progresses,
- * and runs `onRefresh` when a pull past the trigger is released.
+ * Pull-down-to-refresh for the window scroller. Renders only its indicator, and
+ * the indicator only owns the gesture: it follows the finger below the top bar,
+ * turns its arrow upward once the pull arms the refresh, then commits and gets
+ * out of the way. The running refresh is reported by the top bar's own sweep, so
+ * the dial never competes with it.
+ *
+ * The indicator is portalled to the body: the page layout raises its own
+ * stacking context, so an indicator rendered in place could only ever draw
+ * behind the top bar.
  */
 export function PullToRefresh({
   onRefresh,
@@ -38,8 +46,10 @@ export function PullToRefresh({
   disabled?: boolean;
 }) {
   const [phase, setPhase] = useState<PullPhase>("idle");
+  const [busy, setBusy] = useState(false);
   const indicatorRef = useRef<HTMLDivElement>(null);
   const phaseRef = useRef<PullPhase>("idle");
+  const busyRef = useRef(false);
   const onRefreshRef = useRef(onRefresh);
   const disabledRef = useRef(disabled);
 
@@ -53,6 +63,7 @@ export function PullToRefresh({
     let origin: { x: number; y: number } | null = null;
     let owned = false;
     let distance = 0;
+    let commitTimer: number | null = null;
 
     const paint = (next: number, progress: number) => {
       indicator.style.setProperty("--pull-distance", `${next}px`);
@@ -63,6 +74,11 @@ export function PullToRefresh({
       if (!mounted || phaseRef.current === next) return;
       phaseRef.current = next;
       setPhase(next);
+    };
+
+    const markBusy = (next: boolean) => {
+      busyRef.current = next;
+      if (mounted) setBusy(next);
     };
 
     const settle = () => {
@@ -115,12 +131,19 @@ export function PullToRefresh({
         settle();
         return;
       }
+      // The commit plays from where the finger let go and runs to its own
+      // rhythm; the refresh can finish sooner or much later.
       paint(PULL_REST_DISTANCE, 1);
-      enter("refreshing");
+      enter("committing");
+      markBusy(true);
+      commitTimer = window.setTimeout(() => {
+        commitTimer = null;
+        settle();
+      }, PULL_COMMIT_DURATION);
       try {
         await onRefreshRef.current();
       } finally {
-        settle();
+        markBusy(false);
       }
     }
 
@@ -130,7 +153,7 @@ export function PullToRefresh({
     }
 
     const onTouchStart = (event: TouchEvent) => {
-      if (disabledRef.current || phaseRef.current === "refreshing") return;
+      if (disabledRef.current || busyRef.current || phaseRef.current === "committing") return;
       if (event.touches.length !== 1 || window.scrollY > 0) return;
       if (startsInsideScrolledRegion(event.target)) return;
       const touch = event.touches[0];
@@ -144,15 +167,19 @@ export function PullToRefresh({
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     return () => {
       mounted = false;
+      if (commitTimer !== null) window.clearTimeout(commitTimer);
       window.removeEventListener("touchstart", onTouchStart);
       detach();
     };
   }, []);
 
-  return <div className="ui-pull-to-refresh" data-phase={phase} ref={indicatorRef}>
-    <div className="ui-pull-to-refresh__dial" aria-hidden="true">
-      <span className="ui-pull-to-refresh__glyph"><RefreshCw /></span>
-    </div>
-    <span className="sr-only" role="status" aria-live="polite">{phase === "refreshing" ? busyLabel : ""}</span>
-  </div>;
+  return createPortal(
+    <div className="ui-pull-to-refresh" data-phase={phase} ref={indicatorRef}>
+      <div className="ui-pull-to-refresh__dial" aria-hidden="true">
+        <span className="ui-pull-to-refresh__glyph"><ArrowDown /></span>
+      </div>
+      <span className="sr-only" role="status" aria-live="polite">{busy ? busyLabel : ""}</span>
+    </div>,
+    document.body,
+  );
 }

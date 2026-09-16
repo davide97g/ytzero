@@ -1,27 +1,37 @@
-/* The indicator rests hidden behind the top bar and is pushed into view by the
-   pull. `--pull-distance` and `--pull-progress` are written by the gesture. */
+/* The dial is an affordance for the pull, not a progress spinner: it clears the
+   top bar on the first few pixels, winds toward the trigger, and hands the work
+   to the bar's own refresh sweep on release. `--pull-distance` and
+   `--pull-progress` are written by the gesture. */
 .ui-pull-to-refresh {
   --pull-distance: 0px;
   --pull-progress: 0;
+  /* Travel is measured down from the bar's bottom edge, so the dial is always
+     in clear space instead of dimmed behind the bar's glass. */
+  --pull-travel: calc(10px + var(--pull-distance) * 0.62);
   position: fixed;
   top: calc(var(--topbar-h) + var(--safe-top));
   left: 50%;
-  z-index: 44;
-  width: 38px;
-  height: 38px;
-  margin-left: -19px;
+  /* Above the top bar (50), below popovers (60). */
+  z-index: 52;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
   display: grid;
   place-items: center;
   pointer-events: none;
-  opacity: min(1, calc(var(--pull-progress) * 2.4));
-  transform: translate3d(0, calc(var(--pull-distance) - 48px), 0);
-  will-change: transform;
+  opacity: min(1, calc(var(--pull-progress) * 2));
+  transform: translate3d(0, var(--pull-travel), 0) scale(calc(0.62 + var(--pull-progress) * 0.38));
+  will-change: transform, opacity;
 }
-/* Only the settle back and the hand-off to the spinner animate — while the
-   finger is down the indicator tracks it frame for frame. */
-.ui-pull-to-refresh[data-phase="idle"],
-.ui-pull-to-refresh[data-phase="refreshing"] {
-  transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+/* Only the abandoned pull eases back — while the finger is down the dial tracks
+   it frame for frame. */
+.ui-pull-to-refresh[data-phase="idle"] {
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms ease;
+}
+/* The release: a short push against the finger, then the dial retreats toward
+   the bar that is about to report the refresh. */
+.ui-pull-to-refresh[data-phase="committing"] {
+  animation: ui-pull-to-refresh-commit 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* The ring reads as a dial: it fills toward the trigger, then locks to accent. */
@@ -33,48 +43,64 @@
   height: 100%;
   border-radius: 50%;
   background: conic-gradient(
+    from -90deg,
     var(--accent) calc(var(--pull-progress) * 1turn),
-    color-mix(in srgb, var(--surface-3) 70%, transparent) 0
+    color-mix(in srgb, var(--surface-3) 85%, transparent) 0
   );
+  box-shadow: 0 10px 22px -8px rgba(0, 0, 0, 0.7);
   color: var(--text-2);
-  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms ease;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), color 180ms ease, box-shadow 180ms ease;
 }
+/* An opaque face keeps the glyph legible over thumbnails. */
 .ui-pull-to-refresh__dial::before {
   background: var(--surface-2);
   border-radius: 50%;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
   content: "";
-  inset: 2px;
+  inset: 2.5px;
   position: absolute;
 }
-.ui-pull-to-refresh[data-phase="armed"] .ui-pull-to-refresh__dial {
+.ui-pull-to-refresh[data-phase="armed"] .ui-pull-to-refresh__dial,
+.ui-pull-to-refresh[data-phase="committing"] .ui-pull-to-refresh__dial {
   color: var(--text);
-  transform: scale(1.08);
+  transform: scale(1.06);
+  box-shadow:
+    0 10px 22px -8px rgba(0, 0, 0, 0.7),
+    0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent),
+    0 0 18px -2px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
-/* Winding the glyph with the pull is the gesture's feedback: the icon has
-   turned half a revolution by the time the refresh is armed. */
+/* The arrow states the direction, the ring states the progress: holding the
+   arrow down until the trigger keeps it from passing through sideways angles
+   that read as a different arrow, and makes the flip to "release to refresh"
+   the one moment of motion in the glyph. */
 .ui-pull-to-refresh__glyph {
   display: grid;
   place-items: center;
   position: relative;
-  transform: rotate(calc(var(--pull-progress) * 180deg));
+  transform: rotate(0deg);
+  transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ui-pull-to-refresh[data-phase="armed"] .ui-pull-to-refresh__glyph,
+.ui-pull-to-refresh[data-phase="committing"] .ui-pull-to-refresh__glyph {
+  transform: rotate(180deg);
 }
 .ui-pull-to-refresh__glyph svg {
-  width: 17px;
-  height: 17px;
-  stroke-width: 2.1;
-}
-.ui-pull-to-refresh[data-phase="refreshing"] .ui-pull-to-refresh__glyph {
-  animation: ui-pull-to-refresh-spin 850ms linear infinite;
-  color: var(--text);
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.25;
 }
 
-@keyframes ui-pull-to-refresh-spin {
-  to { transform: rotate(360deg); }
+@keyframes ui-pull-to-refresh-commit {
+  0% { opacity: 1; transform: translate3d(0, var(--pull-travel), 0) scale(1); }
+  26% { opacity: 1; transform: translate3d(0, calc(var(--pull-travel) + 5px), 0) scale(1.1); }
+  100% { opacity: 0; transform: translate3d(0, 2px, 0) scale(0.65); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ui-pull-to-refresh[data-phase="refreshing"] .ui-pull-to-refresh__glyph { animation: none; }
-  .ui-pull-to-refresh__dial { transition: color 200ms ease; }
+  .ui-pull-to-refresh[data-phase="idle"] { transition: opacity 140ms ease; }
+  .ui-pull-to-refresh[data-phase="committing"] { animation-duration: 180ms; }
+  .ui-pull-to-refresh__dial { transition: color 180ms ease, box-shadow 180ms ease; }
+  .ui-pull-to-refresh[data-phase="armed"] .ui-pull-to-refresh__dial,
+  .ui-pull-to-refresh[data-phase="committing"] .ui-pull-to-refresh__dial { transform: none; }
+  .ui-pull-to-refresh__glyph { transition: none; }
 }
