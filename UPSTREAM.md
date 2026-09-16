@@ -6,11 +6,18 @@ Repo root is this folder (`yt-zero`).
 
 | Remote | URL | Push |
 | --- | --- | --- |
-| `origin` | https://github.com/davide97g/ytzero (public fork, mine) | yes |
+| `origin` | https://github.com/davide97g/ytzero (public, mine) | yes |
 | `upstream` | https://github.com/Pelski/ytzero (original) | disabled |
 
 `main` tracks `origin/main`. Push URL of `upstream` is set to `DISABLED` on purpose,
 so an accidental `git push upstream` fails instead of trying the original repo.
+
+`origin` left GitHub's fork network on 2026-09-16 and is a standalone repository
+now, not a fork of `upstream`. Nothing about merging changes: `upstream` is an
+ordinary remote URL, so the commands below work exactly as they did. What it buys
+is a repository GitHub treats as its own — in a fork, pushes to `main` never
+triggered a workflow run, which left every deployment ungated. See
+[Deployment](#deployment).
 
 Pull upstream changes:
 
@@ -81,3 +88,36 @@ Already upstream — read before rebuilding:
 - **Watch-together / social** — design notes in `docs/social-watch-together.md`.
 
 Not upstream: AI features.
+
+## Deployment
+
+`main` deploys to the mini PC, following the runbook in the `homelab` project
+rather than anything upstream does.
+
+| | |
+| --- | --- |
+| Runs at | https://ytzero.davideghiotto.it |
+| Service | Dokploy **application** `ytzero-app`, project `ytzero`, built from this repo's `Dockerfile` |
+| Trigger | the `deploy` job in `.github/workflows/ci.yml`, after `Validate` is green |
+| Endpoint | https://deploy-ytzero.davideghiotto.it |
+
+Dokploy's own auto-deploy is off, and the webhook that used to fire on push is
+gone. There is exactly one path from `main` to production and it runs behind the
+test gate — a deploy that starts before the tests have judged the commit is the
+thing this arrangement exists to prevent.
+
+The deploy hostname is Dokploy on the LAN, published through the Cloudflare
+tunnel on a path rule that allows `api/application.(deploy|one)` and nothing
+else. Everything else on Dokploy's admin API, `project.all` included, answers 404
+at Cloudflare's edge before it reaches the box:
+
+```
+curl -s -o /dev/null -w '%{http_code}\n' "https://deploy-ytzero.davideghiotto.it/api/application.one?applicationId=x"  # 401 — reached Dokploy
+curl -s -o /dev/null -w '%{http_code}\n' "https://deploy-ytzero.davideghiotto.it/api/project.all"                      # 404 — never did
+```
+
+The job needs three repository secrets — `DOKPLOY_URL` (the deploy hostname),
+`DOKPLOY_API_KEY` and `DOKPLOY_APPLICATION_ID` — and waits for Dokploy's verdict
+rather than only queueing the build, so a red deploy cannot hide under a green
+workflow. Administering Dokploy itself (anything past those two calls) goes over
+Tailscale, not this hostname.

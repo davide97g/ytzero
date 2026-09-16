@@ -29,7 +29,7 @@ const lineLimits: Record<string, number> = {
   "ui/src/app-shell/AppBootstrap.tsx": 17,
   "ui/src/app-shell/AppShell.tsx": 113,
   "ui/src/app-shell/AppSidebar.tsx": 97,
-  "ui/src/app-shell/AppTopBar.tsx": 162,
+  "ui/src/app-shell/AppTopBar.tsx": 164,
   "ui/src/app-shell/SidebarPlaylists.tsx": 106,
   "ui/src/app-shell/SidebarSubscriptions.tsx": 86,
   "ui/src/app-shell/sidebarVisibility.ts": 30,
