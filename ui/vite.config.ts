@@ -28,8 +28,14 @@ function serviceWorker(buildId: string): Plugin {
   };
 }
 
+const BUILD_ID = resolveBuildId();
+
 export default defineConfig({
-  plugins: [react(), serviceWorker(resolveBuildId())],
+  // The page and the worker are compared at runtime to catch a handover whose
+  // `controllerchange` never arrived (see ui/src/pwaUpdates.ts), so both have to
+  // carry the same string.
+  define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
+  plugins: [react(), serviceWorker(BUILD_ID)],
   build: {
     rollupOptions: {
       output: {
