@@ -78,3 +78,22 @@
   .settings-release-head { align-items: flex-start; }
   .settings-release-actions { flex-wrap: wrap; justify-content: flex-end; }
 }
+
+@media (max-width: 640px) {
+  .ui-settings-section { border-radius: 14px; margin-bottom: 12px; padding: 14px; }
+  .ui-settings-section > .ui-section-header { margin-bottom: 10px; }
+  .ui-settings-section--collapsible[open] > .ui-settings-section__summary { margin-bottom: 10px; }
+  .ui-setting-row { column-gap: 12px; padding: 11px 0; }
+  /* Only controls that need the full width take a line of their own; a switch or
+     a button stays beside its label instead of doubling the row's height. */
+  .ui-setting-row:has(.ui-setting-row__control :is(.ui-input, .ui-input-group, .ui-select-menu__trigger, .ui-slider, .ui-shortcut-input, textarea)) {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ui-setting-row:has(.ui-setting-row__control :is(.ui-input, .ui-input-group, .ui-select-menu__trigger, .ui-slider, .ui-shortcut-input, textarea)) .ui-setting-row__control { width: 100%; }
+  .ui-setting-row__control > :is(.ui-input, .ui-input-group) { width: 100%; }
+  .ui-setting-row__control:has(.ui-select-menu__trigger),
+  .ui-setting-row__control > .ui-popover:has(.ui-select-menu__trigger),
+  .ui-setting-row__control .ui-select-menu__trigger { width: 100%; }
+}

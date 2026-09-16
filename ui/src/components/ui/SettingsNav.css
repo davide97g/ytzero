@@ -16,8 +16,29 @@
 
 @media (max-width: 880px) {
   .ui-settings-nav__desktop { display: none; }
-  .ui-settings-nav__mobile { display: block; width: 100%; }
-  .ui-settings-nav__mobile-trigger { border-radius: 11px; justify-content: space-between; width: 100%; }
+  .ui-settings-nav__mobile { display: grid; gap: 8px; width: 100%; }
+  .ui-settings-nav__mobile-anchor { display: block; width: 100%; }
+  /* Reads as a place picker, not as one more collapsible card: lighter surface,
+     accent mark, and the section it belongs to written above its own name. */
+  .ui-settings-nav__mobile-trigger {
+    background: var(--surface-2);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--surface-3));
+    border-radius: 12px;
+    gap: 11px;
+    height: auto;
+    justify-content: flex-start;
+    min-height: 52px;
+    padding: 7px 12px;
+    width: 100%;
+  }
+  .ui-settings-nav__mobile-trigger:hover { background: var(--surface-3); }
+  .ui-settings-nav__mobile-trigger > .ui-button__icon:first-child { color: var(--accent); }
+  .ui-settings-nav__mobile-trigger > .ui-button__icon:last-child { color: var(--text-2); margin-left: auto; }
+  .ui-settings-nav__mobile-copy { display: grid; gap: 1px; min-width: 0; text-align: left; }
+  .ui-settings-nav__mobile-group { color: var(--text-3); font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .ui-settings-nav__mobile-current { font-size: 15px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ui-settings-nav__rail .ui-tabs { gap: 6px; }
+  .ui-settings-nav__rail .ui-tabs__tab { min-height: 38px; }
   .ui-settings-nav__mobile-popover { box-sizing: border-box; max-height: min(70vh, 560px); max-height: min(70dvh, 560px); overflow-y: auto; overscroll-behavior-y: contain; scrollbar-gutter: stable; width: min(360px, calc(100vw - 32px)); }
   .ui-settings-nav__mobile-popover .ui-menu__item { font-size: 14px; min-height: 38px; }
   .ui-settings-nav__mobile-popover .ui-menu__label-heading { font-size: 11px; }

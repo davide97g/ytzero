@@ -15,6 +15,6 @@
 .plugin-slider-row--search-target { border-color: color-mix(in srgb, var(--accent) 55%, transparent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
 
 @media (max-width: 640px) {
-  .settings-search { flex-basis: 100%; width: 100%; }
+  .settings-search { flex: 1 1 auto; min-width: 0; width: auto; }
   .settings-search__popover { position: fixed; top: 72px; right: 16px; left: 16px; width: auto; }
 }

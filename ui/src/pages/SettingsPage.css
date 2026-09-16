@@ -903,16 +903,6 @@ tr:hover .channel-rename-btn, .channel-rename-btn:focus-visible { opacity: 1; }
 .plugin-slider-control > .ui-input { box-sizing: border-box; width: 100%; }
 
 @media (max-width: 760px) {
-  .ui-settings-section { border-radius: 12px; padding: 14px; }
-  .ui-setting-row { flex-wrap: wrap; gap: 10px; }
-  .ui-setting-row__copy { flex: 1 1 220px; }
-  .ui-setting-row__control:has(.ui-input),
-  .ui-setting-row__control:has(.ui-input-group) { flex: 1 1 100%; width: 100%; }
-  .ui-setting-row__control > .ui-input,
-  .ui-setting-row__control > .ui-input-group { width: 100%; }
-  .ui-setting-row__control:has(.ui-select-menu__trigger),
-  .ui-setting-row__control > .ui-popover:has(.ui-select-menu__trigger),
-  .ui-setting-row__control .ui-select-menu__trigger { width: 100%; }
   .form-row > .ui-input { flex: 1 1 180px; }
   .form-row > .ui-popover:has(.ui-select-menu__trigger) { flex: 1 1 140px; }
   .form-row > .ui-popover:has(.ui-select-menu__trigger) .ui-select-menu__trigger { width: 100%; }
@@ -947,8 +937,10 @@ tr:hover .channel-rename-btn, .channel-rename-btn:focus-visible { opacity: 1; }
 
 @media (max-width: 480px) {
   .ui-settings-section { margin-inline: 0; padding: 12px; }
-  .form-row { align-items: stretch; }
-  .form-row > .ui-input, .form-row > .ui-button, .form-row > .ui-popover:has(.ui-select-menu__trigger) { flex: 1 1 100%; width: 100%; }
+  .form-row { align-items: stretch; gap: 8px; margin-bottom: 12px; }
+  .form-row > .ui-input, .form-row > .ui-popover:has(.ui-select-menu__trigger) { flex: 1 1 100%; width: 100%; }
+  /* Buttons pair up on a line rather than each claiming a full-width bar. */
+  .form-row > .ui-button { flex: 1 1 auto; justify-content: center; min-width: 0; }
   .form-row > .ui-popover:has(.ui-select-menu__trigger) .ui-select-menu__trigger { width: 100%; }
   .playlist-settings-toolbar-actions, .playlist-settings-toolbar-actions .ui-button { width: 100%; }
   .playlist-settings-toolbar-actions .ui-button { flex: 1 1 auto; }
@@ -974,19 +966,10 @@ tr:hover .channel-rename-btn, .channel-rename-btn:focus-visible { opacity: 1; }
 }
 
 @media (max-width: 640px) {
-  .ui-setting-row { flex-wrap: nowrap; }
-  .ui-setting-row__copy { flex: 0 1 auto; }
-}
-@media (max-width: 640px) {
-  .ui-page-header { align-items: stretch; flex-direction: column; gap: 10px; }
-  .ui-page-header__actions { width: 100%; }
   .ui-section-header { gap: 8px; }
   .ui-list-row { align-items: start; grid-template-columns: auto minmax(0,1fr); }
   .ui-list-row__meta { grid-column: 2; white-space: normal; }
   .ui-list-actions { grid-column: 2; justify-content: flex-start; }
-  .ui-setting-row { align-items: flex-start; flex-direction: column; justify-content: flex-start; }
-  .ui-setting-row__copy { flex: 0 1 auto; }
-  .ui-setting-row__control { width: 100%; }
 }
 /* Number + unit pair: the shared 170px trigger minimum is far too wide for a
    one- or two-digit value, and would push the unit select off the row. */

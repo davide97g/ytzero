@@ -27,11 +27,14 @@
   .profile-management-item__role { grid-column: 2 / -1; grid-row: 2; }
 }
 @container settings-section (max-width: 460px) {
-  .profile-management-toolbar, .profile-management-toolbar__access { align-items: stretch; flex-direction: column; }
-  .profile-management-toolbar .ui-button { width: 100%; }
-  .profile-management-item__summary { align-items: start; grid-template-columns: auto minmax(0,1fr); }
-  .profile-management-item__edit { grid-column: 1 / -1; width: 100%; }
-  .profile-management-item__role { grid-column: 1 / -1; }
+  .profile-management-toolbar { align-items: stretch; flex-direction: column; }
+  /* The two access shortcuts share a line; only the primary action spans it. */
+  .profile-management-toolbar__access .ui-button { flex: 1 1 auto; justify-content: center; min-width: 0; }
+  .profile-management-toolbar > .ui-button { width: 100%; }
+  /* Edit keeps the identity's row instead of costing the card a third line. */
+  .profile-management-item__summary { align-items: start; gap: 10px; grid-template-columns: auto minmax(0,1fr) auto; }
+  .profile-management-item__edit { grid-column: 3; grid-row: 1; }
+  .profile-management-item__role { grid-column: 1 / -1; grid-row: 2; }
   .profile-creation-panel { grid-template-columns: auto minmax(0,1fr); }
   .profile-creation-panel__actions { grid-column: 1 / -1; }
   .profile-creation-panel__actions .ui-button { flex: 1; }

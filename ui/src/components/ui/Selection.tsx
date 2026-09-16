@@ -86,6 +86,17 @@ export function Tabs<T extends string>({ value, options, onChange, label, varian
     };
   }, [options]);
 
+  // A tab that scrolled out of the strip is a tab the reader cannot find: bring
+  // the selected one back into the middle whenever the selection moves.
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    const active = scroller?.querySelector<HTMLElement>(".ui-tabs__tab--active");
+    if (!scroller || !active) return;
+    const centered = active.offsetLeft - (scroller.clientWidth - active.offsetWidth) / 2;
+    const reduced = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    scroller.scrollTo({ left: Math.max(0, centered), behavior: reduced ? "auto" : "smooth" });
+  }, [value, options]);
+
   return <div className={cx("ui-tabs-wrap", `ui-tabs-wrap--${variant}`, shadowLeft && "ui-tabs-wrap--shadow-left", shadowRight && "ui-tabs-wrap--shadow-right", className)}><div ref={scrollerRef} className={cx("ui-tabs", `ui-tabs--${variant}`)} role="tablist" aria-label={label}>{options.map((option) => <button type="button" role="tab" aria-selected={value === option.value} className={cx("ui-tabs__tab", value === option.value && "ui-tabs__tab--active")} key={option.value} onClick={() => onChange(option.value)}>{option.icon}{option.label}{option.count != null && option.count > 0 && <span className="ui-tabs__count">{option.count}</span>}</button>)}</div></div>;
 }
 
