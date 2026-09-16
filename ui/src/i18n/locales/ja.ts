@@ -498,6 +498,7 @@ export const ja: Locale = {
     "feedEmptyNotFollowingDescription": "少なくとも1つのチャネルをフォローすれば、この場所は即座に空に感じます。",
     "refresh": "リフレッシュ",
     "refreshError": "エラーをリフレッシュ:",
+    "pullToRefreshBusy": "更新中…",
     "loadMore": "もっと見る",
     "reload": "リロード",
     "searchResultsFor": "検索結果:",

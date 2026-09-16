@@ -1,6 +1,8 @@
 * { box-sizing: border-box; }
 
-html, body { margin: 0; }
+/* `overscroll-behavior-y` hands the pull past the top of the page to the app's
+   own refresh instead of the browser's, which would reload the whole shell. */
+html, body { margin: 0; overscroll-behavior-y: contain; }
 
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; }

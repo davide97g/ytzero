@@ -407,6 +407,7 @@ export const de: Locale = {
     feedEmptyNotFollowingDescription: "Folge mindestens einem Kanal, dann sieht es hier gleich weniger leer aus.",
     refresh: "Aktualisieren",
     refreshError: "Fehler beim Aktualisieren:",
+    pullToRefreshBusy: "Wird aktualisiert…",
     loadMore: "Mehr laden",
     reload: "Neu laden",
     searchResultsFor: "Ergebnisse für:",

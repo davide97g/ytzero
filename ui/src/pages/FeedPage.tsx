@@ -13,7 +13,7 @@ import TagFilterBar from "../components/TagFilterBar";
 import VideoCard, { type CardFeedback } from "../components/VideoCard";
 import { VideoGridSkeleton } from "../components/LoadingState";
 import { GRID_SIZES, persistGridSize, readGridSize, type GridSize } from "../gridSize";
-import { Button, ButtonLink, Divider, EmptyState, IconButton, RevealRegion } from "../components/ui";
+import { Button, ButtonLink, Divider, EmptyState, IconButton, PullToRefresh, RevealRegion } from "../components/ui";
 import { parseAppTimestamp } from "../dateTime";
 import type { PlaybackQueueContext, PlayVideo } from "../playbackQueue";
 import { filterChannelsByTags } from "./feedChannelFilter";
@@ -411,6 +411,7 @@ export default function FeedPage({
 
   return (
     <>
+      <PullToRefresh onRefresh={refresh} busyLabel={t("pullToRefreshBusy")} disabled={refreshing} />
       <ChildTimeRequestBanner />
       <div className="toolbar" ref={hScrollWrapRef}>
         <TagFilterBar

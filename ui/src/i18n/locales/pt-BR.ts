@@ -498,6 +498,7 @@ export const ptBR: Locale = {
     "feedEmptyNotFollowingDescription": "Siga pelo menos um canal e este lugar se sentirá instantaneamente menos vazio.",
     "refresh": "Actualizar",
     "refreshError": "Erro de atualização:",
+    "pullToRefreshBusy": "Atualizando…",
     "loadMore": "Carregar mais",
     "reload": "Recarregar",
     "searchResultsFor": "Resultados para:",

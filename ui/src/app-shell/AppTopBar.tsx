@@ -6,6 +6,7 @@ import { emit, subscribe } from "../events";
 import ProfileMenu from "../components/ProfileMenu";
 import { useI18n } from "../i18n";
 import { toggleSidebar } from "./sidebarVisibility";
+import { useTopbarScrollHidden } from "./topbarScrollVisibility";
 import SessionPlayQueueMenu from "./SessionPlayQueueMenu";
 
 function SpyLogo() {
@@ -51,6 +52,7 @@ export default function AppTopBar({
   const [params] = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
   const [solid, setSolid] = useState(window.scrollY > 8);
+  const scrolledAway = useTopbarScrollHidden();
   const [feedRefreshing, setFeedRefreshing] = useState(false);
   const feedRefreshStartedAtRef = useRef(0);
   const feedRefreshFinishTimerRef = useRef<number | null>(null);
@@ -104,7 +106,7 @@ export default function AppTopBar({
 
   return (
     <div
-      className={`topbar${solid ? " topbar--solid" : ""}${incognito ? " topbar--incognito" : ""}${feedRefreshing ? " topbar--feed-refreshing" : ""}`}
+      className={`topbar${solid ? " topbar--solid" : ""}${incognito ? " topbar--incognito" : ""}${feedRefreshing ? " topbar--feed-refreshing" : ""}${scrolledAway && !feedRefreshing ? " topbar--retracted" : ""}`}
       aria-busy={feedRefreshing}
     >
       <button className="sidebar-toggle-btn" aria-label={t("Menu")} onClick={toggleSidebar}>

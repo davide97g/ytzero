@@ -405,6 +405,7 @@ export const hu: Locale = {
     feedEmptyNotFollowingDescription: "Kövess legalább egy csatornát, és ez a hely azonnal kevésbé fog üresnek tűnni.",
     refresh: "Frissítés",
     refreshError: "Frissítési hiba:",
+    pullToRefreshBusy: "Frissítés folyamatban…",
     loadMore: "Továbbiak betöltése",
     reload: "Újratöltés",
     searchResultsFor: "Találatok erre:",

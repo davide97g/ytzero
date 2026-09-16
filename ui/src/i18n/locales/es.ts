@@ -502,6 +502,7 @@ export const es: Locale = {
     feedEmptyNotFollowingDescription: "Sigue al menos un canal y esto dejará de parecer vacío al instante.",
     refresh: "Actualizar",
     refreshError: "Error al actualizar:",
+    pullToRefreshBusy: "Actualizando…",
     loadMore: "Cargar más",
     reload: "Recargar",
     searchResultsFor: "Resultados para:",

@@ -498,6 +498,7 @@ export const ru: Locale = {
     "feedEmptyNotFollowingDescription": "Подпишитесь хотя бы на один канал, и здесь сразу станет не так пусто.",
     "refresh": "Обновить",
     "refreshError": "Ошибка обновления:",
+    "pullToRefreshBusy": "Обновление…",
     "loadMore": "Загрузить ещё",
     "reload": "Перезагрузить",
     "searchResultsFor": "Результаты для:",

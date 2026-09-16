@@ -407,6 +407,7 @@ export const en = {
     feedEmptyNotFollowingDescription: "Follow at least one channel and this place will instantly feel less empty.",
     refresh: "Refresh",
     refreshError: "Refresh error:",
+    pullToRefreshBusy: "Refreshing…",
     loadMore: "Load more",
     reload: "Reload",
     searchResultsFor: "Results for:",

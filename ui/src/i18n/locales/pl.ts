@@ -407,6 +407,7 @@ export const pl: Locale = {
     feedEmptyNotFollowingDescription: "Dodaj choć jedną subskrypcję, a zrobi się tu trochę mniej pusto.",
     refresh: "Odśwież",
     refreshError: "Błąd odświeżania:",
+    pullToRefreshBusy: "Odświeżanie…",
     loadMore: "Załaduj więcej",
     reload: "Przeładuj",
     searchResultsFor: "Wyniki dla:",

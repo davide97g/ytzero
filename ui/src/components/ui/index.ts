@@ -13,6 +13,7 @@ export * from "./Dialog";
 export * from "./Menu";
 export * from "./Popover";
 export * from "./Progress";
+export * from "./PullToRefresh";
 export * from "./Selection";
 export * from "./ScrollArea";
 export * from "./RevealList";

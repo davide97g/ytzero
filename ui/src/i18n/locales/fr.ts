@@ -498,6 +498,7 @@ export const fr: Locale = {
     "feedEmptyNotFollowingDescription": "Suivez au moins une chaîne et cet endroit paraîtra tout de suite moins vide.",
     "refresh": "Actualiser",
     "refreshError": "Erreur d'actualisation :",
+    "pullToRefreshBusy": "Actualisation…",
     "loadMore": "Charger plus",
     "reload": "Recharger",
     "searchResultsFor": "Résultats pour :",

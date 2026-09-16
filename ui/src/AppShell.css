@@ -469,8 +469,19 @@ body.sidebar-hidden .sidebar { width: 0; padding: 0; }
   background: rgba(15, 15, 15, 0.88);
   backdrop-filter: blur(10px);
   flex-shrink: 0;
-  transition: background 0.25s, backdrop-filter 0.25s;
+  transition: background 0.25s, backdrop-filter 0.25s, transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
   min-width: 0;
+}
+/* On phones the bar gets out of the way on the way down and comes straight back
+   on the first upward flick. Desktop keeps it put: the sticky sidebar hangs off
+   the bar's height, so retracting it would open a gap beside the rail. */
+@media (max-width: 760px) {
+  .topbar--retracted { transform: translateY(calc(-100% - 4px)); }
+  /* The navigation drawer sits directly under the bar — keep them together. */
+  body:not(.sidebar-hidden) .topbar--retracted { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar { transition: background 0.25s, backdrop-filter 0.25s; }
 }
 .topbar--incognito {
   background: rgba(13, 14, 16, 0.92);
