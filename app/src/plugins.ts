@@ -19,8 +19,8 @@ import {
   scoreRecommendationCandidate,
   type RecommendationTimeOfDay,
 } from "./recommendationRanking";
-import { nearlyCompleteSql, normalizeWatchProgressConfig, type WatchProgressConfig } from "../../shared/watchProgress";
-import { userWatchProgressConfig } from "./watchProgressSettings";
+import { nearlyCompleteSql } from "../../shared/watchProgress";
+import { settingsWatchProgress, userWatchProgressConfig } from "./watchProgressSettings";
 import { activeRotation, type ActiveRotation, type RotationTag } from "./dailyRotationTags";
 import type { DaypartId } from "../../shared/dailyRotation";
 import {
@@ -425,15 +425,6 @@ async function discoverySettings(uid: number): Promise<Record<string, number>> {
     progress_min_position: progress.minPosition,
     progress_min_duration: progress.minDuration,
   };
-}
-
-/** Rebuilds a watch-progress config from a scorer settings record. */
-function settingsWatchProgress(settings: Record<string, number>): WatchProgressConfig {
-  return normalizeWatchProgressConfig({
-    completeRatio: settings.complete_ratio,
-    minPosition: settings.progress_min_position,
-    minDuration: settings.progress_min_duration,
-  });
 }
 
 async function discoveryTermState(uid: number): Promise<PluginTermState> {

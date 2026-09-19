@@ -6,7 +6,6 @@ import { AlertTriangle, ArchiveRestore, ArrowRight, Check, CheckCircle2, Chevron
 import { api, type AppChangelog, type AppLogs, type AppLogStreamEvent, type AppVersion, type AuthMethod, type Channel, type ChannelManualStatus, type ChildLockStatus, type FilterRule, type FollowedPlaylist, type MembersOnlyVisibility, type PluginManifest, type PluginSettingsResponse, type Profile, type ProfilePermissionArea, type ProfilePermissions, type Rule, type ShortsFeedMode, type Tag, type UpdateCheck, type UserPlaylist, type UserPlaylistRule, type Video, SB_CATEGORIES } from "../api";
 import { parseCustomPlaybackSpeeds } from "../../../shared/playbackSpeeds";
 import { normalizeWatchCommentsMode, type WatchCommentsMode } from "../../../shared/watchComments";
-import { normalizeWatchProgressConfig, WATCH_PROGRESS_DEFAULTS, type WatchProgressConfig } from "../../../shared/watchProgress";
 import AuthSettings from "../components/AuthSettings";
 import { NAV_ITEMS, normalizeNav, parseNavConfig, type NavConfigEntry } from "../nav";
 import { img } from "../img";
@@ -180,9 +179,6 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
   const [channelPostsTab, setChannelPostsTab] = useState(false);
   const [feedMaxAgeValue, setFeedMaxAgeValue] = useState("6");
   const [feedMaxAgeUnit, setFeedMaxAgeUnit] = useState<FeedMaxAgeUnit>("months");
-  const [feedTuning, setFeedTuning] = useState<WatchProgressConfig>({ ...WATCH_PROGRESS_DEFAULTS });
-  const [feedRefreshScope, setFeedRefreshScope] = useState<"videos" | "everything">("videos");
-  const [feedSort, setFeedSort] = useState<"published" | "arrival">("published");
   const [feedAutoplayEnabled, setFeedAutoplayEnabled] = useState(false);
   const [feedAutoplayBehavior, setFeedAutoplayBehavior] = useState<"autoplay" | "prompt">("autoplay");
   const [feedAutoplayDirection, setFeedAutoplayDirection] = useState<"oldest" | "newest">("newest");
@@ -458,14 +454,6 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
       setChannelPostsTab(r.settings.channel_posts_tab === "1");
       setFeedMaxAgeValue(r.settings.feed_max_age_value || "6");
       setFeedMaxAgeUnit(isFeedMaxAgeUnit(r.settings.feed_max_age_unit) ? r.settings.feed_max_age_unit : "off");
-      setFeedTuning(normalizeWatchProgressConfig({
-        completeRatio: r.settings.feed_complete_ratio,
-        minPosition: r.settings.feed_progress_min_seconds,
-        minDuration: r.settings.feed_progress_min_duration,
-        continueLimit: r.settings.feed_continue_limit,
-      }));
-      setFeedRefreshScope(r.settings.feed_refresh_scope === "everything" ? "everything" : "videos");
-      setFeedSort(r.settings.feed_sort === "arrival" ? "arrival" : "published");
       setFeedAutoplayEnabled(r.settings.feed_autoplay_enabled === "1");
       setFeedAutoplayBehavior(r.settings.feed_autoplay_behavior === "prompt" ? "prompt" : "autoplay");
       setFeedAutoplayDirection(r.settings.feed_autoplay_direction === "newest" ? "newest" : "oldest");
@@ -706,35 +694,6 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
     setFeedMaxAgeValue(value);
     setFeedMaxAgeUnit(unit);
     await api.updateSettings({ feed_max_age_value: value, feed_max_age_unit: unit });
-    showToast(t("displaySettingsSaved"));
-  };
-
-  // Feed tuning writes the whole config so a slider drag cannot leave two
-  // thresholds describing different rules.
-  const changeFeedTuning = async (next: WatchProgressConfig, persist = true) => {
-    setFeedTuning(next);
-    if (!persist) return;
-    await api.updateSettings({
-      feed_complete_ratio: String(next.completeRatio),
-      feed_progress_min_seconds: String(next.minPosition),
-      feed_progress_min_duration: String(next.minDuration),
-      feed_continue_limit: String(next.continueLimit),
-    });
-    emit("feed-view-reload-requested");
-    showToast(t("displaySettingsSaved"));
-  };
-
-  const changeFeedRefreshScope = async (next: "videos" | "everything") => {
-    setFeedRefreshScope(next);
-    await api.updateSettings({ feed_refresh_scope: next });
-    showToast(t("displaySettingsSaved"));
-  };
-
-  const changeFeedSort = async (next: "published" | "arrival") => {
-    setFeedSort(next);
-    await api.updateSettings({ feed_sort: next });
-    emit("feed-settings-changed");
-    emit("feed-view-reload-requested");
     showToast(t("displaySettingsSaved"));
   };
 
@@ -1280,12 +1239,6 @@ export function useSettingsPageController({ showToast }: { showToast: (message: 
     feedAutoplayEnabled,
     feedMaxAgeUnit,
     feedMaxAgeValue,
-    feedRefreshScope,
-    feedSort,
-    feedTuning,
-    changeFeedRefreshScope,
-    changeFeedSort,
-    changeFeedTuning,
     fileRef,
     filterAction,
     filterChannel,

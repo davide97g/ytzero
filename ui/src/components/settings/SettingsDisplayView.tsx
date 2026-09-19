@@ -14,9 +14,9 @@ import { Button, ColorPicker, Divider, Inline, Input, InputGroup, SelectMenu, Se
 import { SidebarNavEditor, VideoCardActionEditor } from "./SettingsEditors"; import { KeyboardShortcutSettings } from "./KeyboardShortcutSettings";
 import PlaybackSpeedOptionsSetting from "./PlaybackSpeedOptionsSetting";
 import { resolvePlaybackSpeeds, serializeCustomPlaybackSpeeds } from "../../../../shared/playbackSpeeds";
-import { WATCH_PROGRESS_LIMITS } from "../../../../shared/watchProgress";
 const VideoCardSwipeSetting = lazy(() => import("./VideoCardSwipeSetting").then((module) => ({ default: module.VideoCardSwipeSetting })));
 const DailyRotationSettings = lazy(() => import("./DailyRotationSettings").then((module) => ({ default: module.DailyRotationSettings })));
+const FeedTuningSettings = lazy(() => import("./FeedTuningSettings").then((module) => ({ default: module.FeedTuningSettings })));
 const SunBackdropSettings = lazy(() => import("./SunBackdropSettings").then((module) => ({ default: module.SunBackdropSettings })));
 const FeedBuilderSettings = (import.meta as ImportMeta & { env: { DEV: boolean } }).env.DEV
   ? lazy(() => import("./FeedBuilderSettings").then((module) => ({ default: module.FeedBuilderSettings })))
@@ -34,14 +34,6 @@ type FeedMaxAgeUnit = "days" | "weeks" | "months" | "years" | "off";
 const FEED_MAX_AGE_UNITS: Exclude<FeedMaxAgeUnit, "off">[] = ["days", "weeks", "months", "years"];
 const FEED_MAX_AGE_VALUES = Array.from({ length: 30 }, (_, index) => String(index + 1));
 
-/** Slider read-out: seconds up to a minute, then m:ss. */
-function formatSeconds(value: number): string {
-  if (value < 60) return `${value}s`;
-  const minutes = Math.floor(value / 60);
-  const seconds = value % 60;
-  return seconds === 0 ? `${minutes}m` : `${minutes}m ${seconds}s`;
-}
-
 type SettingsController = ReturnType<typeof useSettingsPageController>;
 export function SettingsDisplayView({ controller, showToast }: { controller: SettingsController; showToast: (message: string) => void }) {
   const {
@@ -56,9 +48,6 @@ export function SettingsDisplayView({ controller, showToast }: { controller: Set
     changeFeedAutoplayBehavior,
     changeFeedAutoplayDirection,
     changeFeedMaxAge,
-    changeFeedRefreshScope,
-    changeFeedSort,
-    changeFeedTuning,
     changeShortsFeedMode,
     changeMembersOnlyVisibility,
     changeYoutubeTitleLanguage,
@@ -73,9 +62,6 @@ export function SettingsDisplayView({ controller, showToast }: { controller: Set
     feedAutoplayEnabled,
     feedMaxAgeUnit,
     feedMaxAgeValue,
-    feedRefreshScope,
-    feedSort,
-    feedTuning,
     hideLiveFromFeed,
     isCurrentTabLocked,
     isPrimary,
@@ -301,96 +287,9 @@ export function SettingsDisplayView({ controller, showToast }: { controller: Set
 
           </SettingsSection>
           }
-          {displaySubTab === "tuning" && canManageArea("feed") && <SettingsSection title={t("displayFeedTuning")} description={t("feedTuningHint")} className="settings-display-group">
-          <SettingRow label={t("feedSortLabel")} description={t("feedTuningSortHint")}>
-            <SelectMenu
-              label={t("feedSortLabel")}
-              value={feedSort}
-              onChange={(next: "published" | "arrival") => changeFeedSort(next)}
-              options={[
-                { value: "published" as const, label: t("feedSortUploaded") },
-                { value: "arrival" as const, label: t("feedSortFound") },
-              ]}
-            />
-          </SettingRow>
-
-          <SettingRow label={t("feedRefreshScope")} description={t("feedRefreshScopeHint")}>
-            <SelectMenu
-              label={t("feedRefreshScope")}
-              value={feedRefreshScope}
-              onChange={(next: "videos" | "everything") => changeFeedRefreshScope(next)}
-              options={[
-                { value: "videos" as const, label: t("feedRefreshScopeVideos") },
-                { value: "everything" as const, label: t("feedRefreshScopeEverything") },
-              ]}
-            />
-          </SettingRow>
-
-          <SettingRow label={t("feedCompleteRatio")} description={t("feedCompleteRatioHint")}>
-            <Inline gap={2} align="center">
-              <Slider
-                aria-label={t("feedCompleteRatio")}
-                min={Math.round(WATCH_PROGRESS_LIMITS.completeRatio.min * 100)}
-                max={Math.round(WATCH_PROGRESS_LIMITS.completeRatio.max * 100)}
-                step={1}
-                value={Math.round(feedTuning.completeRatio * 100)}
-                onChange={(percent) => changeFeedTuning({ ...feedTuning, completeRatio: percent / 100 }, false)}
-                onPointerUp={() => changeFeedTuning(feedTuning)}
-                onKeyUp={() => changeFeedTuning(feedTuning)}
-              />
-              <Text as="span" size="sm" tone="muted">{Math.round(feedTuning.completeRatio * 100)}%</Text>
-            </Inline>
-          </SettingRow>
-
-          <SettingRow label={t("feedProgressMinSeconds")} description={t("feedProgressMinSecondsHint")}>
-            <Inline gap={2} align="center">
-              <Slider
-                aria-label={t("feedProgressMinSeconds")}
-                min={WATCH_PROGRESS_LIMITS.minPosition.min}
-                max={120}
-                step={1}
-                value={Math.min(120, feedTuning.minPosition)}
-                onChange={(minPosition) => changeFeedTuning({ ...feedTuning, minPosition }, false)}
-                onPointerUp={() => changeFeedTuning(feedTuning)}
-                onKeyUp={() => changeFeedTuning(feedTuning)}
-              />
-              <Text as="span" size="sm" tone="muted">{formatSeconds(feedTuning.minPosition)}</Text>
-            </Inline>
-          </SettingRow>
-
-          <SettingRow label={t("feedProgressMinDuration")} description={t("feedProgressMinDurationHint")}>
-            <Inline gap={2} align="center">
-              <Slider
-                aria-label={t("feedProgressMinDuration")}
-                min={WATCH_PROGRESS_LIMITS.minDuration.min}
-                max={600}
-                step={5}
-                value={Math.min(600, feedTuning.minDuration)}
-                onChange={(minDuration) => changeFeedTuning({ ...feedTuning, minDuration }, false)}
-                onPointerUp={() => changeFeedTuning(feedTuning)}
-                onKeyUp={() => changeFeedTuning(feedTuning)}
-              />
-              <Text as="span" size="sm" tone="muted">{formatSeconds(feedTuning.minDuration)}</Text>
-            </Inline>
-          </SettingRow>
-
-          <SettingRow label={t("feedContinueLimit")} description={t("feedContinueLimitHint")}>
-            <Inline gap={2} align="center">
-              <Slider
-                aria-label={t("feedContinueLimit")}
-                min={WATCH_PROGRESS_LIMITS.continueLimit.min}
-                max={WATCH_PROGRESS_LIMITS.continueLimit.max}
-                step={1}
-                value={feedTuning.continueLimit}
-                onChange={(continueLimit) => changeFeedTuning({ ...feedTuning, continueLimit }, false)}
-                onPointerUp={() => changeFeedTuning(feedTuning)}
-                onKeyUp={() => changeFeedTuning(feedTuning)}
-              />
-              <Text as="span" size="sm" tone="muted">{feedTuning.continueLimit}</Text>
-            </Inline>
-          </SettingRow>
-          </SettingsSection>
-          }
+          {displaySubTab === "tuning" && canManageArea("feed") && (
+            <Suspense fallback={null}><FeedTuningSettings showToast={showToast} /></Suspense>
+          )}
           {FeedBuilderSettings && displaySubTab === "feed" && canManageArea("feed") && (
             <Suspense fallback={null}><FeedBuilderSettings showToast={showToast} /></Suspense>
           )}
