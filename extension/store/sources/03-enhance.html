@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Player enhancement</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; width: 1280px; height: 800px; padding: 64px 90px;
+        background: #0f0f0f; color: #eef1f5;
+        font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+        display: flex; flex-direction: column; gap: 34px;
+      }
+      h1 { font-size: 36px; margin: 0; letter-spacing: -0.02em; }
+      h1 span { color: #6dc5ff; }
+      p.lead { margin: -18px 0 0; color: #9aa3b0; font-size: 17px; max-width: 760px; }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .tile { border: 1px solid #262a31; background: #17191d; border-radius: 14px; padding: 20px; }
+      .tile h2 { font-size: 16px; margin: 0 0 6px; }
+      .tile p { margin: 0; color: #9aa3b0; font-size: 13.5px; line-height: 1.5; }
+      .keys { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+      kbd {
+        font: 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+        border: 1px solid #2e343d; background: #0f0f0f; color: #6dc5ff;
+        border-radius: 6px; padding: 6px 8px;
+      }
+      footer { margin-top: auto; color: #6b7481; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <h1>Your instance's shortcuts, <span>inside the player</span>.</h1>
+    <p class="lead">
+      When your YT Zero instance enables the integration, the extension applies the
+      profile you configured there — no fixed key table, no duplicated settings.
+    </p>
+    <div class="grid">
+      <div class="tile">
+        <div class="keys"><kbd>K</kbd><kbd>J</kbd><kbd>L</kbd><kbd>Shift</kbd><kbd>.</kbd></div>
+        <h2>Configurable shortcuts</h2>
+        <p>Every binding comes from your profile and follows physical key codes, so layouts and rebinds keep working.</p>
+      </div>
+      <div class="tile">
+        <div class="keys"><kbd>S</kbd></div>
+        <h2>Raw frame screenshots</h2>
+        <p>Captured from the video itself and named with your filename template, then saved by the browser.</p>
+      </div>
+      <div class="tile">
+        <div class="keys"><kbd>I</kbd><kbd>F</kbd><kbd>C</kbd></div>
+        <h2>Native picture-in-picture</h2>
+        <p>Real browser PiP, fullscreen and caption control, with caption size and colour from your settings.</p>
+      </div>
+      <div class="tile">
+        <div class="keys"><kbd>,</kbd><kbd>.</kbd></div>
+        <h2>Frame stepping and chapters</h2>
+        <p>Step at your configured frame rate while paused, and jump chapters published by your instance.</p>
+      </div>
+      <div class="tile">
+        <div class="keys"><kbd>LIVE</kbd><kbd>SHORT</kbd></div>
+        <h2>Aware of what it plays</h2>
+        <p>Livestreams stay at 1× and refuse what they cannot do. Shorts keep their up/down navigation.</p>
+      </div>
+      <div class="tile">
+        <div class="keys"><kbd>SYNC</kbd></div>
+        <h2>Watch-party safe</h2>
+        <p>While a host owns the transport, the extension never plays, pauses, seeks or skips on its own.</p>
+      </div>
+    </div>
+    <footer>Open source · no accounts · no tracking · works only with the instance you configure</footer>
+  </body>
+</html>

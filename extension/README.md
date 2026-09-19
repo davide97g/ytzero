@@ -117,12 +117,15 @@ needs beyond the code:
   The optional origins are wildcards only because the instance is unknown at
   build time; exactly one concrete origin is requested, from the options page,
   after the user types it.
-- **Privacy disclosure.** The only stored data is the user-entered instance URL
+- **Privacy disclosure** — [`PRIVACY.md`](./PRIVACY.md) is written for the
+  listing's policy URL. The only stored data is the user-entered instance URL
   and those toggles, in `chrome.storage.sync`. Nothing is collected, and the
   extension contacts no server of its own: it navigates tabs to the instance the
   user configured. A privacy policy URL is still required by the listing form.
 - **Branding.** Name, icons and screenshots must avoid YouTube marks and any
   red-rounded-rectangle play glyph. The bundled icons are a neutral ring.
+- **Listing assets.** [`store/`](./store) holds the screenshots and the listing
+  copy, and the packaging command that excludes it from the uploaded zip.
 - Unlisted distribution is the closest thing to a private link; it is still
   reviewed. Self-hosted CRX installs are enterprise-policy only on Chrome,
   whereas Firefox does allow a self-hosted signed build.
