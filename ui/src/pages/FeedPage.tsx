@@ -128,11 +128,13 @@ export default function FeedPage({
   onPlay,
   showToast,
   feedSort,
+  feedRefreshScope,
   showTopChannels,
 }: {
   onPlay: PlayVideo;
   showToast: (m: string) => void;
   feedSort: FeedSort;
+  feedRefreshScope: "videos" | "everything";
   showTopChannels: boolean;
 }) {
   const { t } = useI18n();
@@ -315,7 +317,11 @@ export default function FeedPage({
       showToast(t("refreshed", { channels: r.channels, added: r.added }));
       setLoading(true);
       setPage(0);
-      await load(0);
+      // "The video grid" keeps the shelves as they are; "the whole page" also
+      // rebuilds Continue watching, Scheduled, tags and subscription state.
+      await (feedRefreshScope === "everything"
+        ? Promise.all([load(0), loadTags(), loadQueued(), loadInProgress(), loadSubscriptionState()])
+        : load(0));
     } catch (e) {
       showToast(`${t("refreshError")} ${e instanceof Error ? e.message : e}`);
     } finally {
@@ -323,7 +329,7 @@ export default function FeedPage({
       emit("feed-refresh-finished");
       setRefreshing(false);
     }
-  }, [load, showToast, t]);
+  }, [feedRefreshScope, load, loadInProgress, loadQueued, loadSubscriptionState, loadTags, showToast, t]);
 
   const reloadView = useCallback(async () => {
     if (refreshingRef.current) return;

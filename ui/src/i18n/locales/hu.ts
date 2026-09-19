@@ -3,6 +3,7 @@ import { featureMessages } from "./featureMessages";
 import { surfaceMessages } from "./surfaceMessages";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
+import { feedTuningMessages } from "./feedTuning";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 import type { Locale } from "../types";
@@ -12,6 +13,7 @@ export const hu: Locale = {
     ...surfaceMessages.hu,
     ...feedBuilderMessages.hu,
     ...dailyRotationMessages.hu,
+    ...feedTuningMessages.hu,
     ...clusterMessages.hu,
     ...notificationMessages.hu,
     navToday: "Kezdőlap",

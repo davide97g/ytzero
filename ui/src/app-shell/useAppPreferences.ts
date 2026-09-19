@@ -50,6 +50,7 @@ export function useAppPreferences() {
   }, []);
 
   const feedSort: "published" | "arrival" = appSettings?.feed_sort === "arrival" ? "arrival" : "published";
+  const feedRefreshScope: "videos" | "everything" = appSettings?.feed_refresh_scope === "everything" ? "everything" : "videos";
   const changeFeedSort = useCallback((next: "published" | "arrival") => {
     setAppSettings((current) => current ? { ...current, feed_sort: next } : current);
     queueSettingWrite("feed_sort", { feed_sort: next }, { onError: loadSettings });
@@ -84,6 +85,9 @@ export function useAppPreferences() {
   }, []);
   useEffect(() => {
     const events = ["app-name-changed", "sidebar-nav-changed", "watched-style-changed", "video-card-size-changed",
+      // Feed order also lives in Settings -> Display -> Feed tuning, so the
+      // shell has to pick up a change made there, not only in the profile menu.
+      "feed-settings-changed",
       "video-card-actions-changed", "player-settings-changed", "child-watching-settings-changed", "top-channels-changed", "shorts-settings-changed"];
     const unsubscribes = events.map((event) => subscribe(event, loadSettings));
     return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
@@ -99,6 +103,7 @@ export function useAppPreferences() {
     appName,
     appSettings,
     changeFeedSort,
+    feedRefreshScope,
     feedSort,
     navConfig,
     profilePermissions,

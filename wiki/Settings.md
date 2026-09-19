@@ -8,7 +8,7 @@ saved immediately unless an action explicitly shows a confirmation button.
 The menu is grouped by purpose:
 
 - **Library** — Channels, Followed playlists, Filters, Tags, Rules, and personal Playlists.
-- **Experience** — Appearance, Feed, Navigation, Playback, Subtitles, Screenshots, and Privacy.
+- **Experience** — Appearance, Feed, Feed tuning, Daily rotation, Navigation, Playback, Subtitles, Screenshots, and Privacy.
 - **Administration** — Plugins, Profiles, Authentication, and Sharing.
 - **System** — Changelog and update checks, Logs, External videos, Backup and restore, Database, other dangerous operations, and Cluster health when PostgreSQL is active.
 
@@ -35,6 +35,7 @@ maintenance procedure.
 
 - **Appearance** controls the interface language, YouTube video-title language, application identity, video-card density, and watched-video style. Video titles follow the profile language by default, or can be pinned to another supported language.
 - **Feed** controls the feed age window and visibility of Shorts, live, Upcoming, and members-only content. Shorts can be hidden, shown for selected channels, or shown for every followed channel; a channel opt-in affects only the main feed.
+- **Feed tuning** holds the per-profile watch-progress thresholds and the Main ordering. *Counts as seen at* (92% by default) is the line past which a video leaves Continue watching and never returns to Main, even when it was never marked watched; Recommendations treat the same line as "already seen". *Resume point starts after* and *Shortest video that can resume* decide what counts as a real resume point at all, *Videos in Continue watching* sizes that shelf, and *Refresh reloads* chooses whether the refresh button rebuilds only the video grid or the whole page. Recommendation scoring itself stays in Plugins → Recommendations.
 - **Navigation** controls Shorts, top channels, and the order and visibility of sidebar destinations.
 - **Playback** controls related videos, on-demand comments, list continuation, player language, quality, speed, keyboard seeking, and automatic landscape fullscreen. Download configuration also offers a default remote player: YouTube embed or a direct, no-disk MP4 stream.
 - **Subtitles** controls caption defaults and presentation.

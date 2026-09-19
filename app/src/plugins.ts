@@ -19,6 +19,8 @@ import {
   scoreRecommendationCandidate,
   type RecommendationTimeOfDay,
 } from "./recommendationRanking";
+import { nearlyCompleteSql, normalizeWatchProgressConfig, type WatchProgressConfig } from "../../shared/watchProgress";
+import { userWatchProgressConfig } from "./watchProgressSettings";
 import { activeRotation, type ActiveRotation, type RotationTag } from "./dailyRotationTags";
 import type { DaypartId } from "../../shared/dailyRotation";
 import {
@@ -413,8 +415,25 @@ export async function resetPluginState(uid: number, pluginId: string, language?:
 }
 
 async function discoverySettings(uid: number): Promise<Record<string, number>> {
-  // Discovery definitions are all sliders, so the values are numbers.
-  return (await getPluginSettings(uid, "discovery")).settings as Record<string, number>;
+  // Discovery definitions are all sliders, so the values are numbers. The
+  // profile's watch-progress thresholds ride along as three more tuning
+  // values, so "already seen" means the same here as it does in the feed.
+  const progress = userWatchProgressConfig(uid);
+  return {
+    ...(await getPluginSettings(uid, "discovery")).settings as Record<string, number>,
+    complete_ratio: progress.completeRatio,
+    progress_min_position: progress.minPosition,
+    progress_min_duration: progress.minDuration,
+  };
+}
+
+/** Rebuilds a watch-progress config from a scorer settings record. */
+function settingsWatchProgress(settings: Record<string, number>): WatchProgressConfig {
+  return normalizeWatchProgressConfig({
+    completeRatio: settings.complete_ratio,
+    minPosition: settings.progress_min_position,
+    minDuration: settings.progress_min_duration,
+  });
 }
 
 async function discoveryTermState(uid: number): Promise<PluginTermState> {
@@ -597,8 +616,7 @@ async function localRecommendations(
       AND TRIM(COALESCE(c.custom_title, c.title)) != ''
       AND COALESCE(uv.status, 'inbox') = 'inbox'
       AND COALESCE(uv.watched, 0) != 1
-      AND (uv.watch_position IS NULL OR uv.watch_duration IS NULL OR uv.watch_duration <= 30
-        OR uv.watch_position < 3 OR CAST(uv.watch_position AS REAL) / uv.watch_duration < 0.92)
+      AND NOT ${nearlyCompleteSql(settingsWatchProgress(settings))}
       AND ${profileOwnsCandidate}
       ${externalWhere}
       ${downloadsWhere}
@@ -840,6 +858,7 @@ async function setDiscoveryGeneratedAt(uid: number) {
 }
 
 async function readStoredDiscoveryRecommendations(uid: number, limit: number): Promise<DiscoveryRecommendation[]> {
+  const progress = userWatchProgressConfig(uid);
   const rows = await database.prepare(`
     SELECT dr.video_id, dr.score, dr.reasons_json, dr.query
     FROM discovery_recommendations dr
@@ -856,8 +875,7 @@ async function readStoredDiscoveryRecommendations(uid: number, limit: number): P
       AND TRIM(COALESCE(c.custom_title, c.title)) != ''
       AND COALESCE(uv.status, 'inbox') = 'inbox'
       AND COALESCE(uv.watched, 0) != 1
-      AND (uv.watch_position IS NULL OR uv.watch_duration IS NULL OR uv.watch_duration <= 30
-        OR uv.watch_position < 3 OR CAST(uv.watch_position AS REAL) / uv.watch_duration < 0.92)
+      AND NOT ${nearlyCompleteSql(progress)}
       AND NOT EXISTS (
         SELECT 1 FROM recommendation_feedback rf
         WHERE rf.user_id = dr.user_id
@@ -870,7 +888,7 @@ async function readStoredDiscoveryRecommendations(uid: number, limit: number): P
   const out: DiscoveryRecommendation[] = [];
   for (const row of rows) {
     const video = await selectVideo(uid, row.video_id);
-    if (!video || !isEligibleRecommendation(video)) continue;
+    if (!video || !isEligibleRecommendation(video, progress)) continue;
     out.push({
       kind: "local",
       score: Number(row.score),
@@ -1084,6 +1102,7 @@ function mixRecommendations(recommendations: DiscoveryRecommendation[], limit: n
     recommendations,
     Math.max(0, Math.floor(limit)),
     Math.max(1, Math.floor(settings.per_channel_limit ?? 5)),
+    settingsWatchProgress(settings),
   );
 }
 

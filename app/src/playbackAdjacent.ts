@@ -2,6 +2,8 @@ import { childDownloadsOnly, childHidesLive } from "./childTime";
 import { database } from "./database";
 import { getUserSetting } from "./db";
 import { feedSortSql, feedVisibilityWhere, shortsUiVisibilitySql } from "./feedQuery";
+import { continueWatchingSql } from "../../shared/watchProgress";
+import { userWatchProgressConfig } from "./watchProgressSettings";
 import type { PlaybackContext, WatchlistSort } from "./playbackContext";
 import { sortFetchedPlaylistVideos } from "./playlistVideoOrder";
 import { recommendationQueueVideoIds } from "./plugins";
@@ -45,11 +47,10 @@ async function feedAdjacent(userId: number, currentVideoId: string, context: Ext
   const comparison = direction === "oldest" ? ">" : "<";
   where.push(`(${sortColumn} ${comparison} ? OR (${sortColumn} = ? AND v.video_id ${comparison} ?))`);
   params.push(anchorTime, anchorTime, anchor.video_id);
-  where.push(`NOT (
-    uv.watch_position IS NOT NULL AND uv.watch_duration IS NOT NULL
-    AND uv.watch_duration > 30 AND uv.watch_position >= 3
-    AND CAST(uv.watch_position AS REAL) / uv.watch_duration < 0.92
-  )`);
+  // FeedPage lifts partials into the Continue watching shelf, so the
+  // chronological queue skips them; anything past the completion ratio is
+  // already gone via feedVisibilityWhere.
+  where.push(`NOT ${continueWatchingSql(userWatchProgressConfig(userId))}`);
   const order = direction === "oldest" ? "ASC" : "DESC";
   const row = await database.prepare(`SELECT v.video_id FROM videos v
     LEFT JOIN user_videos uv ON uv.video_id = v.video_id AND uv.user_id = ${userId}
@@ -114,7 +115,7 @@ async function orderedVideoIds(userId: number, context: Exclude<PlaybackContext,
   }
   if (context.kind === "recommendations") return recommendationQueueVideoIds(userId, { downloadsOnly: childDownloadsOnly(userId) });
   if (context.kind === "in-progress") {
-    return (await database.prepare(`SELECT uv.video_id FROM user_videos uv JOIN (SELECT video_id,MAX(watched_at) last_watched FROM history WHERE user_id=? GROUP BY video_id) lw ON lw.video_id=uv.video_id JOIN videos v ON v.video_id=uv.video_id WHERE uv.user_id=? AND v.published_at IS NOT NULL AND v.published_at!='' AND uv.watch_position IS NOT NULL AND uv.watch_duration>30 AND uv.watch_position>=3 AND CAST(uv.watch_position AS REAL)/uv.watch_duration<0.92 AND uv.status='inbox' AND ${shortsUiVisibilitySql(userId)} ORDER BY lw.last_watched DESC,uv.video_id DESC`).all(userId, userId) as { video_id: string }[]).map((row) => row.video_id);
+    return (await database.prepare(`SELECT uv.video_id FROM user_videos uv JOIN (SELECT video_id,MAX(watched_at) last_watched FROM history WHERE user_id=? GROUP BY video_id) lw ON lw.video_id=uv.video_id JOIN videos v ON v.video_id=uv.video_id WHERE uv.user_id=? AND v.published_at IS NOT NULL AND v.published_at!='' AND ${continueWatchingSql(userWatchProgressConfig(userId))} AND uv.status='inbox' AND ${shortsUiVisibilitySql(userId)} ORDER BY lw.last_watched DESC,uv.video_id DESC`).all(userId, userId) as { video_id: string }[]).map((row) => row.video_id);
   }
   const due = context.dueOnly ? "AND (uv.show_from IS NULL OR uv.show_from <= datetime('now'))" : "";
   const rows = await database.prepare(`SELECT v.video_id,uv.bucket,uv.show_from,uv.queued_at,v.duration,v.title,COALESCE(c.custom_title,c.title) channel_title FROM user_videos uv JOIN videos v ON v.video_id=uv.video_id JOIN channels c ON c.channel_id=v.channel_id WHERE uv.user_id=? AND uv.status='queued' AND ${shortsUiVisibilitySql(userId)} ${due} ORDER BY uv.queued_at DESC,v.video_id DESC`).all(userId) as WatchlistRow[];

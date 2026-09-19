@@ -15,6 +15,16 @@ import { normalizePlaybackSpeed, normalizePlaybackSpeedOptionsSetting } from "..
 import { isWatchCommentsSetting, normalizeWatchCommentsMode } from "../../../shared/watchComments";
 import { normalizeDailyRotationConfig, serializeDailyRotationConfig } from "../../../shared/dailyRotation";
 import { timeZoneCoordinates } from "../timeZoneCoordinates";
+import { isWatchProgressValue, type WatchProgressConfig } from "../../../shared/watchProgress";
+
+/** Feed-tuning keys that carry a bounded number, and the config field whose
+ * limits they must respect. */
+const WATCH_PROGRESS_SETTING_KEYS: Readonly<Record<string, keyof WatchProgressConfig>> = {
+  feed_complete_ratio: "completeRatio",
+  feed_progress_min_seconds: "minPosition",
+  feed_progress_min_duration: "minDuration",
+  feed_continue_limit: "continueLimit",
+};
 
 /** Latitude and longitude are optional: an empty value means the backdrop falls
  * back to the coordinates implied by the configured timezone. */
@@ -278,6 +288,15 @@ api.put("/settings", async (c) => {
   }
   if ("daily_rotation" in body && normalizeDailyRotationConfig(body.daily_rotation) === null) {
     return c.json({ error: "invalid daily rotation settings" }, 400);
+  }
+  for (const [key, field] of Object.entries(WATCH_PROGRESS_SETTING_KEYS)) {
+    if (key in body && !isWatchProgressValue(body[key], field)) return c.json({ error: `invalid ${key}` }, 400);
+  }
+  if ("feed_refresh_scope" in body && body.feed_refresh_scope !== "videos" && body.feed_refresh_scope !== "everything") {
+    return c.json({ error: "invalid feed refresh scope" }, 400);
+  }
+  if ("feed_sort" in body && body.feed_sort !== "published" && body.feed_sort !== "arrival") {
+    return c.json({ error: "invalid feed sort" }, 400);
   }
   if ("location_latitude" in body && !isCoordinate(body.location_latitude, 90)) return c.json({ error: "invalid latitude" }, 400);
   if ("location_longitude" in body && !isCoordinate(body.location_longitude, 180)) return c.json({ error: "invalid longitude" }, 400);

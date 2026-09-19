@@ -6,6 +6,7 @@ import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
+import { feedTuningMessages } from "./feedTuning";
 export const de: Locale = {
   messages: {
     ...surfaceMessages.de,
@@ -13,6 +14,7 @@ export const de: Locale = {
     ...notificationMessages.de,
     ...feedBuilderMessages.de,
     ...dailyRotationMessages.de,
+    ...feedTuningMessages.de,
     navToday: "Start",
     navSocial: "Social",
     navDiscovery: "Entdecken",

@@ -313,6 +313,13 @@ export interface AppSettings {
   feed_autoplay_behavior: string;
   feed_autoplay_direction: string;
   feed_sort: string;
+  /** Feed tuning — watch-progress thresholds shared with Recommendations. */
+  feed_complete_ratio: string;
+  feed_progress_min_seconds: string;
+  feed_progress_min_duration: string;
+  feed_continue_limit: string;
+  /** videos | everything — what the Main refresh button reloads. */
+  feed_refresh_scope: string;
   /** Serialized DailyRotationConfig from shared/dailyRotation. */
   daily_rotation: string;
   sun_backdrop: string;

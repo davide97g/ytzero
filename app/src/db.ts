@@ -284,6 +284,21 @@ export const SETTING_DEFAULTS: Record<string, string> = {
   feed_max_age_value: "6",
   feed_max_age_unit: "months",
   hide_live_from_feed: "0",
+  // ---------- feed tuning (per profile) ----------
+  // Watch-progress thresholds shared by the feed, Continue watching, the
+  // playback queues and Recommendations. See shared/watchProgress.ts.
+  // Past this fraction a video counts as seen: the feed skips it and the
+  // Continue watching shelf lets it go.
+  feed_complete_ratio: "0.92",
+  // A resume point only means something after this many seconds, on a video
+  // at least this long.
+  feed_progress_min_seconds: "3",
+  feed_progress_min_duration: "30",
+  feed_continue_limit: "20",
+  // What the Main refresh button reloads: "videos" fetches new uploads and
+  // redraws the grid, "everything" also rebuilds the shelves, tags and
+  // subscription state.
+  feed_refresh_scope: "videos", // videos | everything
   // "More like this" on the watch page. Off keeps a session strictly to what the
   // viewer chose to open, with no suggested next thing.
   watch_show_related: "1",

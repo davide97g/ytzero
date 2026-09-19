@@ -1,6 +1,9 @@
 import { storedUtcTimestampMs } from "./timeZone";
+import { WATCH_PROGRESS_DEFAULTS, watchProgressRatio, type WatchProgressConfig } from "../../shared/watchProgress";
 
-export const RECOMMENDATION_COMPLETE_RATIO = 0.92;
+/** Fallback for callers with no profile at hand; the real value is the
+ * profile's feed_complete_ratio, handed in as a scorer setting. */
+export const RECOMMENDATION_COMPLETE_RATIO = WATCH_PROGRESS_DEFAULTS.completeRatio;
 
 export type RecommendationTimeOfDay = "night" | "morning" | "afternoon" | "evening";
 
@@ -52,14 +55,17 @@ export function recommendationHoursNear(hour: number): number[] {
 
 /** A real continuation starts after three seconds and stops before the same
  * completion threshold used by the in-progress shelf. */
-export function recommendationProgress(candidate: Pick<RecommendationCandidate, "watch_position" | "watch_duration">): number | null {
-  const position = Number(candidate.watch_position);
-  const duration = Number(candidate.watch_duration);
-  if (!Number.isFinite(position) || !Number.isFinite(duration) || duration <= 30 || position < 3) return null;
-  return Math.max(0, position / duration);
+export function recommendationProgress(
+  candidate: Pick<RecommendationCandidate, "watch_position" | "watch_duration">,
+  config: WatchProgressConfig = WATCH_PROGRESS_DEFAULTS,
+): number | null {
+  return watchProgressRatio(candidate, config);
 }
 
-export function isEligibleRecommendation(candidate: RecommendationCandidate): boolean {
+export function isEligibleRecommendation(
+  candidate: RecommendationCandidate,
+  config: WatchProgressConfig = WATCH_PROGRESS_DEFAULTS,
+): boolean {
   // `is_short = NULL` means metadata has not been checked yet. Recommendations
   // deliberately require a confirmed regular video so a Short cannot leak in.
   if (candidate.is_short !== 0) return false;
@@ -67,8 +73,8 @@ export function isEligibleRecommendation(candidate: RecommendationCandidate): bo
   if (candidate.live_status !== "none") return false;
   // Queued videos already have an explicit destination in Scheduled.
   if (candidate.is_private === 1 || candidate.status !== "inbox" || candidate.watched === 1) return false;
-  const progress = recommendationProgress(candidate);
-  return progress == null || progress < RECOMMENDATION_COMPLETE_RATIO;
+  const progress = recommendationProgress(candidate, config);
+  return progress == null || progress < config.completeRatio;
 }
 
 function numeric(value: number | null | undefined) {
@@ -84,7 +90,15 @@ export function scoreRecommendationCandidate<T extends RecommendationCandidate>(
   settings: Record<string, number>,
   nowMs = Date.now(),
 ): RankedRecommendation<T> | null {
-  if (!isEligibleRecommendation(video)) return null;
+  // The profile's watch-progress thresholds reach the scorer as plain tuning
+  // values, keeping it a pure function of (video, settings).
+  const progressConfig: WatchProgressConfig = {
+    ...WATCH_PROGRESS_DEFAULTS,
+    completeRatio: numeric(settings.complete_ratio) || WATCH_PROGRESS_DEFAULTS.completeRatio,
+    minPosition: Number.isFinite(Number(settings.progress_min_position)) ? Number(settings.progress_min_position) : WATCH_PROGRESS_DEFAULTS.minPosition,
+    minDuration: Number.isFinite(Number(settings.progress_min_duration)) ? Number(settings.progress_min_duration) : WATCH_PROGRESS_DEFAULTS.minDuration,
+  };
+  if (!isEligibleRecommendation(video, progressConfig)) return null;
 
   let score = 0;
   const reasons: string[] = [];
@@ -143,8 +157,8 @@ export function scoreRecommendationCandidate<T extends RecommendationCandidate>(
   add(numeric(video.playlist_hits) > 0 ? numeric(settings.playlist_points) : 0, "in your playlists");
   add(video.liked === 1 ? numeric(settings.liked_points) : 0, "liked");
 
-  const progress = recommendationProgress(video);
-  if (progress != null && progress < RECOMMENDATION_COMPLETE_RATIO) {
+  const progress = recommendationProgress(video, progressConfig);
+  if (progress != null && progress < progressConfig.completeRatio) {
     // A meaningful continuation gets stronger as the viewer gets further in,
     // without crowding out every fresh recommendation.
     add(numeric(settings.started_points) * (0.65 + Math.min(progress, 1) * 0.7), "started watching");
@@ -192,12 +206,13 @@ export function diversifyRecommendations<T extends RankedRecommendation>(
   input: T[],
   limit: number,
   perChannel: number,
+  config: WatchProgressConfig = WATCH_PROGRESS_DEFAULTS,
 ): T[] {
   const seen = new Set<string>();
   const pool = input
     .filter((item) => {
       const id = recommendationId(item);
-      if (!id || seen.has(id) || !item.video || !isEligibleRecommendation(item.video)) return false;
+      if (!id || seen.has(id) || !item.video || !isEligibleRecommendation(item.video, config)) return false;
       seen.add(id);
       return true;
     })

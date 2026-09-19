@@ -3,6 +3,7 @@ import { localeFormats } from "../localeFormats";
 import { surfaceMessages } from "./surfaceMessages";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
+import { feedTuningMessages } from "./feedTuning";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 
@@ -11,6 +12,7 @@ export const ru: Locale = {
     ...surfaceMessages.ru,
     ...feedBuilderMessages.ru,
     ...dailyRotationMessages.ru,
+    ...feedTuningMessages.ru,
     ...clusterMessages.ru,
     ...notificationMessages.ru,
     "navToday": "Главная",

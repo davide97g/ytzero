@@ -3,6 +3,8 @@ import { childHidesLive } from "./childTime";
 import { feedSortSql, filterOnlySql, followedExists, followedPlaylistExists, profileVideoOwnershipExists, tagFilterSql } from "./feedQueryFragments";
 import { feedMaxAgeCutoff } from "./feedMaxAge";
 import { pluginEnabled } from "./plugins";
+import { nearlyCompleteSql } from "../../shared/watchProgress";
+import { userWatchProgressConfig } from "./watchProgressSettings";
 
 export { feedSortSql, filterOnlySql, followedExists, followedPlaylistExists, profileVideoOwnershipExists, tagFilterSql };
 
@@ -76,6 +78,11 @@ export function feedVisibilityWhere(
   // its channel is followed it belongs in Main just like an RSS-first upload.
   where.push(feedSourceExists(uid));
   if (!opts.includeHidden) {
+    // Already seen in all but name. A video abandoned past the completion
+    // ratio never returns to the feed, and the Continue watching shelf drops
+    // it at the same point, so it cannot reappear on either surface. Cleanup's
+    // "also match hidden videos" toggle still reaches it.
+    where.push(`NOT ${nearlyCompleteSql(userWatchProgressConfig(uid))}`);
     // Age limit: old uploads stay in the library and on channel pages, they just
     // never surface in the feed (see feed_max_age_* in SETTING_DEFAULTS).
     const cutoff = feedMaxAgeCutoff(getUserSetting(uid, "feed_max_age_value"), getUserSetting(uid, "feed_max_age_unit"));

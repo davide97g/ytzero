@@ -92,6 +92,7 @@ export default function AppShell({ isAdmin }: { isAdmin: boolean }) {
               <div className="content">
                 <AppRoutes childStatus={profile.childStatus}
                   enabledPluginRoutes={plugins.enabledPluginRoutes}
+                  feedRefreshScope={preferences.feedRefreshScope}
                   feedSort={preferences.feedSort}
                   isAdmin={isAdmin}
                   onPlay={play}

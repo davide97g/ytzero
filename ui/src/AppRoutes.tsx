@@ -32,6 +32,7 @@ const WatchlistPage = lazy(() => import("./pages/WatchlistPage"));
 type AppRoutesProps = {
   childStatus: ChildStatus | null;
   enabledPluginRoutes: Set<string> | null;
+  feedRefreshScope: "videos" | "everything";
   feedSort: "published" | "arrival";
   isAdmin: boolean;
   onPlay: (video: Video, playbackQueue?: PlaybackQueueContext) => void;
@@ -44,6 +45,7 @@ type AppRoutesProps = {
 export default function AppRoutes({
   childStatus,
   enabledPluginRoutes,
+  feedRefreshScope,
   feedSort,
   isAdmin,
   onPlay,
@@ -55,7 +57,7 @@ export default function AppRoutes({
   return (
     <Suspense fallback={<DelayedPageSkeleton delay={200} />}>
       <Routes>
-        <Route path="/" element={<FeedPage onPlay={onPlay} showToast={showToast} feedSort={feedSort} showTopChannels={showTopChannels} />} />
+        <Route path="/" element={<FeedPage onPlay={onPlay} showToast={showToast} feedSort={feedSort} feedRefreshScope={feedRefreshScope} showTopChannels={showTopChannels} />} />
         <Route path="/search" element={<SearchPage onPlay={onPlay} hideExternalSearch={childStatus?.local_only ?? false} />} />
         <Route path="/recommendations" element={enabledPluginRoutes?.has("/recommendations")
           ? <RecommendationsPage onPlay={onPlay} loadRecommendations={api.recommendations} />

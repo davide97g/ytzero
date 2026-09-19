@@ -6,6 +6,8 @@ import { cancelAutoDownloadIfUnwanted } from "../downloader";
 import { refreshDiscoveryInBackground } from "../plugins";
 import { searchYouTube } from "../youtube";
 import { feedSortSql, shortsUiVisibilitySql } from "../feedQuery";
+import { continueWatchingSql } from "../../../shared/watchProgress";
+import { userWatchProgressConfig } from "../watchProgressSettings";
 import { buildCleanupWhere, countCleanupMatches, listCleanupVideoIds, snapshotUserVideoState, applyCleanupAction, restoreUserVideoState, saveBulkUndo, loadBulkUndo, clearBulkUndo, type CleanupFilter } from "../cleanup";
 import { videoSelect, type VideoRow } from "../videoRoutesSupport";
 
@@ -80,18 +82,16 @@ api.post("/cleanup/undo", async (c) => {
 
 api.get("/in-progress", async (c) => {
   const uid = currentUserId(c);
+  const progress = userWatchProgressConfig(uid);
   const rows = await database.prepare(`
     ${videoSelect(uid)}
     JOIN (SELECT video_id, MAX(watched_at) AS last_watched FROM history WHERE user_id = ${uid} GROUP BY video_id) lw ON lw.video_id = v.video_id
     WHERE v.published_at IS NOT NULL AND v.published_at != ''
-      AND uv.watch_position IS NOT NULL AND uv.watch_duration IS NOT NULL
-      AND uv.watch_duration > 30
-      AND uv.watch_position >= 3
-      AND CAST(uv.watch_position AS REAL) / uv.watch_duration < 0.92
+      AND ${continueWatchingSql(progress)}
       AND COALESCE(uv.status, 'inbox') = 'inbox'
       AND ${shortsUiVisibilitySql(uid)}
     ORDER BY lw.last_watched DESC
-    LIMIT 20
+    LIMIT ${progress.continueLimit}
   `).all() as VideoRow[];
   return c.json({ videos: await attachTags(uid, rows) });
 });
