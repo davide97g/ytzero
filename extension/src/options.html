@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>YT Zero Redirect</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body { font: 14px/1.5 system-ui, sans-serif; margin: 0; padding: 16px; min-width: 320px; }
+      h1 { font-size: 15px; margin: 0 0 12px; }
+      label { display: block; margin-bottom: 12px; }
+      .row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+      .row label { margin: 0; }
+      input[type="url"] { width: 100%; box-sizing: border-box; padding: 6px 8px; }
+      .hint { opacity: 0.7; font-size: 12px; }
+      .status { min-height: 18px; font-size: 12px; margin-top: 8px; }
+      .status[data-tone="error"] { color: #c0392b; }
+      button { padding: 6px 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>YT Zero Redirect</h1>
+
+    <label>
+      Instance URL
+      <input id="instanceUrl" type="url" placeholder="https://ytzero.example.com" />
+    </label>
+
+    <div class="row">
+      <input id="enabled" type="checkbox" />
+      <label for="enabled">Redirect YouTube videos to YT Zero</label>
+    </div>
+    <div class="row">
+      <input id="redirectDirectLoads" type="checkbox" />
+      <label for="redirectDirectLoads">Also redirect YouTube watch pages opened directly</label>
+    </div>
+    <div class="row">
+      <input id="openInNewTab" type="checkbox" />
+      <label for="openInNewTab">Always open in a new tab</label>
+    </div>
+
+    <button id="save">Save</button>
+    <div id="status" class="status"></div>
+    <p class="hint">Links marked with <code>#ytNoRedirect</code> always stay on YouTube.</p>
+
+    <script src="shared.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
