@@ -14,6 +14,7 @@ export const en = {
     ...notificationMessages.en,
     ...feedBuilderMessages.en,
     ...dailyRotationMessages.en,
+    ...discoveryExternalMessages.en,
     ...feedTuningMessages.en,
     navToday: "Main",
     navSocial: "Social",

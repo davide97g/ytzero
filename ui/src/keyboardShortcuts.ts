@@ -14,6 +14,7 @@ export const SHORTCUT_ACTIONS = [
   ["volumeDown", "playback", "player", "ArrowDown"], ["toggleCaptions", "subtitles", "player", "KeyC"],
   ["subtitleLarger", "subtitles", "player", "Shift+Equal"], ["subtitleSmaller", "subtitles", "player", "Minus"],
   ["toggleFullscreen", "general", "player", "KeyF"], ["toggleTheater", "general", "player", "KeyT"],
+  ["toggleImmersive", "general", "player", "Shift+KeyT"],
   ["togglePictureInPicture", "general", "player", "KeyI"], ["close", "general", "player", "Escape"],
   ["toggleMute", "general", "player", "KeyM"], ["screenshot", "general", "player", "KeyS"],
 ] as const satisfies readonly (readonly [string, ShortcutCategory, ShortcutContext, string])[];

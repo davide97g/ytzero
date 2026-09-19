@@ -12,6 +12,7 @@ export const ja: Locale = {
     ...surfaceMessages.ja,
     ...feedBuilderMessages.ja,
     ...dailyRotationMessages.ja,
+    ...discoveryExternalMessages.ja,
     ...feedTuningMessages.ja,
     ...clusterMessages.ja,
     ...notificationMessages.ja,

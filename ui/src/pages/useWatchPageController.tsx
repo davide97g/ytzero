@@ -34,8 +34,10 @@ import { useYouTubeMediaSession } from "./useYouTubeMediaSession";
 import { resolveShortcutBindings, SHORTCUT_CLOSE_EVENT, shortcutActionMatches } from "../keyboardShortcuts";
 import { normalizeWatchCommentsMode } from "../../../shared/watchComments";
 import { applyEmbeddedPlayerCommand } from "./embeddedPlayerCommand";
+import { useImmersiveChrome } from "./useImmersiveChrome";
 
 const CINEMA_MODE_KEY = "watchCinemaMode";
+const IMMERSIVE_MODE_KEY = "watchImmersiveMode";
 export function useWatchPageController(audioModeRequested: boolean = false) {
   const { t, language } = useI18n();
   const { id, playlistId } = useParams<{ id: string; playlistId?: string }>();
@@ -757,7 +759,8 @@ export function useWatchPageController(audioModeRequested: boolean = false) {
       if (message.type === "shortcut") {
         const { action, repeat } = message.payload;
         if (repeat) return;
-        if (action === "toggleTheater" || action === "cinema-mode") setCinemaMode((current) => !current);
+        if (action === "toggleTheater" || action === "cinema-mode") toggleCinemaMode();
+        else if (action === "toggleImmersive" || action === "immersive-mode") toggleImmersiveMode();
         else if (action === "previousVideo" && canPlayPreviousVideo) playPreviousVideo();
         else if (action === "nextVideo" && canPlayNextVideo) playNextVideo();
         else if (action === "close") closeWatchMode();
@@ -781,7 +784,7 @@ export function useWatchPageController(audioModeRequested: boolean = false) {
     };
     document.addEventListener(ENHANCE_BRIDGE_EVENTS.playerEvent, onPlayerEvent);
     return () => document.removeEventListener(ENHANCE_BRIDGE_EVENTS.playerEvent, onPlayerEvent);
-  }, [audioActive, canPlayNextVideo, canPlayPreviousVideo, closeWatchMode, id, keyboardSeekSeconds, navigate, playerKind, playNextVideo, playPreviousVideo, showShortcutFeedback, watchTogetherRoomId]);
+  }, [audioActive, canPlayNextVideo, canPlayPreviousVideo, closeWatchMode, id, keyboardSeekSeconds, navigate, playerKind, playNextVideo, playPreviousVideo, showShortcutFeedback, toggleCinemaMode, toggleImmersiveMode, watchTogetherRoomId]);
 
   // Create the player (YT iframe or the ref populated by LocalPlayer) and poll
   // progress every second. The poll runs against the shared YT-shaped player
@@ -1089,6 +1092,15 @@ export function useWatchPageController(audioModeRequested: boolean = false) {
     }
   }, [cinemaMode]);
 
+  // Immersive owns the whole viewport: the app chrome is hidden by CSS on the
+  // body class, so leaving the mode (or the page) only has to drop the class.
+  useEffect(() => {
+    localStorage.setItem(IMMERSIVE_MODE_KEY, immersiveMode ? "1" : "0");
+    if (!immersiveMode) return;
+    document.body.classList.add("immersive");
+    return () => document.body.classList.remove("immersive");
+  }, [immersiveMode]);
+
   // Unmount: clean cinema mode without overriding the user's saved sidebar state.
   useEffect(() => restoreSidebarVisibility, []);
 
@@ -1143,7 +1155,8 @@ export function useWatchPageController(audioModeRequested: boolean = false) {
     const matches = (action: Parameters<typeof shortcutActionMatches>[0], event: KeyboardEvent) => shortcutActionMatches(action, event, bindings);
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as Element).closest("input,textarea,select,[contenteditable]")) return;
-      if (matches("toggleTheater", e)) { e.preventDefault(); if (!e.repeat) setCinemaMode((v) => !v); }
+      if (matches("toggleTheater", e)) { e.preventDefault(); if (!e.repeat) toggleCinemaMode(); }
+      else if (matches("toggleImmersive", e)) { e.preventDefault(); if (!e.repeat) toggleImmersiveMode(); }
       else if (matches("previousVideo", e)) { e.preventDefault(); if (!e.repeat && canPlayPreviousVideo) playPreviousVideo(); }
       else if (matches("nextVideo", e)) { e.preventDefault(); if (!e.repeat && canPlayNextVideo) playNextVideo(); }
       else if (matches("close", e)) { e.preventDefault(); closeWatchMode(); }
@@ -1166,7 +1179,7 @@ export function useWatchPageController(audioModeRequested: boolean = false) {
     return () => {
       document.removeEventListener("keydown", onKey);
     };
-  }, [audioActive, canPlayNextVideo, canPlayPreviousVideo, closeWatchMode, id, navigate, playNextVideo, playPreviousVideo, playerKind, settings?.keyboard_shortcuts, watchTogetherRoomId]);
+  }, [audioActive, canPlayNextVideo, canPlayPreviousVideo, closeWatchMode, id, navigate, playNextVideo, playPreviousVideo, playerKind, settings?.keyboard_shortcuts, toggleCinemaMode, toggleImmersiveMode, watchTogetherRoomId]);
 
   useYouTubeKeyboardShortcuts({
     audioActive,
@@ -1490,6 +1503,8 @@ export function useWatchPageController(audioModeRequested: boolean = false) {
     screenshotFormat,
     screenshotQuality,
     setCinemaMode,
+    toggleCinemaMode,
+    toggleImmersiveMode,
     setDesktopPlaylistOpen,
     setDisabledSegs,
     setMoreOpen,

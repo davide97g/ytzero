@@ -776,6 +776,8 @@ export const de: Locale = {
     membersOnlyVisibility: "Videos nur für Mitglieder",
     membersOnlyVisibilityHint: "Lege fest, wo sie standardmäßig sichtbar sind. Eine Kanaleinstellung kann diese Wahl überschreiben.",
     cinemaMode: "Theater",
+    immersiveMode: "Immersiv",
+    immersiveModeExit: "Immersiven Modus verlassen",
     cinema: "Theater",
     youtubeReferrerErrorTitle: "Dein Browser blockiert die Identifizierung des YouTube-Players",
     youtubeReferrerErrorHint: "Prüfe die Datenschutz- oder Referer-Einstellungen und lade diese Seite neu.",

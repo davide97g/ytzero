@@ -17,6 +17,7 @@ import {
   Captions,
   EllipsisVertical,
   ExternalLink,
+  Film,
   Gauge,
   HardDrive,
   LoaderCircle,
@@ -115,6 +116,9 @@ export default function WatchPage() {
     chooseYouTube,
     cinemaMode,
     cinemaVisible,
+    immersiveMode,
+    immersiveChromeVisible,
+    holdImmersiveChrome,
     commentsMode,
     copyKey,
     copyShareLink,
@@ -238,14 +242,24 @@ export default function WatchPage() {
 
   const { errorText: watchTogetherError, transportLockLabel: watchTogetherTransportLockLabel } = getWatchTogetherLabels(watchTogether, t);
   return (
-    <div className={`watch-layout${cinemaMode ? " theater" : ""}${watchTogether.room ? " together" : ""}`}>
+    <div className={`watch-layout${cinemaMode ? " theater" : ""}${immersiveMode ? " immersive" : ""}${immersiveMode && !immersiveChromeVisible ? " immersive-idle" : ""}${watchTogether.room ? " together" : ""}`}>
+      {immersiveMode && (
+        <WatchImmersiveChrome
+          title={video?.title ?? pendingVideoInfo?.title ?? ""}
+          channelTitle={video?.channel_title ?? pendingVideoInfo?.channelTitle}
+          visible={immersiveChromeVisible}
+          exitLabel={t("immersiveModeExit")}
+          onExit={() => toggleImmersiveMode(false)}
+          onHoldChange={holdImmersiveChrome}
+        />
+      )}
       <div>
         <div className={`watch-player-stage${watchTogether.room ? " watch-player-stage--together" : ""}`}>
           <div className="cinema-player-wrap">
           {video && (
             <div
               className="player-glow"
-              style={{ backgroundImage: `url(${videoThumbnail(video.thumbnail)})`, opacity: cinemaVisible ? 0.6 : 0 }}
+              style={{ backgroundImage: `url(${videoThumbnail(video.thumbnail)})`, opacity: immersiveMode ? 0.78 : cinemaVisible ? 0.6 : 0 }}
             />
           )}
           <div className="watch-player-shell">
@@ -343,7 +357,9 @@ export default function WatchPage() {
                   chapters={chapters}
                   sbSegments={sbSegments}
                   cinemaMode={cinemaMode}
-                  onToggleCinema={() => setCinemaMode((mode) => !mode)}
+                  onToggleCinema={() => toggleCinemaMode()}
+                  immersiveMode={immersiveMode}
+                  onToggleImmersive={() => toggleImmersiveMode()}
                   onEnded={watchTogetherTransportLocked ? undefined : handleEnded}
                   onNext={canPlayNextVideo ? playNextVideo : undefined} onPrevious={canPlayPreviousVideo ? playPreviousVideo : undefined}
                   keyboardSeekSeconds={keyboardSeekSeconds} keyboardShortcuts={settings?.keyboard_shortcuts} frameRate={Number(settings?.enhance_frame_fps) || 30}
@@ -542,10 +558,19 @@ export default function WatchPage() {
               className="watch-action-desktop watch-action-medium"
               variant={cinemaMode ? "secondary" : "default"}
               label={t("cinemaMode")}
-              onClick={() => setCinemaMode((m) => !m)}
+              onClick={() => toggleCinemaMode()}
               aria-pressed={cinemaMode}
             >
               <Clapperboard size={15} />
+            </IconButton>
+            <IconButton
+              className="watch-action-desktop watch-action-medium"
+              variant={immersiveMode ? "secondary" : "default"}
+              label={t("immersiveMode")}
+              onClick={() => toggleImmersiveMode()}
+              aria-pressed={immersiveMode}
+            >
+              <Film size={15} />
             </IconButton>
             <Popover
               rootClassName="watch-action-desktop watch-action-medium"

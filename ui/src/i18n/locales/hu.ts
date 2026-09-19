@@ -13,6 +13,7 @@ export const hu: Locale = {
     ...surfaceMessages.hu,
     ...feedBuilderMessages.hu,
     ...dailyRotationMessages.hu,
+    ...discoveryExternalMessages.hu,
     ...feedTuningMessages.hu,
     ...clusterMessages.hu,
     ...notificationMessages.hu,

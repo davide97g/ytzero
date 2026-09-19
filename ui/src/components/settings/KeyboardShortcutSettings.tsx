@@ -13,7 +13,7 @@ const ACTION_KEYS: Record<ShortcutAction, I18nKey> = {
   previousVideo: "shortcutPreviousVideo", nextVideo: "shortcutNextVideo", previousFrame: "shortcutPreviousFrame", nextFrame: "shortcutNextFrame",
   speedDown: "shortcutSpeedDown", speedUp: "shortcutSpeedUp", seekPercent: "shortcutSeekPercent", previousChapter: "shortcutPreviousChapter", nextChapter: "shortcutNextChapter",
   seekBack: "shortcutSeekBack", seekForward: "shortcutSeekForward", volumeUp: "shortcutVolumeUp", volumeDown: "shortcutVolumeDown", toggleCaptions: "shortcutToggleCaptions",
-  subtitleLarger: "shortcutSubtitleLarger", subtitleSmaller: "shortcutSubtitleSmaller", toggleFullscreen: "shortcutToggleFullscreen", toggleTheater: "shortcutToggleTheater",
+  subtitleLarger: "shortcutSubtitleLarger", subtitleSmaller: "shortcutSubtitleSmaller", toggleFullscreen: "shortcutToggleFullscreen", toggleTheater: "shortcutToggleTheater", toggleImmersive: "shortcutToggleImmersive",
   togglePictureInPicture: "shortcutTogglePictureInPicture", close: "shortcutClose", toggleMute: "shortcutToggleMute", screenshot: "shortcutScreenshot",
 };
 

@@ -14,6 +14,7 @@ export const pl: Locale = {
     ...notificationMessages.pl,
     ...feedBuilderMessages.pl,
     ...dailyRotationMessages.pl,
+    ...discoveryExternalMessages.pl,
     ...feedTuningMessages.pl,
     navToday: "Główna",
     navSocial: "Social",

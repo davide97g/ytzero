@@ -868,6 +868,8 @@ export const ptBR: Locale = {
     "membersOnlyVisibility": "Vídeos apenas para membros",
     "membersOnlyVisibilityHint": "Escolha onde estão visíveis por padrão. Uma configuração de canal pode sobrepor esta escolha.",
     "cinemaMode": "Teatro",
+    "immersiveMode": "Imersivo",
+    "immersiveModeExit": "Sair do modo imersivo",
     "cinema": "Teatro",
     "youtubeReferrerErrorTitle": "Seu navegador bloqueou a identificação do jogador do YouTube",
     "youtubeReferrerErrorHint": "Verifique suas configurações de privacidade ou referência e, em seguida, recarregue esta página.",

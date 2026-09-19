@@ -562,6 +562,13 @@ archive with no such capability restores with public sharing denied.
   remains local to that browser and origin, is not written to profile settings,
   and is never included in a portable or exact server-side backup.
 
+- The watch-page presentation flags stored in browser `localStorage`
+  (`watchCinemaMode` for theater, `watchImmersiveMode` for immersive) are
+  machine-bound viewing conveniences that depend on the screen in front of the
+  viewer. They stay local to that browser and origin, are not written to
+  profile settings, and are never included in a portable or exact server-side
+  backup.
+
 - passwords and PIN hashes
 - environment-owned authentication overrides and the `YTZERO_AUTH_PASSWORD`
   secret; they are machine-bound runtime configuration and are never persisted,

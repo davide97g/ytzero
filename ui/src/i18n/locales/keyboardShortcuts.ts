@@ -9,7 +9,7 @@ export const keyboardShortcutMessages = {
     shortcutSpeedDown: "Decrease playback speed", shortcutSpeedUp: "Increase playback speed", shortcutSeekPercent: "Seek to 0–90%", shortcutPreviousChapter: "Previous chapter",
     shortcutNextChapter: "Next chapter", shortcutSeekBack: "Seek backward", shortcutSeekForward: "Seek forward", shortcutVolumeUp: "Volume up", shortcutVolumeDown: "Volume down",
     shortcutToggleCaptions: "Toggle captions", shortcutSubtitleLarger: "Increase subtitle size", shortcutSubtitleSmaller: "Decrease subtitle size",
-    shortcutToggleFullscreen: "Toggle fullscreen", shortcutToggleTheater: "Toggle theater mode", shortcutTogglePictureInPicture: "Toggle picture-in-picture", shortcutClose: "Close current mode",
+    shortcutToggleFullscreen: "Toggle fullscreen", shortcutToggleTheater: "Toggle theater mode", shortcutToggleImmersive: "Toggle immersive mode", shortcutTogglePictureInPicture: "Toggle picture-in-picture", shortcutClose: "Close current mode",
     shortcutToggleMute: "Mute / unmute", shortcutScreenshot: "Save screenshot",
   },
   pl: {
@@ -35,7 +35,7 @@ export const keyboardShortcutMessages = {
     shortcutSpeedDown: "Geschwindigkeit verringern", shortcutSpeedUp: "Geschwindigkeit erhöhen", shortcutSeekPercent: "Zu 0–90 % springen", shortcutPreviousChapter: "Vorheriges Kapitel",
     shortcutNextChapter: "Nächstes Kapitel", shortcutSeekBack: "Zurückspulen", shortcutSeekForward: "Vorspulen", shortcutVolumeUp: "Lauter", shortcutVolumeDown: "Leiser",
     shortcutToggleCaptions: "Untertitel umschalten", shortcutSubtitleLarger: "Untertitel vergrößern", shortcutSubtitleSmaller: "Untertitel verkleinern",
-    shortcutToggleFullscreen: "Vollbild umschalten", shortcutToggleTheater: "Kinomodus umschalten", shortcutTogglePictureInPicture: "Bild-in-Bild umschalten", shortcutClose: "Aktuellen Modus schließen",
+    shortcutToggleFullscreen: "Vollbild umschalten", shortcutToggleTheater: "Kinomodus umschalten", shortcutToggleImmersive: "Immersiven Modus umschalten", shortcutTogglePictureInPicture: "Bild-in-Bild umschalten", shortcutClose: "Aktuellen Modus schließen",
     shortcutToggleMute: "Stummschalten", shortcutScreenshot: "Bildschirmfoto speichern",
   },
 } as const;

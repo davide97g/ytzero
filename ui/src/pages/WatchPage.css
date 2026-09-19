@@ -62,12 +62,12 @@
 @media (max-width: 640px) {
   /* Let the player use the mobile viewport gutter-to-gutter while the title,
      actions and description below retain the content padding. */
-  body:not(.cinema) .cinema-player-wrap {
+  body:not(.cinema):not(.immersive) .cinema-player-wrap {
     margin-top: -14px;
     margin-right: calc(-14px - var(--safe-right));
     margin-left: calc(-14px - var(--safe-left));
   }
-  body:not(.cinema) .watch-player-shell {
+  body:not(.cinema):not(.immersive) .watch-player-shell {
     width: 100%;
     max-width: none;
     border-radius: 0;
@@ -550,6 +550,58 @@
   z-index: -1;
   pointer-events: none;
   transition: opacity 0.4s ease;
+}
+
+/* ---------- immersive mode ---------- */
+/* Theater keeps the page and trims it; immersive replaces it. The layout takes
+   over the viewport, floats the player off every edge and lets the ambient glow
+   spill into the gap, so the only thing left to look at is the picture. */
+.watch-layout.immersive {
+  --immersive-gutter-x: clamp(16px, 3.4vw, 64px);
+  --immersive-gutter-y: clamp(16px, 3.4vh, 48px);
+  /* The marquee strip above the picture: the title bar lives in this band, so
+     it never collides with the chrome a player draws inside its own frame. */
+  --immersive-marquee-h: clamp(46px, 7vh, 82px);
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: block;
+  max-width: none;
+  overflow: hidden;
+  padding: var(--immersive-marquee-h) var(--immersive-gutter-x) var(--immersive-gutter-y);
+  background: #050506;
+}
+.watch-layout.immersive.immersive-idle { cursor: none; }
+/* Everything except the player stage belongs to the page, not to the mode. */
+.watch-layout.immersive > div:not(.watch-immersive-chrome) { display: grid; height: 100%; place-items: center; min-width: 0; }
+.watch-layout.immersive > div:not(.watch-immersive-chrome) > *:not(.watch-player-stage),
+.watch-layout.immersive > aside { display: none; }
+.watch-layout.immersive .watch-player-stage { display: grid; place-items: center; width: 100%; }
+.watch-layout.immersive .watch-player-stage > *:not(.cinema-player-wrap) { display: none; }
+.watch-layout.immersive .cinema-player-wrap { width: 100%; }
+.watch-layout.immersive .watch-player-shell {
+  width: min(100%, calc((100dvh - var(--immersive-marquee-h) - var(--immersive-gutter-y)) * 16 / 9));
+  border-radius: clamp(14px, 1.5vw, 26px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 40px 120px rgba(0, 0, 0, 0.6);
+}
+.watch-layout.immersive .watch-player { border-radius: inherit; }
+/* The glow reaches further out here: it is the only thing framing the picture. */
+.watch-layout.immersive .player-glow {
+  inset: clamp(-170px, -8vw, -70px);
+  background-size: 125%;
+  filter: blur(92px) saturate(2.7) brightness(0.72);
+}
+/* The audio-mode toggle would collide with the immersive bar's exit button. */
+.watch-layout.immersive .watch-player-mode-toggle--overlay.ui-button { display: none; }
+@media (max-width: 900px) {
+  .watch-layout.immersive .watch-player--audio { width: 100%; }
+}
+@media (max-width: 640px) {
+  .watch-layout.immersive {
+    --immersive-gutter-x: 10px;
+    --immersive-gutter-y: 10px;
+    --immersive-marquee-h: 44px;
+  }
 }
 
 /* Cinema: strip content padding so theater player spans full width and sits flush under topbar */

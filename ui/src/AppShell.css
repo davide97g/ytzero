@@ -532,6 +532,14 @@ body.sidebar-hidden .sidebar { width: 0; padding: 0; }
   .topbar--incognito .topbar-logo:hover .spy-logo { animation: none; }
   .topbar--incognito::after { animation: none; opacity: 0; }
 }
+/* Immersive mode: the watch layout owns the viewport, so the app chrome goes
+   away entirely and the page underneath must not scroll behind it. */
+body.immersive { overflow: hidden; }
+body.immersive .topbar,
+body.immersive .sidebar,
+body.immersive .sidebar-backdrop,
+body.immersive .child-watching-collapsed { display: none; }
+body.immersive .content { padding: 0; }
 body.cinema .topbar {
   background: transparent;
   backdrop-filter: none;

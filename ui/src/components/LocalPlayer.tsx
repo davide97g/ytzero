@@ -76,6 +76,8 @@ const LocalPlayer = forwardRef<LocalPlayerHandle, {
   sbSegments?: SponsorSegment[];
   cinemaMode?: boolean;
   onToggleCinema?: () => void;
+  immersiveMode?: boolean;
+  onToggleImmersive?: () => void;
   onEnded?: () => void;
   onNext?: () => void;
   onPrevious?: () => void;
@@ -121,6 +123,8 @@ const LocalPlayer = forwardRef<LocalPlayerHandle, {
   sbSegments = [],
   cinemaMode = false,
   onToggleCinema,
+  immersiveMode = false,
+  onToggleImmersive,
   onEnded, onNext, onPrevious,
   keyboardSeekSeconds = 5,
   keyboardShortcuts,
@@ -882,6 +886,16 @@ const LocalPlayer = forwardRef<LocalPlayerHandle, {
               aria-pressed={cinemaMode}
             >
               <Clapperboard size={19} />
+            </button>
+          )}
+          {onToggleImmersive && (
+            <button
+              className={`lp-btn${immersiveMode ? " active" : ""}`}
+              onClick={onToggleImmersive}
+              aria-label={immersiveMode ? t("immersiveModeExit") : t("immersiveMode")}
+              aria-pressed={immersiveMode}
+            >
+              <Film size={19} />
             </button>
           )}
           <button className="lp-btn" onClick={togglePip} aria-label={t("playerPip")}>

@@ -1,7 +1,7 @@
 const ACTIONS = new Set([
   "togglePlay", "temporaryBoost", "seekBack10", "seekForward10", "previousVideo", "nextVideo", "previousFrame", "nextFrame",
   "speedDown", "speedUp", "seekPercent", "previousChapter", "nextChapter", "seekBack", "seekForward", "volumeUp", "volumeDown",
-  "toggleCaptions", "subtitleLarger", "subtitleSmaller", "toggleFullscreen", "toggleTheater", "togglePictureInPicture", "close", "toggleMute",
+  "toggleCaptions", "subtitleLarger", "subtitleSmaller", "toggleFullscreen", "toggleTheater", "toggleImmersive", "togglePictureInPicture", "close", "toggleMute",
   "screenshot",
 ]);
 const CHORD = /^(?:(?:Ctrl|Alt|Shift|Meta)\+)*(?:Key[A-Z]|Digit[0-9]|Digit0-9|F(?:[1-9]|1[0-2])|Numpad(?:Add|Subtract)|Arrow(?:Left|Right|Up|Down)|Space|Escape|Enter|Tab|Backspace|Delete|Home|End|PageUp|PageDown|Comma|Period|Minus|Equal|BracketLeft|BracketRight|Semicolon|Quote|Backslash|Slash|Backquote)$/;

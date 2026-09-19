@@ -87,6 +87,7 @@ export const hungarianFeatureMessages = {
   shortcutSubtitleSmaller: "Feliratméret csökkentése",
   shortcutToggleFullscreen: "Teljes képernyő be-/kikapcsolása",
   shortcutToggleTheater: "Mozi mód be-/kikapcsolása",
+  shortcutToggleImmersive: "Elmerülő mód be-/kikapcsolása",
   shortcutTogglePictureInPicture: "Kép a képben mód be-/kikapcsolása",
   shortcutClose: "Aktuális mód bezárása",
   shortcutToggleMute: "Némítás be-/kikapcsolása",
