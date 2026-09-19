@@ -2,7 +2,9 @@
 // and the options page all load this file directly.
 (function (global) {
   const DEFAULT_SETTINGS = {
-    instanceUrl: "https://ytzero.davideghiotto.it",
+    // Deliberately empty: every install points at its own YT Zero instance, and
+    // nothing runs until the user sets one.
+    instanceUrl: "",
     enabled: true,
     openInNewTab: false,
     redirectDirectLoads: true,

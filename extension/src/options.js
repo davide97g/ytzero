@@ -13,6 +13,7 @@ globalThis.YTZ.loadSettings().then((settings) => {
   fields.enabled.checked = settings.enabled;
   fields.redirectDirectLoads.checked = settings.redirectDirectLoads;
   fields.openInNewTab.checked = settings.openInNewTab;
+  if (!settings.instanceUrl) report("Set your YT Zero instance URL to activate the extension.", "ok");
   void refreshAccess();
 });
 

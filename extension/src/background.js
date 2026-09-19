@@ -56,7 +56,11 @@ async function syncEnhanceScript() {
   return { registered: true, origin };
 }
 
-chrome.runtime.onInstalled.addListener(() => void syncEnhanceScript());
+chrome.runtime.onInstalled.addListener((details) => {
+  void syncEnhanceScript();
+  // Nothing works until an instance URL exists, so make the first run obvious.
+  if (details.reason === "install") chrome.runtime.openOptionsPage();
+});
 chrome.runtime.onStartup.addListener(() => void syncEnhanceScript());
 chrome.permissions.onAdded.addListener(() => void syncEnhanceScript());
 chrome.permissions.onRemoved.addListener(() => void syncEnhanceScript());

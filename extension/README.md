@@ -1,4 +1,4 @@
-# YT Zero Enhance (local dev extension)
+# YT Zero Enhance
 
 Unpacked Chrome extension with two jobs:
 
@@ -9,14 +9,17 @@ Unpacked Chrome extension with two jobs:
    configuration discovery, the page bridge, configurable shortcuts, player
    commands and raw-frame screenshots.
 
-Local development only: no build step, no packaging, bridge version 1.
+No build step and no bundler: the folder loads as-is. Bridge version 1.
+
+The extension ships without an instance: it does nothing at all until you point
+it at your own YT Zero deployment.
 
 ## Load it
 
 1. Open `chrome://extensions`, enable **Developer mode**, **Load unpacked**, pick
    this `extension/` folder.
-2. Open the toolbar popup (or the options page) and set the instance URL. The
-   default is `https://ytzero.davideghiotto.it`.
+2. The options page opens on install. Set your instance URL, for example
+   `https://ytzero.example.com` or `http://localhost:5173`.
 3. Press **Grant access to the instance**. The instance origin is user-configured,
    so it cannot be a static manifest match: granting it registers the page content
    script at runtime. Without it the redirect still works and enhancement stays off.
@@ -100,6 +103,29 @@ Covers configuration and context validation, chord matching and editable guards,
 cumulative speed stepping under a stale player value, boost hold/release, frame
 step, chapters, livestream and transport restrictions, parent-owned routing,
 handshake ordering, cancelable claim behavior and command results.
+
+## Publishing
+
+The extension is instance-neutral, so it can be listed as-is. What a submission
+needs beyond the code:
+
+- **Single purpose**, as stated in the listing: route YouTube videos to the
+  user's own YT Zero instance and enhance that instance's embedded player.
+- **Permission justification.** `storage` keeps the instance URL and the three
+  redirect toggles. `scripting` registers the instance content script at runtime.
+  The YouTube host permissions are the redirect surface and the embedded player.
+  The optional origins are wildcards only because the instance is unknown at
+  build time; exactly one concrete origin is requested, from the options page,
+  after the user types it.
+- **Privacy disclosure.** The only stored data is the user-entered instance URL
+  and those toggles, in `chrome.storage.sync`. Nothing is collected, and the
+  extension contacts no server of its own: it navigates tabs to the instance the
+  user configured. A privacy policy URL is still required by the listing form.
+- **Branding.** Name, icons and screenshots must avoid YouTube marks and any
+  red-rounded-rectangle play glyph. The bundled icons are a neutral ring.
+- Unlisted distribution is the closest thing to a private link; it is still
+  reviewed. Self-hosted CRX installs are enterprise-policy only on Chrome,
+  whereas Firefox does allow a self-hosted signed build.
 
 ## Not implemented yet
 
