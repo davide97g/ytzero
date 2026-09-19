@@ -1,14 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "YT Zero Redirect (dev)",
+  "name": "YT Zero Enhance (dev)",
   "version": "0.1.0",
-  "description": "Opens YouTube videos in a YT Zero instance instead of YouTube.",
+  "description": "Opens YouTube videos in a YT Zero instance and enhances the embedded player.",
   "permissions": [
-    "storage"
+    "storage",
+    "scripting"
   ],
   "host_permissions": [
     "https://www.youtube.com/*",
-    "https://m.youtube.com/*"
+    "https://m.youtube.com/*",
+    "https://www.youtube-nocookie.com/*"
   ],
   "background": {
     "service_worker": "src/background.js"
@@ -18,7 +20,7 @@
     "open_in_tab": true
   },
   "action": {
-    "default_title": "YT Zero Redirect",
+    "default_title": "YT Zero Enhance",
     "default_popup": "src/options.html"
   },
   "content_scripts": [
@@ -33,6 +35,25 @@
       ],
       "run_at": "document_start",
       "all_frames": false
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/embed/*",
+        "https://www.youtube-nocookie.com/embed/*"
+      ],
+      "js": [
+        "src/enhance/contract.js",
+        "src/enhance/matcher.js",
+        "src/enhance/controller.js",
+        "src/enhance/bridge.js",
+        "src/enhance/player.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
     }
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
   ]
 }

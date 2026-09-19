@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>YT Zero Redirect</title>
+    <title>YT Zero Enhance</title>
     <style>
       :root { color-scheme: light dark; }
       body { font: 14px/1.5 system-ui, sans-serif; margin: 0; padding: 16px; min-width: 320px; }
@@ -15,10 +15,12 @@
       .status { min-height: 18px; font-size: 12px; margin-top: 8px; }
       .status[data-tone="error"] { color: #c0392b; }
       button { padding: 6px 12px; }
+      h2 { font-size: 14px; margin: 16px 0 8px; }
+      hr { border: 0; border-top: 1px solid currentColor; opacity: 0.15; margin: 16px 0; }
     </style>
   </head>
   <body>
-    <h1>YT Zero Redirect</h1>
+    <h1>YT Zero Enhance</h1>
 
     <label>
       Instance URL
@@ -41,6 +43,18 @@
     <button id="save">Save</button>
     <div id="status" class="status"></div>
     <p class="hint">Links marked with <code>#ytNoRedirect</code> always stay on YouTube.</p>
+
+    <hr />
+    <h2>Player enhancement</h2>
+    <p class="hint">
+      Reading the instance's enhance configuration and driving its embedded player
+      needs access to the instance origin. YT Zero itself decides whether the
+      integration is enabled.
+    </p>
+    <div class="row">
+      <button id="grant">Grant access to the instance</button>
+      <span id="access" class="hint"></span>
+    </div>
 
     <script src="shared.js"></script>
     <script src="options.js"></script>
