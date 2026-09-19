@@ -778,6 +778,8 @@ export const en = {
     membersOnlyVisibility: "Members-only videos",
     membersOnlyVisibilityHint: "Choose where they are visible by default. A channel setting can override this choice.",
     cinemaMode: "Theater",
+    immersiveMode: "Immersive",
+    immersiveModeExit: "Leave immersive mode",
     cinema: "Theater",
     youtubeReferrerErrorTitle: "Your browser blocked YouTube's player identification",
     youtubeReferrerErrorHint: "Check its privacy or referrer settings, then reload this page.",

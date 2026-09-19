@@ -22,7 +22,7 @@ export const keyboardShortcutMessages = {
     shortcutSpeedDown: "Zmniejsz prędkość", shortcutSpeedUp: "Zwiększ prędkość", shortcutSeekPercent: "Przejdź do 0–90% filmu", shortcutPreviousChapter: "Poprzedni rozdział",
     shortcutNextChapter: "Następny rozdział", shortcutSeekBack: "Cofnij", shortcutSeekForward: "Przewiń", shortcutVolumeUp: "Głośniej", shortcutVolumeDown: "Ciszej",
     shortcutToggleCaptions: "Włącz / wyłącz napisy", shortcutSubtitleLarger: "Powiększ napisy", shortcutSubtitleSmaller: "Pomniejsz napisy",
-    shortcutToggleFullscreen: "Pełny ekran", shortcutToggleTheater: "Tryb kinowy", shortcutTogglePictureInPicture: "Włącz / wyłącz obraz w obrazie", shortcutClose: "Zamknij bieżący tryb",
+    shortcutToggleFullscreen: "Pełny ekran", shortcutToggleTheater: "Tryb kinowy", shortcutToggleImmersive: "Tryb immersyjny", shortcutTogglePictureInPicture: "Włącz / wyłącz obraz w obrazie", shortcutClose: "Zamknij bieżący tryb",
     shortcutToggleMute: "Wycisz / włącz dźwięk", shortcutScreenshot: "Zapisz zrzut klatki",
   },
   de: {

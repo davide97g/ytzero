@@ -61,6 +61,7 @@ import WatchVideoDescription from "../components/watch/WatchVideoDescription";
 import WatchPlaylistPanel from "../components/watch/WatchPlaylistPanel";
 import WatchPlayerModeToggle from "../components/watch/WatchPlayerModeToggle";
 import WatchRestrictedPlayer from "../components/watch/WatchRestrictedPlayer";
+import WatchImmersiveChrome from "../components/watch/WatchImmersiveChrome";
 import { colonDurationToSeconds, formatWatchTime } from "./watchRuntime";
 import { resolveWatchAudioSources } from "./watchAudioMode";
 import { useWatchPageController } from "./useWatchPageController";
@@ -176,7 +177,8 @@ export default function WatchPage() {
     screenshotFilenameTemplate,
     screenshotFormat,
     screenshotQuality,
-    setCinemaMode,
+    toggleCinemaMode,
+    toggleImmersiveMode,
     setDesktopPlaylistOpen,
     setDisabledSegs,
     setMoreOpen,
@@ -322,7 +324,9 @@ export default function WatchPage() {
                   channelTitle={video.channel_title}
                   artworkUrl={videoThumbnail(video.thumbnail)}
                   cinemaMode={cinemaMode}
-                  onToggleCinema={() => setCinemaMode((mode) => !mode)}
+                  onToggleCinema={() => toggleCinemaMode()}
+                  immersiveMode={immersiveMode}
+                  onToggleImmersive={() => toggleImmersiveMode()}
                   onEnded={watchTogetherTransportLocked ? undefined : handleEnded}
                   onNext={canPlayNextVideo ? playNextVideo : undefined} onPrevious={canPlayPreviousVideo ? playPreviousVideo : undefined}
                   keyboardSeekSeconds={keyboardSeekSeconds} keyboardShortcuts={settings?.keyboard_shortcuts} frameRate={Number(settings?.enhance_frame_fps) || 30}
@@ -691,9 +695,13 @@ export default function WatchPage() {
                 <div className={`watch-more-menu more-menu--${moreView}`}>
                   {moreView === "root" && (
                     <>
-                      <button className="more-item-medium" onClick={() => { setCinemaMode((m) => !m); setMoreOpen(false); }}>
+                      <button className="more-item-medium" onClick={() => { toggleCinemaMode(); setMoreOpen(false); }}>
                         <Clapperboard /> {t("cinemaMode")}
                         {cinemaMode && <MenuStatus><Check size={14} /></MenuStatus>}
+                      </button>
+                      <button className="more-item-always" onClick={() => { toggleImmersiveMode(); setMoreOpen(false); }}>
+                        <Film /> {t("immersiveMode")}
+                        {immersiveMode && <MenuStatus><Check size={14} /></MenuStatus>}
                       </button>
                       <button className="more-item-medium" disabled={watchTogetherTransportLocked} onClick={() => setMoreView("speed")}>
                         <Gauge /> {t("channelSpeed")}

@@ -778,6 +778,8 @@ export const pl: Locale = {
     membersOnlyVisibility: "Filmy dla wspierających",
     membersOnlyVisibilityHint: "Określa domyślną widoczność. Kanał może mieć własne ustawienie.",
     cinemaMode: "Tryb kinowy",
+    immersiveMode: "Tryb immersyjny",
+    immersiveModeExit: "Wyjdź z trybu immersyjnego",
     cinema: "Tryb kinowy",
     youtubeReferrerErrorTitle: "Przeglądarka blokuje identyfikację odtwarzacza YouTube",
     youtubeReferrerErrorHint: "Sprawdź ustawienia prywatności lub nagłówka Referer, a następnie odśwież stronę.",

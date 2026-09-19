@@ -776,6 +776,8 @@ export const hu: Locale = {
     membersOnlyVisibility: "Csak tagoknak elérhető videók",
     membersOnlyVisibilityHint: "Válaszd ki, hol legyenek alapból láthatók. Egy csatornabeállítás felülbírálhatja ezt a választást.",
     cinemaMode: "Mozi mód",
+    immersiveMode: "Elmerülő mód",
+    immersiveModeExit: "Kilépés az elmerülő módból",
     cinema: "Mozi mód",
     youtubeReferrerErrorTitle: "A böngésződ blokkolta a YouTube lejátszó-azonosítását",
     youtubeReferrerErrorHint: "Ellenőrizd az adatvédelmi vagy hivatkozó (referrer) beállításait, majd töltsd újra ezt az oldalt.",

@@ -210,6 +210,7 @@ export const ptBR: Locale = {
     "shortcutSubtitleSmaller": "Diminuir o tamanho das legendas",
     "shortcutToggleFullscreen": "Alternar a tela cheia",
     "shortcutToggleTheater": "Alternar o modo de teatro",
+    "shortcutToggleImmersive": "Alternar o modo imersivo",
     "shortcutTogglePictureInPicture": "Alternar imagem na imagem",
     "shortcutClose": "Fechar o modo atual",
     "shortcutToggleMute": "Mudo / unmute",
