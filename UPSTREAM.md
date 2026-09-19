@@ -57,10 +57,8 @@ own player, optional `yt-dlp` download-and-play-from-disk.
   `@simplewebauthn/server`, `sharp` / `resvg`
 - Frontend: `ui/` — Vite SPA (`ui/DESIGN_SYSTEM.md`)
 - Shared code: `shared/`
-- Static pages: `pages/`, templates: `templates/`
 - DB: `app/src/schema.sql` + migrations (`bun run check:database-migrations`)
-- Deploy: `Dockerfile`, `docker-compose*.yml`, `deploy/`, plus Railway / Render /
-  Heroku / DigitalOcean descriptors
+- Deploy: `Dockerfile`, `docker-compose*.yml`, Dokploy on the mini PC
 - Repo docs worth reading first: `AGENTS.md`, `design.md` (54 KB), `TODO.md`,
   `CONTRIBUTING.md`, `docs/`, `wiki/`
 

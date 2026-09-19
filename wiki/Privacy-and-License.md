@@ -63,4 +63,4 @@ YouTube is a trademark of Google LLC. This project is not affiliated with, endor
 
 This project is licensed under the **GNU Affero General Public License v3.0 only** (`AGPL-3.0-only`).
 
-See [LICENSE](https://github.com/Pelski/ytzero/blob/main/LICENSE) for the full license text.
+See [LICENSE](https://github.com/davide97g/ytzero/blob/main/LICENSE) for the full license text.

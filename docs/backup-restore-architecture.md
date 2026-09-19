@@ -549,7 +549,7 @@ archive with no such capability restores with public sharing denied.
 - the container-managed yt-dlp binary in `/data/bin/yt-dlp` and its adjacent
   pending-channel-reconciliation marker; these are machine-bound executable
   state, excluded from portable backups, but included when an operator makes
-  an exact Docker/Railway `/data` backup
+  an exact Docker `/data` backup
 - successful transcript payloads cached in memory for 30 minutes, isolated by
   profile, video, and subtitle language; failures are never cached
 - `portable_object_mappings` restore bookkeeping and automatic pre-restore

@@ -47,21 +47,21 @@ picker is read-only until `TZ` is removed and the instance restarted.
 | `YTDLP_AUTO_UPDATE` | _(unset; `1` in Docker)_ | Initial default for automatic yt-dlp updates (`1` means daily). An administrator can later choose Never, 1, 3, 7, or 30 days and the stable/nightly channel in the Downloads UI. |
 | `APP_URL` | _(derived from request)_ | Public base URL. Used as the OIDC redirect origin and WebAuthn origin when behind a reverse proxy. |
 | `WEBAUTHN_RP_ID` | _(request hostname)_ | Override the WebAuthn Relying Party ID (the registrable domain) when the auto-derived hostname is wrong. |
-| `YTZERO_AUTH_METHOD` | _(unset)_ | Set to `shared` to force shared-password authentication regardless of the saved method. One-click cloud templates set this automatically. |
+| `YTZERO_AUTH_METHOD` | _(unset)_ | Set to `shared` to force shared-password authentication regardless of the saved method. |
 | `YTZERO_AUTH_PASSWORD` | _(unset)_ | Shared login password used when `YTZERO_AUTH_METHOD=shared`. It stays environment-owned and is never written to the database, backups, or logs. A missing or empty value leaves forced authentication unconfigured and emits `auth.environment_password_missing`. |
 | `YTZERO_AUTH_DISABLE` | _(unset)_ | Set to `1` to force the **None** auth method regardless of the saved setting. Emergency unlock if an auth method locks you out — see [Authentication](Authentication#recovery-anti-lockout). |
 | `YTZERO_BACKGROUND_TASKS` | `1` | Set to `0` on HTTP-only replicas in a PostgreSQL cluster. Such replicas still serve requests and enqueue durable work, but do not start refresh schedulers, the download consumer, automatic yt-dlp updates, or TubeArchivist background synchronization. Exactly one replica should keep the default `1`. |
 | `YTZERO_INSTANCE_NAME` | hostname and port | Optional human-readable node name shown in **Settings → Cluster**. Nomad's `NOMAD_ALLOC_NAME` is used automatically when this variable is unset. Give each concurrently running instance a distinct name. |
 | `APP_EVENT_POLL_INTERVAL_MS` | `750` | PostgreSQL cross-replica live-event polling interval in milliseconds (`100`–`30000`). Usually there is no reason to change it. |
-| `YTZERO_VERSION` | `dev` | Version reported by `/api/health`. Set by the Docker build and by the native installer; there is no reason to set it by hand. |
+| `YTZERO_VERSION` | `dev` | Version reported by `/api/health`. Set by the Docker build; there is no reason to set it by hand. |
 | `DATABASE_URL` | _(unset)_ | PostgreSQL connection URL. When unset, YT Zero uses SQLite at `DB_PATH`. Migrate from Dangerous settings before enabling this value. |
 | `DATABASE_STATE_PATH` | next to the data directory | Machine-local marker used to detect an unexpected engine/location change. It contains fingerprints and migration receipt IDs, never credentials. |
 | `RESTORE_SESSION_DIR` | `./data/restore-sessions` | Temporary staging directory for validated portable-restore sessions. |
 
 The path defaults above are relative to the source tree, not to the working
-directory: unset, they resolve to a `data/` directory next to `app/`. Docker and
-the native installer both set every path explicitly, so this only matters when
-you run YT Zero straight from a checkout.
+directory: unset, they resolve to a `data/` directory next to `app/`. Docker
+sets every path explicitly, so this only matters when you run YT Zero straight
+from a checkout.
 
 ## Method-specific configuration
 
@@ -77,50 +77,26 @@ environment:
 ```
 
 ```bash
-docker compose up -d
+docker compose up --build -d
 ```
 
 Keep all state under the mounted `/data` path. When changing a path variable in
 Docker, point it somewhere below `/data` or add another persistent mount.
 
-### Native Debian/Ubuntu and Proxmox LXC
+### Homelab (Dokploy)
 
-The installer writes `/etc/ytzero/ytzero.env`. It is retained during updates,
-so edit it directly and restart the service:
-
-```bash
-sudoedit /etc/ytzero/ytzero.env
-systemctl restart ytzero
-systemctl status ytzero
-```
-
-For a Proxmox-managed container, enter it first with `pct enter <CTID>`, or run
-the restart from the host with:
-
-```bash
-pct exec <CTID> -- systemctl restart ytzero
-```
-
-The installer sets database, cache, download, avatar, log, frontend and yt-dlp
-paths explicitly. If you move `YTZERO_DATA` after installation, update the path
-variables and the systemd unit's `ReadWritePaths`, then run `systemctl
-daemon-reload`. Using the install-time `YTZERO_DATA` knob for a new install is
-less error-prone.
-
-### Unraid
-
-Choose **Docker → YT Zero → Edit** and add or change variables in the template.
-Applying the change recreates the container without touching the host data path.
-Keep `/data` mapped to `/mnt/user/appdata/ytzero` (or another persistent share).
-For OIDC or passkeys behind a reverse proxy, add `APP_URL` with the complete
-external HTTPS URL.
+Production runs on the mini PC. Set variables in the Dokploy application
+environment, then wait for the next push to `main` (or trigger a deploy). Keep
+all state under the mounted `/data` volume. `APP_URL` should be
+`https://ytzero.davideghiotto.it`. See [Installation](Installation) and
+[UPSTREAM.md](https://github.com/davide97g/ytzero/blob/main/UPSTREAM.md#deployment).
 
 ## Health check
 
 `GET /api/health` needs no authentication and returns `200` with
 `{"status":"ok","version":"…","commit":"…","uptime":…,"database":"sqlite|postgres","background_tasks":true|false}`,
 or `503` if the database cannot be reached. The Docker image has a `HEALTHCHECK`
-wired to it; use it for reverse-proxy readiness probes, Unraid, or uptime
+wired to it; use it for reverse-proxy readiness probes or uptime
 monitoring. In a cluster, `database` and `background_tasks` also confirm that an
 allocation received the intended role.
 
@@ -157,7 +133,7 @@ The connection URL is accepted only for the migration request and is not saved i
 For Docker Compose, the optional override can be used with the main file:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d
+docker compose -f docker-compose.yml -f docker-compose.postgres.yml up --build -d
 ```
 
 Back up PostgreSQL with the tools supplied by your PostgreSQL operator (for example `pg_dump` plus tested restore procedures). Portable YT Zero backups remain engine-independent, but they intentionally exclude secrets, downloads, caches, and database implementation metadata.

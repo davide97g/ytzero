@@ -1,9 +1,8 @@
-// The pipeline stamps app/src/build-version.txt and app/src/build-commit.txt before the build
-// starts, so both labels travel with the sources into the image, the release
-// tarball and the native install without a build arg. YTZERO_VERSION and
-// YTZERO_COMMIT stay the fallback for unstamped builds (docker run -e, the
-// scripts/install.sh env file, a plain checkout), and the commit is still
-// resolved from git after that so dev logs carry it too.
+// The pipeline stamps app/src/build-version.txt and app/src/build-commit.txt
+// before the build starts, so both labels travel with the sources into the
+// image without a build arg. YTZERO_VERSION and YTZERO_COMMIT stay the
+// fallback for unstamped builds (docker run -e, a plain checkout), and the
+// commit is still resolved from git after that so dev logs carry it too.
 import { readFileSync } from "node:fs";
 
 const COMMIT_HASH = /^[0-9a-f]{7,40}$/;

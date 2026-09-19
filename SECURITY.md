@@ -6,16 +6,15 @@ there is no SLA, and fixes ship on a best-effort basis.
 
 ## Supported versions
 
-Only the latest code on `main` (and the matching `ghcr.io/pelski/ytzero:latest`
-image) is supported. There are no backports to older tags — please update to
-the latest version before reporting an issue.
+Only the latest code on `main` is supported. There are no backports to older
+tags — please update to the latest version before reporting an issue.
 
 ## Reporting a vulnerability
 
 **Please do not open a public issue for security problems.**
 
 Report privately through GitHub's
-[private vulnerability reporting](https://github.com/pelski/ytzero/security/advisories/new):
+[private vulnerability reporting](https://github.com/davide97g/ytzero/security/advisories/new):
 
 1. Go to the repository's **Security** tab → **Report a vulnerability**.
 2. Describe the issue, the impact, and clear steps to reproduce.
@@ -29,16 +28,14 @@ unless you prefer to stay anonymous.
 
 YT Zero can run as a single-user app on a private network (the default, no
 login) or be exposed more broadly using one of the built-in authentication
-methods — see [Authentication](https://github.com/pelski/ytzero/wiki/Authentication).
+methods — see [Authentication](wiki/Authentication.md).
 Some things are intentional and **not** considered vulnerabilities:
 
-- **No authentication by default outside one-click cloud templates.** With the
-  default **None** method, the app
+- **No authentication by default.** With the default **None** method, the app
   has no login and assumes anyone who can reach it is the owner. If you expose
   the app beyond your LAN, activate one of the supported authentication
   methods first (shared login, per-profile login, OIDC, or a trusted
-  reverse-proxy header). One-click cloud templates instead force shared login
-  and require `YTZERO_AUTH_PASSWORD` in the deployment environment.
+  reverse-proxy header).
 - **Trusting the reverse-proxy header method.** The **Proxy header** auth
   method trusts whatever value your reverse proxy sends — it is your
   responsibility to run it behind a proxy that always sets that header and
@@ -46,7 +43,7 @@ Some things are intentional and **not** considered vulnerabilities:
   missing proxy is a deployment issue, not an app vulnerability.
 - **The `YTZERO_AUTH_DISABLE` escape hatch.** This environment variable forces
   the **None** method for recovery purposes and is documented in
-  [Authentication](https://github.com/pelski/ytzero/wiki/Authentication#recovery-anti-lockout).
+  [Authentication](wiki/Authentication.md#recovery-anti-lockout).
   Leaving it set in production disables login by design — this is expected
   behavior, not a bug.
 - **Outbound connections to YouTube and SponsorBlock.** The app fetches RSS

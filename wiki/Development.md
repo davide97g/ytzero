@@ -5,7 +5,7 @@
 | Backend | Bun, Hono |
 | Frontend | React, Vite, TypeScript |
 | Storage | SQLite by default, PostgreSQL optional |
-| Runtime | Docker/Unraid, native systemd, Proxmox LXC, or local Bun |
+| Runtime | Docker via Dokploy, or local Bun |
 
 ## Repository layout
 
@@ -29,8 +29,8 @@
 ├── wiki/                # Source for the GitHub Wiki
 ├── data/                # Local runtime data, usually gitignored
 ├── Dockerfile
-├── docker-compose.yml      # Run with the published GHCR image
-└── docker-compose.dev.yml  # Build locally from source
+├── docker-compose.yml          # Build and run locally from source
+└── docker-compose.postgres.yml # Optional PostgreSQL overlay
 ```
 
 ## Workflow

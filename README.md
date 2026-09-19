@@ -3,14 +3,8 @@
   <h1>YT Zero</h1>
   <p><strong>A self-hosted YouTube inbox for people who want subscriptions, not recommendations.</strong></p>
   <p>
-    <a href="https://github.com/Pelski/ytzero/releases"><img src="https://img.shields.io/github/v/release/Pelski/ytzero?sort=date" alt="Latest release"></a>
-    <a href="https://github.com/Pelski/ytzero/pkgs/container/ytzero"><img src="https://img.shields.io/badge/docker-ghcr.io%2Fpelski%2Fytzero-2496ED?logo=docker&amp;logoColor=white" alt="Docker image"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue" alt="AGPL-3.0-only"></a>
-    <a href="https://github.com/Pelski/ytzero/wiki"><img src="https://img.shields.io/badge/docs-wiki-555" alt="Documentation wiki"></a>
-    <a href="https://github.com/Pelski/ytzero/stargazers"><img src="https://img.shields.io/github/stars/Pelski/ytzero?style=flat" alt="GitHub stars"></a>
-  </p>
-  <p>
-    <a href="https://ko-fi.com/pelski"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi"></a>
+    <a href="wiki/Home.md"><img src="https://img.shields.io/badge/docs-wiki-555" alt="Documentation wiki"></a>
   </p>
 </div>
 
@@ -18,12 +12,12 @@ YT Zero turns YouTube back into a simple reader for channels you chose on purpos
 
 > **Fix embedded player and get more!** 
 > 
-> Companion extensions are already available for **Firefox and Chrome/Chromium**: [YT Zero Enhance](https://github.com/Pelski/ytzero-enhance) upgrades playback with reliable controls, shortcuts, chapters, SponsorBlock, picture-in-picture and more. See the [browser extension guide](https://github.com/Pelski/ytzero/wiki/Browser-Extensions) to get started.
+> Companion extensions are already available for **Firefox and Chrome/Chromium**: [YT Zero Enhance](https://github.com/Pelski/ytzero-enhance) upgrades playback with reliable controls, shortcuts, chapters, SponsorBlock, picture-in-picture and more. See the [browser extension guide](wiki/Browser-Extensions.md) to get started.
 
 It reads public YouTube RSS feeds, stores everything in your own SQLite or PostgreSQL database, and gives you a calm place to sort, schedule, watch, archive, and revisit videos from creators you already follow. With the optional [yt-dlp](https://github.com/yt-dlp/yt-dlp) integration it can even download those videos and play them from disk, in its own player.
 
 PostgreSQL deployments can run multiple HTTP replicas with one nominated
-background worker. See the [clustered deployment configuration](https://github.com/Pelski/ytzero/wiki/Configuration#clustered-postgresql-deployment)
+background worker. See the [clustered deployment configuration](wiki/Configuration.md#clustered-postgresql-deployment)
 for worker, shared-storage, and load-balancer requirements. SQLite deployments
 remain single-instance.
 
@@ -98,7 +92,7 @@ YT Zero removes that layer. It keeps subscriptions, watch progress, playlists, t
   profile. See the [localization guide](docs/localization.md) for native names,
   locale behavior, and contribution notes.
 
-See the full list with screens in the **[Features](https://github.com/Pelski/ytzero/wiki/Features)** wiki page.
+See the full list with screens in the **[Features](wiki/Features.md)** wiki page.
 
 ## Downloads & offline playback (yt-dlp)
 
@@ -110,12 +104,12 @@ The **YT-DLP Integration** plugin (disabled by default) uses [yt-dlp](https://gi
 - **Smart retention** — keep files for N days or retain them in a profile until manually deleted; optionally drop watched files, protect liked and pinned videos, and cap total shared disk usage. The storage cap can still evict unprotected downloads retained by a profile.
 - **Household-aware** — one download serves every profile, and child profiles can be limited to downloaded videos only.
 
-The Docker image and native installer bundle yt-dlp, ffmpeg, and Deno. Deno is
+The Docker image bundles yt-dlp, ffmpeg, and Deno. Deno is
 the JavaScript runtime yt-dlp uses to solve YouTube's extraction challenges;
-manual installations must provide Deno 2.3 or newer on `PATH`. Administrators
+a local Bun checkout must provide Deno 2.3 or newer on `PATH`. Administrators
 can update yt-dlp from the UI and choose stable or nightly releases plus an
 automatic-update interval. Details and the full settings reference:
-**[YT-DLP Integration](https://github.com/Pelski/ytzero/wiki/YT-DLP-Integration)**.
+**[YT-DLP Integration](wiki/YT-DLP-Integration.md)**.
 
 ## Audio mode
 
@@ -161,7 +155,7 @@ Configure it under **Settings → Plugins → TubeArchivist** with the server UR
 and API token. The YT Zero server/container must be able to reach that address;
 the browser does not need direct TubeArchivist access. Full setup, data flow,
 security, backup behavior, troubleshooting, and limitations:
-**[TubeArchivist Integration](https://github.com/Pelski/ytzero/wiki/TubeArchivist-Integration)**.
+**[TubeArchivist Integration](wiki/TubeArchivist-Integration.md)**.
 
 ## How it works
 
@@ -176,45 +170,20 @@ That means:
 
 ## Quick start
 
-YT Zero can run as a regular Docker container, an Unraid Community App, a
-native systemd service, in its own Proxmox LXC, or on a cloud platform.
+Production is the mini PC. A green push to `main` rebuilds this repo's
+`Dockerfile` on Dokploy. Local Docker and Bun are for development.
 
-### One-click cloud deploy
+### Homelab
 
-[![Deploy to DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/Pelski/ytzero/tree/main)
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Pelski/ytzero)
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/yt-zero-1?referralCode=1GJD2M&utm_medium=integration&utm_source=template&utm_campaign=generic)
-[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io%2Fpelski%2Fytzero%3Alatest&name=ytzero&service_type=web&instance_type=small&regions=fra&ports=3001%3Bhttp%3B%2F&env%5BPORT%5D=3001&env%5BYTZERO_AUTH_METHOD%5D=shared&env%5BYTZERO_AUTH_PASSWORD%5D=)
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://www.heroku.com/deploy?template=https://github.com/Pelski/ytzero)
+The live instance is https://ytzero.davideghiotto.it. See
+**[Installation](wiki/Installation.md)** and [UPSTREAM.md](UPSTREAM.md#deployment).
 
-Render provisions a persistent `/data` disk. DigitalOcean provisions PostgreSQL
-for application state, but App Platform has no persistent filesystem, so
-downloads, avatars, logs, and caches are ephemeral there. Heroku has the same
-file limitation and provisions PostgreSQL. Koyeb requires a volume mounted at
-`/data` to be added manually after the initial deployment.
-See **[Cloud Deployment](https://github.com/Pelski/ytzero/wiki/Cloud-Deployment)**
-before choosing a provider.
-
-One-click deployments force the shared-password login. Set the required
-`YTZERO_AUTH_PASSWORD` secret in the provider's environment-variable form; an
-unset or empty value keeps the deployment locked and emits an error in its logs.
-
-| Method | Best for | How it runs |
-| --- | --- | --- |
-| Docker Compose | Most servers and NAS systems | Published multi-architecture GHCR image |
-| Unraid | Unraid users who prefer DockerMan / Community Apps | The same GHCR image with persistent appdata |
-| Proxmox VE | Homelabs managed from a PVE host | Unprivileged Debian LXC, without Docker inside |
-| Debian / Ubuntu | LXC, VM or bare-metal Linux | Native Bun application managed by systemd |
-| Cloud | Render, Railway, DigitalOcean, Koyeb, Heroku, Fly.io, Zeabur, Kubernetes and Docker PaaS | One-click templates or repository manifests |
-
-### Docker
-
-Run with the published GHCR image:
+### Local Docker
 
 ```yaml
 services:
   ytzero:
-    image: ghcr.io/pelski/ytzero:latest
+    build: .
     container_name: ytzero
     ports:
       - "3001:3001"
@@ -224,72 +193,43 @@ services:
 ```
 
 ```bash
-docker compose up -d
-```
-
-### Unraid
-
-YT Zero is available in Community Applications:
-**[YT-Zero on Unraid Community Apps](https://ca.unraid.net/apps/yt-zero-1ry69q20pcrx1i?q=YT-Zero)**.
-Open **Apps**, search for **YT-Zero**, install, review the
-`/mnt/user/appdata/ytzero` data path and port `3001`, then apply it.
-
-Alternatively, load the bundled template manually from an Unraid terminal:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Pelski/ytzero/main/templates/ytzero.xml \
-  -o /boot/config/plugins/dockerMan/templates-user/my-ytzero.xml
-```
-
-then reload **Docker → Add Container** and select the `ytzero` template.
-
-### Proxmox VE
-
-On the Proxmox host — creates an unprivileged Debian LXC and installs YT Zero natively inside it:
-
-```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/Pelski/ytzero/main/scripts/proxmox-lxc.sh)"
-```
-
-### Debian / Ubuntu (LXC, VM, bare metal)
-
-As root — installs Bun, ffmpeg and yt-dlp, and runs YT Zero as a systemd service. Re-run it to update:
-
-```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/Pelski/ytzero/main/scripts/install.sh)"
+docker compose up --build -d
 ```
 
 Open <http://localhost:3001>. The app starts empty — add channels from **Settings → Channels**.
 
-Full instructions (Proxmox and installer options, Unraid, local development, production-like start) are in **[Installation](https://github.com/Pelski/ytzero/wiki/Installation)**.
+### Local development
 
-The native and Proxmox commands require a release that includes the packaged
-`ytzero-YYYY.MM.N.tar.gz` asset (for example,
-`ytzero-2026.08.1.tar.gz`). Older tags without that asset are Docker/local
-only.
+```bash
+bun run setup
+bun run dev
+```
+
+UI: <http://localhost:5173> · API: <http://localhost:3001>.
+
+Full instructions are in **[Installation](wiki/Installation.md)**.
 
 ## Documentation
 
-Full documentation lives in the **[Wiki](https://github.com/Pelski/ytzero/wiki)**:
+Full documentation lives in **[wiki/](wiki/Home.md)**:
 
-- **[Installation](https://github.com/Pelski/ytzero/wiki/Installation)** — Docker, Unraid, Proxmox, native Linux, and local development.
-- **[Cloud Deployment](https://github.com/Pelski/ytzero/wiki/Cloud-Deployment)** — one-click buttons and guides for hosted platforms.
-- **[Configuration](https://github.com/Pelski/ytzero/wiki/Configuration)** — environment variables.
-- **[Features](https://github.com/Pelski/ytzero/wiki/Features)** — everything the app does, with screens.
-- **[Settings](https://github.com/Pelski/ytzero/wiki/Settings)** — current navigation, sections, and administrator-only access.
-- **[Importing Subscriptions](https://github.com/Pelski/ytzero/wiki/Importing-Subscriptions)** — OPML and Google Takeout.
-- **[Profiles](https://github.com/Pelski/ytzero/wiki/Profiles)** — multi-account profiles.
-- **[Authentication](https://github.com/Pelski/ytzero/wiki/Authentication)** — login methods and setup.
-- **[Child Lock](https://github.com/Pelski/ytzero/wiki/Child-Lock)** — PIN-protecting settings.
-- **[Browser Extensions](https://github.com/Pelski/ytzero/wiki/Browser-Extensions)** — recommended companion extension and redirect helpers.
-- **[YT-DLP Integration](https://github.com/Pelski/ytzero/wiki/YT-DLP-Integration)** — downloads, offline playback, and retention.
+- **[Installation](wiki/Installation.md)** — Dokploy on the mini PC, plus local Docker and Bun.
+- **[Configuration](wiki/Configuration.md)** — environment variables.
+- **[Features](wiki/Features.md)** — everything the app does, with screens.
+- **[Settings](wiki/Settings.md)** — current navigation, sections, and administrator-only access.
+- **[Importing Subscriptions](wiki/Importing-Subscriptions.md)** — OPML and Google Takeout.
+- **[Profiles](wiki/Profiles.md)** — multi-account profiles.
+- **[Authentication](wiki/Authentication.md)** — login methods and setup.
+- **[Child Lock](wiki/Child-Lock.md)** — PIN-protecting settings.
+- **[Browser Extensions](wiki/Browser-Extensions.md)** — recommended companion extension and redirect helpers.
+- **[YT-DLP Integration](wiki/YT-DLP-Integration.md)** — downloads, offline playback, and retention.
 - **[Audio mode](docs/audio-mode.md)** — background audio playback for regular videos and active livestreams.
 - **[Installed app updates](docs/pwa-updates.md)** — how a deployment reaches an app that is already installed and open.
-- **[TubeArchivist Integration](https://github.com/Pelski/ytzero/wiki/TubeArchivist-Integration)** — use an existing archive in the normal feed and local player.
-- **[Backup & Updates](https://github.com/Pelski/ytzero/wiki/Backup-and-Updates)** — keeping your data safe.
-- **[How It Works](https://github.com/Pelski/ytzero/wiki/How-It-Works)** — what is fetched and stored.
-- **[Privacy & License](https://github.com/Pelski/ytzero/wiki/Privacy-and-License)** — external requests, optional integrations, and licensing.
-- **[Development](https://github.com/Pelski/ytzero/wiki/Development)** — tech stack and repository layout.
+- **[TubeArchivist Integration](wiki/TubeArchivist-Integration.md)** — use an existing archive in the normal feed and local player.
+- **[Backup & Updates](wiki/Backup-and-Updates.md)** — keeping your data safe.
+- **[How It Works](wiki/How-It-Works.md)** — what is fetched and stored.
+- **[Privacy & License](wiki/Privacy-and-License.md)** — external requests, optional integrations, and licensing.
+- **[Development](wiki/Development.md)** — tech stack and repository layout.
 
 ## Browser extensions
 
@@ -304,9 +244,9 @@ If you only want automatic redirects, [YTZero Redirect](https://github.com/pekem
 | Backend | Bun, Hono |
 | Frontend | React, Vite, TypeScript |
 | Storage | SQLite by default, PostgreSQL optional |
-| Downloads | [yt-dlp](https://github.com/yt-dlp/yt-dlp) + Deno + ffmpeg (optional plugin, bundled in Docker/native installs) |
+| Downloads | [yt-dlp](https://github.com/yt-dlp/yt-dlp) + Deno + ffmpeg (optional plugin, bundled in Docker) |
 | Archive integration | TubeArchivist API and protected media proxy (optional plugin) |
-| Runtime | Docker/Unraid, a Proxmox LXC or Debian/Ubuntu host via systemd, or local Bun |
+| Runtime | Docker via Dokploy, or local Bun |
 
 ## Privacy & license
 
@@ -322,7 +262,7 @@ The optional [DeArrow](https://dearrow.ajay.app/) integration fetches community-
 
 YouTube is a trademark of Google LLC. This project is not affiliated with, endorsed by, or associated with YouTube or Google LLC.
 
-Licensed under the **GNU Affero General Public License v3.0 only** (`AGPL-3.0-only`). See [LICENSE](LICENSE). More in **[Privacy & License](https://github.com/Pelski/ytzero/wiki/Privacy-and-License)**.
+Licensed under the **GNU Affero General Public License v3.0 only** (`AGPL-3.0-only`). See [LICENSE](LICENSE). More in **[Privacy & License](wiki/Privacy-and-License.md)**.
 
 ## Mentions
 

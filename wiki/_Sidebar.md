@@ -2,7 +2,6 @@
 
 **Getting started**
 - [Installation](Installation)
-- [Cloud Deployment](Cloud-Deployment)
 - [Configuration](Configuration)
 
 **Using the app**

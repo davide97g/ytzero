@@ -155,7 +155,7 @@ Passkeys (WebAuthn) are supported for the **Shared** and **Login per profile** m
 
 ## Recovery (anti-lockout)
 
-Because there is **no fallback between methods** (see the note above), a broken or forgotten login means you are locked out — the app will not revert to **None** on its own. The single recovery path is the `YTZERO_AUTH_DISABLE` environment variable, which requires access to the deployment (Docker Compose file, systemd unit, shell, etc.).
+Because there is **no fallback between methods** (see the note above), a broken or forgotten login means you are locked out — the app will not revert to **None** on its own. The single recovery path is the `YTZERO_AUTH_DISABLE` environment variable, which requires access to the deployment (Dokploy env, Compose file, or shell).
 
 Step by step:
 

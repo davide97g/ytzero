@@ -63,17 +63,14 @@ caches, and downloaded media, so it is not a complete instance backup.
 
 ## Updates
 
-Update a Docker install that uses the published GHCR image:
+Production updates when `main` is green: the `deploy` job in
+`.github/workflows/ci.yml` tells Dokploy to rebuild the `Dockerfile`. See
+[Installation](Installation) and [UPSTREAM.md](https://github.com/davide97g/ytzero/blob/main/UPSTREAM.md#deployment).
+
+Update a local Docker checkout after pulling new code:
 
 ```bash
-docker compose pull
-docker compose up -d
-```
-
-Update a Docker install that builds locally after pulling new code:
-
-```bash
-docker compose -f docker-compose.dev.yml up --build -d
+docker compose up --build -d
 ```
 
 Schema changes are applied automatically on startup, so updates do not require manual migration steps. Back up `./data` first if you want a safety net.

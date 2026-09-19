@@ -51,8 +51,8 @@ hand-off can fail there and the first touch after returning restarts audio.
 For videos without a local copy, the YT Zero server must have a working
 [yt-dlp](https://github.com/yt-dlp/yt-dlp) installation and Deno 2.3 or newer
 available on `PATH`. Deno runs yt-dlp's JavaScript challenge solver for videos
-that YouTube does not expose without that step. The official Docker image and
-native installer bundle both. A completed download is played directly from the
+that YouTube does not expose without that step. The Docker image bundles both.
+A completed download is played directly from the
 local file instead, so it does not require yt-dlp or access to YouTube.
 
 Audio mode is available for:
