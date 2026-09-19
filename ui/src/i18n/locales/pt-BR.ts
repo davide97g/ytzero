@@ -3,6 +3,7 @@ import { localeFormats } from "../localeFormats";
 import { surfaceMessages } from "./surfaceMessages";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
+import { discoveryExternalMessages } from "./discoveryExternal";
 import { feedTuningMessages } from "./feedTuning";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
@@ -12,6 +13,7 @@ export const ptBR: Locale = {
     ...surfaceMessages["pt-BR"],
     ...feedBuilderMessages["pt-BR"],
     ...dailyRotationMessages["pt-BR"],
+    ...discoveryExternalMessages["pt-BR"],
     ...feedTuningMessages["pt-BR"],
     ...clusterMessages["pt-BR"],
     ...notificationMessages["pt-BR"],

@@ -1,6 +1,15 @@
 # Idea: smart home recommendations without cookies or a Google account
 
-Status: idea / research notes (2026-09-10). Fork-local, not upstream.
+Status: partly implemented (2026-09-19). Fork-local, not upstream.
+Sections 2, 3, 5 and 6 shipped as `app/src/youtubeRelated.ts`,
+`app/src/discoverySeeds.ts` and `app/src/discoveryExternal.ts`. Section 4 was
+dropped: search ranks by query match, not by co-watch, so the keyword path was
+deleted rather than revived, and the `outside_exact_match_points` /
+`outside_partial_match_points` / `early_external_count` settings did not come
+back. The `related_cache` table in section 5 was also dropped — the responses
+are rebuildable network cache, so they live in an in-process `AsyncTtlCache`
+instead of in the database.
+
 Goal: build a pseudo-YouTube-algorithm home shelf from YT Zero's own history,
 with no Google login, no cookie jar, no throwaway account.
 

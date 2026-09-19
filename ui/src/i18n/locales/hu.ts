@@ -3,6 +3,7 @@ import { featureMessages } from "./featureMessages";
 import { surfaceMessages } from "./surfaceMessages";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
+import { discoveryExternalMessages } from "./discoveryExternal";
 import { feedTuningMessages } from "./feedTuning";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";

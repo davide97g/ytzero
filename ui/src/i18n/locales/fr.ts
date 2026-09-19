@@ -12,6 +12,7 @@ export const fr: Locale = {
     ...surfaceMessages.fr,
     ...feedBuilderMessages.fr,
     ...dailyRotationMessages.fr,
+    ...discoveryExternalMessages.fr,
     ...feedTuningMessages.fr,
     ...clusterMessages.fr,
     ...notificationMessages.fr,

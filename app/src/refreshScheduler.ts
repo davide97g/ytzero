@@ -11,6 +11,7 @@ import {
 import { syncNextFollowedPlaylist, syncNextSubscribedChannel } from "./scheduledSync";
 import { runAutomaticUpdateChecks } from "./updates";
 import { backgroundTasksEnabled } from "./deploymentMode";
+import { runDiscoveryCycle } from "./plugins";
 const FEED_REFRESH_BATCH_SIZE = 10;
 const FEED_REFRESH_FAIRNESS_SLOTS = 2;
 
@@ -54,6 +55,14 @@ export function startScheduler() {
     refreshAll({ manualOnly: true }).catch((e) => log.error("refresh.manual_cron_failed", { error: e instanceof Error ? e.message : String(e) }));
   }, 60_000);
   log.info("scheduler.manual_feed_refresh", { intervalMin: 1 });
+
+  // Discovery reaches outside the library, so it runs here and nowhere else:
+  // one profile per tick, on the worker, well after startup traffic settles.
+  const discoveryIntervalMin = 15;
+  const runDiscovery = () => runDiscoveryCycle().catch((e) => log.error("discovery.cron_failed", { error: e instanceof Error ? e.message : String(e) }));
+  setTimeout(runDiscovery, 150_000);
+  setInterval(runDiscovery, discoveryIntervalMin * 60_000);
+  log.info("scheduler.discovery_refresh", { intervalMin: discoveryIntervalMin });
 
   const fullSyncIntervalMin = positiveNumber(process.env.FULL_SYNC_INTERVAL_MINUTES, 15);
   const runFullSync = () => {

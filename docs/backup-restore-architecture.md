@@ -512,6 +512,14 @@ archive with no such capability restores with public sharing denied.
   errors are machine-local scheduler state
 - `discovery_recommendations`
 - derived Discovery `last_terms`
+- the in-process InnerTube related/mix response cache, its empty-answer
+  suppression map, and the address-wide external-discovery cooldown. All three
+  are process-local network cache: they are never written to the database, never
+  exported, and a restart simply costs one refresh cycle
+- videos and channels imported by external discovery (`external = 1`). They are
+  temporary catalog rows covered by the existing minimal referenced-video rule,
+  are pruned once nothing references them, and are re-discovered from the
+  profile's own history after a restore
 - `update_check_state`, `notifications` (including derived Social alerts), `bulk_undo`
 - adaptive feed scheduler attempt timestamps, detected cadence, and failure
   counters on `channels` (operator-defined publication weekdays and refresh
@@ -613,6 +621,9 @@ targets before anything is forwarded.
 
 The Discovery adapter exports validated settings, `blocked_terms`, and optional
 feedback; it does not export generated recommendations or `last_terms`. The
+settings it carries now include the external-discovery switch and its tuning
+values, so a restored profile keeps the choice to look outside its
+subscriptions, while every candidate that choice produced is rebuilt locally. The
 TubeArchivist adapter exports only its harmless refresh interval and two-way
 watched-sync policy. Its server URL is machine-bound, its API token is a secret,
 and its catalog rows (including imported watched state), comments/metadata,
