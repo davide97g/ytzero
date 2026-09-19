@@ -4,57 +4,148 @@
     <meta charset="utf-8" />
     <title>YT Zero Enhance</title>
     <style>
-      :root { color-scheme: light dark; }
-      body { font: 14px/1.5 system-ui, sans-serif; margin: 0; padding: 16px; min-width: 320px; }
-      h1 { font-size: 15px; margin: 0 0 12px; }
-      label { display: block; margin-bottom: 12px; }
-      .row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+      :root {
+        color-scheme: light dark;
+        --bg: #f4f5f7;
+        --card: #ffffff;
+        --text: #16181d;
+        --muted: #5c6470;
+        --line: #dfe3e9;
+        --accent: #1f7fd0;
+        --accent-text: #ffffff;
+        --error: #c0392b;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0f0f0f;
+          --card: #17191d;
+          --text: #eef1f5;
+          --muted: #9aa3b0;
+          --line: #262a31;
+          --accent: #6dc5ff;
+          --accent-text: #0f0f0f;
+          --error: #ff8a7a;
+        }
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        padding: 24px 16px 40px;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+
+      main { width: 100%; max-width: 520px; margin: 0 auto; }
+
+      .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+      .brand img { width: 40px; height: 40px; border-radius: 10px; }
+      .brand h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; }
+      .brand p { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+
+      section {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 14px;
+      }
+
+      h2 { font-size: 13px; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+      label.field { display: block; font-weight: 500; margin-bottom: 6px; }
+
+      input[type="url"] {
+        width: 100%;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--bg);
+        color: var(--text);
+        font: inherit;
+      }
+
+      input[type="url"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+      .row { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; }
       .row label { margin: 0; }
-      input[type="url"] { width: 100%; box-sizing: border-box; padding: 6px 8px; }
-      .hint { opacity: 0.7; font-size: 12px; }
-      .status { min-height: 18px; font-size: 12px; margin-top: 8px; }
-      .status[data-tone="error"] { color: #c0392b; }
-      button { padding: 6px 12px; }
-      h2 { font-size: 14px; margin: 16px 0 8px; }
-      hr { border: 0; border-top: 1px solid currentColor; opacity: 0.15; margin: 16px 0; }
+      .row input[type="checkbox"] { margin: 3px 0 0; accent-color: var(--accent); width: 15px; height: 15px; }
+
+      .actions { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+
+      button {
+        padding: 8px 15px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: var(--accent);
+        color: var(--accent-text);
+        font: inherit;
+        font-weight: 550;
+        cursor: pointer;
+      }
+
+      button.secondary { background: transparent; border-color: var(--line); color: var(--text); }
+      button:disabled { opacity: 0.5; cursor: default; }
+
+      .hint { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; }
+      .hint code { font-size: 12px; }
+
+      .status { min-height: 18px; font-size: 12.5px; color: var(--muted); }
+      .status[data-tone="error"] { color: var(--error); }
     </style>
   </head>
   <body>
-    <h1>YT Zero Enhance</h1>
+    <main>
+      <div class="brand">
+        <img src="../icons/icon-128.png" alt="" />
+        <div>
+          <h1>YT Zero Enhance</h1>
+          <p>Send YouTube videos to your own YT Zero instance.</p>
+        </div>
+      </div>
 
-    <label>
-      Instance URL
-      <input id="instanceUrl" type="url" placeholder="https://ytzero.example.com" />
-    </label>
+      <section>
+        <h2>Your instance</h2>
+        <label class="field" for="instanceUrl">Instance URL</label>
+        <input id="instanceUrl" type="url" placeholder="https://ytzero.example.com" />
 
-    <div class="row">
-      <input id="enabled" type="checkbox" />
-      <label for="enabled">Redirect YouTube videos to YT Zero</label>
-    </div>
-    <div class="row">
-      <input id="redirectDirectLoads" type="checkbox" />
-      <label for="redirectDirectLoads">Also redirect YouTube watch pages opened directly</label>
-    </div>
-    <div class="row">
-      <input id="openInNewTab" type="checkbox" />
-      <label for="openInNewTab">Always open in a new tab</label>
-    </div>
+        <div class="row">
+          <input id="enabled" type="checkbox" />
+          <label for="enabled">Redirect YouTube videos to YT Zero</label>
+        </div>
+        <div class="row">
+          <input id="redirectDirectLoads" type="checkbox" />
+          <label for="redirectDirectLoads">Also redirect YouTube watch pages opened directly</label>
+        </div>
+        <div class="row">
+          <input id="openInNewTab" type="checkbox" />
+          <label for="openInNewTab">Always open in a new tab</label>
+        </div>
 
-    <button id="save">Save</button>
-    <div id="status" class="status"></div>
-    <p class="hint">Links marked with <code>#ytNoRedirect</code> always stay on YouTube.</p>
+        <div class="actions">
+          <button id="save">Save</button>
+          <span id="status" class="status"></span>
+        </div>
 
-    <hr />
-    <h2>Player enhancement</h2>
-    <p class="hint">
-      Reading the instance's enhance configuration and driving its embedded player
-      needs access to the instance origin. YT Zero itself decides whether the
-      integration is enabled.
-    </p>
-    <div class="row">
-      <button id="grant">Grant access to the instance</button>
-      <span id="access" class="hint"></span>
-    </div>
+        <p class="hint">Links marked with <code>#ytNoRedirect</code> always stay on YouTube.</p>
+      </section>
+
+      <section>
+        <h2>Player enhancement</h2>
+        <p class="hint" style="margin-top: 0">
+          Reading your instance's enhance configuration and driving its embedded
+          player needs access to the instance origin. YT Zero itself decides
+          whether the integration is enabled.
+        </p>
+        <div class="actions">
+          <button id="grant" class="secondary">Grant access to the instance</button>
+          <span id="access" class="status"></span>
+        </div>
+      </section>
+    </main>
 
     <script src="shared.js"></script>
     <script src="options.js"></script>
