@@ -49,6 +49,11 @@ export class AsyncTtlCache<T> {
     return entry.promise;
   }
 
+  /** Drop every cached answer. In-flight work keeps running for its callers. */
+  clear(): void {
+    this.entries.clear();
+  }
+
   private pruneExpired(now: number): void {
     for (const [key, entry] of this.entries) {
       if (entry.expiresAt !== null && entry.expiresAt <= now) this.entries.delete(key);

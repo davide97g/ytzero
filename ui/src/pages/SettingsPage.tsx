@@ -874,6 +874,12 @@ export default function SettingsPage({ showToast }: { showToast: (m: string) => 
                 keys: ["total_limit", "per_channel_limit", "random_pick_count", "high_pick_count"],
               },
               {
+                id: "outside",
+                title: t("pluginSectionOutside"),
+                description: t("pluginSectionOutsideHint"),
+                keys: ["external_enabled", "seed_count", "external_limit", "min_view_count", "min_duration_minutes", "outside_base_points", "cooccurrence_points", "outside_seed_points", "novelty_penalty", "external_adjustment"],
+              },
+              {
                 id: "personalization",
                 title: t("pluginSectionPersonalization"),
                 description: t("pluginSectionPersonalizationHint"),

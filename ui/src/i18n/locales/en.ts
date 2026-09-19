@@ -5,6 +5,7 @@ import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
+import { discoveryExternalMessages } from "./discoveryExternal";
 import { feedTuningMessages } from "./feedTuning";
 // English defines the message keys; `pl` and `de` are type-checked against them.
 export const en = {

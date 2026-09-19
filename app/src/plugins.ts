@@ -1,8 +1,10 @@
 import { database } from "./database";
 import { getSetting, reloadSettingCache } from "./db";
-import { classifyIsShort, fetchChannelAbout, fetchVideoInfo, searchYouTube, type SearchResult, type VideoInfo } from "./youtube";
 import { isYouTubeRefusalError } from "./youtubeRateLimit";
-import { buildKeywordPlan, tokenizeDiscoveryText, type KeywordSeed } from "./discoveryKeywords";
+import { buildExternalCandidates, pruneDiscoveryCandidates, type ExternalCandidateScore } from "./discoveryExternal";
+import { clearRelatedCache } from "./youtubeRelated";
+import { tokenizeDiscoveryText } from "./discoveryKeywords";
+import { childLocalOnly } from "./childTime";
 import { maintenanceActive } from "./maintenance";
 import { log } from "./logger";
 import { storedUtcTimestampMs, zonedDayHour } from "./timeZone";
@@ -406,6 +408,7 @@ export async function resetPluginState(uid: number, pluginId: string, language?:
       await database.prepare("DELETE FROM discovery_recommendations WHERE user_id = ?").run(uid);
       await database.prepare("DELETE FROM recommendation_feedback WHERE user_id = ?").run(uid);
       await database.prepare("DELETE FROM channels WHERE external = 1 AND channel_id NOT IN (SELECT DISTINCT channel_id FROM videos)").run();
+      clearRelatedCache();
     }
     await database.prepare("DELETE FROM plugin_settings WHERE plugin_id = ? AND user_id = ?").run(pluginId, uid);
     await database.prepare("DELETE FROM plugin_state WHERE plugin_id = ? AND user_id = ?").run(pluginId, uid);
@@ -471,7 +474,6 @@ export interface DiscoveryRecommendation {
   score: number;
   reasons: string[];
   video?: any;
-  result?: SearchResult;
   query?: string;
 }
 
@@ -626,133 +628,6 @@ async function localRecommendations(
     .slice(0, Math.max(0, Math.floor(limit)));
 }
 
-async function externalRecommendations(uid: number, limit: number, settings: Record<string, number>): Promise<DiscoveryRecommendation[]> {
-  const seedRows = await database.prepare(`
-    SELECT v.title AS text,
-           CASE WHEN uv.liked = 1 THEN 6
-                WHEN EXISTS (SELECT 1 FROM history h WHERE h.video_id = v.video_id AND h.user_id = ?) THEN 3
-                ELSE 2 END AS weight,
-           'title' AS kind
-    FROM videos v
-    LEFT JOIN user_videos uv ON uv.video_id = v.video_id AND uv.user_id = ?
-    WHERE uv.liked = 1
-       OR EXISTS (SELECT 1 FROM history h WHERE h.video_id = v.video_id AND h.user_id = ?)
-       OR uv.watch_position IS NOT NULL
-    ORDER BY COALESCE(
-      (SELECT MAX(h.watched_at) FROM history h WHERE h.video_id = v.video_id AND h.user_id = ?),
-      v.published_at,
-      v.created_at
-    ) DESC
-    LIMIT 80
-  `).all(uid, uid, uid, uid) as KeywordSeed[];
-  const tagRows = await database.prepare(`
-    SELECT t.name AS text, 5 AS weight, 'tag' AS kind
-    FROM tags t
-    WHERE t.user_id = ? AND (
-      EXISTS (SELECT 1 FROM video_tags vt JOIN user_videos uv ON uv.video_id = vt.video_id AND uv.user_id = ? WHERE vt.tag_id = t.id AND uv.liked = 1)
-      OR EXISTS (SELECT 1 FROM channel_tags ct JOIN videos v ON v.channel_id = ct.channel_id JOIN history h ON h.video_id = v.video_id AND h.user_id = ? WHERE ct.tag_id = t.id)
-    )
-  `).all(uid, uid, uid) as KeywordSeed[];
-  const blockedTerms = new Set(await readDiscoveryTerms(uid, "blocked_terms"));
-  const keywordPlan = buildKeywordPlan([...tagRows, ...seedRows], blockedTerms, 24, 3);
-  const foundTerms = keywordPlan.terms;
-  await writeDiscoveryTerms(uid, "last_terms", foundTerms);
-  const queries = keywordPlan.queries;
-
-  const candidates: (SearchResult & { query: string; matchScore: number })[] = [];
-  const seen = new Set<string>();
-  for (const query of queries) {
-    const queryTerms = new Set(tokenizeDiscoveryText(query));
-    const search = await searchYouTube(query).catch(() => ({ results: [], channels: [] }));
-    for (const result of search.results) {
-      if (seen.has(result.videoId)) continue;
-      if (await database.prepare("SELECT 1 FROM recommendation_feedback WHERE user_id = ? AND video_id = ? AND action = 'dismiss'").get(uid, result.videoId)) continue;
-      seen.add(result.videoId);
-      const matchScore = scoreSearchResult(result, queryTerms, settings);
-      if (matchScore <= 0) continue;
-      candidates.push({ ...result, query, matchScore });
-    }
-  }
-
-  const imported: DiscoveryRecommendation[] = [];
-  for (const candidate of candidates.sort((a, b) => b.matchScore - a.matchScore).slice(0, limit * 2)) {
-    let info: VideoInfo | null;
-    try { info = await fetchVideoInfo(candidate.videoId); }
-    catch (error) { if (isYouTubeRefusalError(error)) break; info = null; }
-    if (!info) continue;
-    if (info.liveStatus !== "none") continue;
-    // A network error is `null`, not proof that this is a regular video.
-    if (await classifyIsShort(info.videoId, info.title) !== false) continue;
-    const about = await fetchChannelAbout(info.channelId).catch(() => null);
-    await upsertExternalVideo(info, about?.avatar ?? "");
-    const video = await selectVideo(uid, info.videoId);
-    if (!video) continue;
-    imported.push({
-      kind: "local",
-      score: settings.outside_base_points + candidate.matchScore,
-      reasons: ["external search"],
-      query: candidate.query,
-      video,
-    });
-    if (imported.length >= limit) break;
-  }
-  return imported;
-}
-
-function scoreSearchResult(result: SearchResult, terms: Set<string>, settings: Record<string, number>) {
-  const titleTokens = tokenizeDiscoveryText(`${result.title} ${result.channelTitle}`);
-  let score = 0;
-  for (const token of titleTokens) {
-    if (terms.has(token)) score += settings.outside_exact_match_points;
-    else {
-      for (const term of terms) {
-        if (token.includes(term) || term.includes(token)) {
-          score += settings.outside_partial_match_points;
-          break;
-        }
-      }
-    }
-  }
-  if (result.viewCount != null && result.viewCount > 1000) score += 3;
-  return score;
-}
-
-async function upsertExternalVideo(info: VideoInfo, channelThumbnail: string) {
-  await database.prepare(`
-    INSERT INTO channels (channel_id, title, url, thumbnail, followed, external)
-    VALUES (?, ?, ?, ?, 0, 1)
-    ON CONFLICT(channel_id) DO UPDATE SET
-      title = CASE WHEN channels.title = '' OR channels.title IS NULL THEN excluded.title ELSE channels.title END,
-      thumbnail = CASE WHEN channels.thumbnail = '' OR channels.thumbnail IS NULL THEN excluded.thumbnail ELSE channels.thumbnail END
-  `).run(info.channelId, info.channelTitle, `https://www.youtube.com/channel/${info.channelId}`, channelThumbnail);
-
-  await database.prepare(`
-    INSERT INTO videos
-      (video_id, channel_id, title, description, thumbnail, published_at, live_status, status, views, duration, is_short, external)
-    VALUES (?, ?, ?, ?, ?, ?, 'none', 'inbox', ?, ?, 0, 1)
-    ON CONFLICT(video_id) DO UPDATE SET
-      title = CASE WHEN videos.title = '' OR videos.title IS NULL THEN excluded.title ELSE videos.title END,
-      description = CASE WHEN videos.description = '' OR videos.description IS NULL THEN excluded.description ELSE videos.description END,
-      thumbnail = CASE WHEN videos.thumbnail = '' OR videos.thumbnail IS NULL THEN excluded.thumbnail ELSE videos.thumbnail END,
-      views = COALESCE(videos.views, excluded.views),
-      duration = COALESCE(videos.duration, excluded.duration),
-      live_status = CASE
-        WHEN videos.live_status IN ('live', 'upcoming', 'was_live') THEN videos.live_status
-        ELSE excluded.live_status
-      END,
-      is_short = CASE WHEN videos.is_short = 1 THEN 1 ELSE COALESCE(videos.is_short, excluded.is_short) END
-  `).run(
-    info.videoId,
-    info.channelId,
-    info.title,
-    info.description,
-    info.thumbnail,
-    info.publishedAt,
-    info.viewCount,
-    info.duration,
-  );
-}
-
 async function selectVideo(uid: number, videoId: string) {
   return await database.prepare(`
     SELECT v.video_id, v.channel_id, v.title, v.description, v.thumbnail,
@@ -767,17 +642,45 @@ async function selectVideo(uid: number, videoId: string) {
   `).get(uid, uid, videoId) as any | null;
 }
 
-export async function discoveryRecommendations(_uid: number): Promise<{ recommendations: DiscoveryRecommendation[]; enabled: boolean }> {
-  return { recommendations: [], enabled: pluginEnabled("discovery") };
+export async function discoveryRecommendations(uid: number): Promise<{ recommendations: DiscoveryRecommendation[]; enabled: boolean }> {
+  if (!pluginEnabled("discovery")) return { recommendations: [], enabled: false };
+  return { recommendations: await readStoredDiscoveryRecommendations(uid, 60), enabled: true };
 }
 
-export async function refreshDiscoveryNow(_uid: number): Promise<{ recommendations: DiscoveryRecommendation[]; enabled: boolean }> {
-  return { recommendations: [], enabled: pluginEnabled("discovery") };
+export async function refreshDiscoveryNow(uid: number): Promise<{ recommendations: DiscoveryRecommendation[]; enabled: boolean }> {
+  await runDiscoveryRefresh(uid);
+  return discoveryRecommendations(uid);
 }
 
-// Recommendations are a read-only projection. Library mutations must never
-// schedule searches, imports or recommendation-state writes.
-export function refreshDiscoveryInBackground(_uid: number) {}
+/** Library mutations may only leave a note. Every network call happens on the
+ * background worker's own schedule, never inside a request that changed the
+ * library — that is what made this feature expensive enough to be removed once. */
+export function refreshDiscoveryInBackground(uid: number) {
+  markDiscoveryDirty(uid);
+}
+
+const discoveryDirtyProfiles = new Set<number>();
+/** Address-wide pause after YouTube refuses. Process-local on purpose: an
+ * egress address is shared by every profile and outlives no restart. */
+let externalCooldownUntil = 0;
+
+export function markDiscoveryDirty(uid: number) {
+  if (Number.isSafeInteger(uid) && uid > 0) discoveryDirtyProfiles.add(uid);
+}
+
+async function isPrimaryProfile(uid: number): Promise<boolean> {
+  const row = await database.prepare("SELECT id FROM users ORDER BY id ASC LIMIT 1").get() as { id: number } | null;
+  return row?.id === uid;
+}
+
+/** Looking outside the library is opt-in, primary-profile only, and never
+ * offered to a profile restricted to local content. */
+export async function externalDiscoveryEnabled(uid: number): Promise<boolean> {
+  if (!pluginEnabled("discovery") || childLocalOnly(uid)) return false;
+  const settings = await discoverySettings(uid);
+  if (Number(settings.external_enabled) !== 1) return false;
+  return await isPrimaryProfile(uid);
+}
 
 async function runDiscoveryRefresh(uid: number) {
   if (maintenanceActive()) return;
@@ -790,44 +693,72 @@ async function runDiscoveryRefresh(uid: number) {
 
 async function rebuildDiscoveryRecommendations(uid: number) {
   if (!pluginEnabled("discovery")) return;
+  discoveryDirtyProfiles.delete(uid);
   const startedAt = Date.now();
+  if (!await externalDiscoveryEnabled(uid)) {
+    // Turning the switch off must also take back what it imported.
+    await persistExternalCandidateScores(uid, []);
+    await pruneDiscoveryCandidates();
+    return;
+  }
   const settings = await discoverySettings(uid);
-  const totalLimit = settings.total_limit;
-  const local = await localRecommendations(uid, Math.max(24, totalLimit), settings);
-  const importedExternal = await externalRecommendations(uid, Math.max(settings.early_external_count, 8), settings);
-  const recommendations = mixRecommendations([...local, ...importedExternal], totalLimit, settings);
-  await persistDiscoveryRecommendations(uid, recommendations);
-  log.info("discovery.refresh_complete", {
-    userId: uid,
-    localCandidates: local.length,
-    externalCandidates: importedExternal.length,
-    recommendations: recommendations.length,
-    ms: Date.now() - startedAt,
-  });
+  try {
+    const external = await buildExternalCandidates(uid, settings);
+    await persistExternalCandidateScores(uid, external);
+    log.info("discovery.refresh_complete", {
+      userId: uid,
+      externalCandidates: external.length,
+      ms: Date.now() - startedAt,
+    });
+  } catch (error) {
+    if (!isYouTubeRefusalError(error)) throw error;
+    // A refused address means every profile waits, and the surface silently
+    // falls back to library-only ranking.
+    externalCooldownUntil = Math.max(externalCooldownUntil, Date.now() + 6 * 60 * 60_000);
+    log.warn("discovery.refresh_halted", { userId: uid, ms: Date.now() - startedAt });
+  }
+  await pruneDiscoveryCandidates();
 }
 
-async function persistDiscoveryRecommendations(uid: number, recommendations: DiscoveryRecommendation[]) {
+/** One profile per tick, cheapest gate first. */
+export async function runDiscoveryCycle(): Promise<void> {
+  if (!pluginEnabled("discovery") || maintenanceActive() || Date.now() < externalCooldownUntil) return;
+  const rows = await database.prepare(`
+    SELECT u.id FROM users u
+    WHERE EXISTS (SELECT 1 FROM history h WHERE h.user_id = u.id AND h.watched_at > datetime('now', '-1 day'))
+    ORDER BY u.id ASC
+  `).all() as { id: number }[];
+  for (const row of rows) {
+    if (!await externalDiscoveryEnabled(row.id)) continue;
+    if (!discoveryDirtyProfiles.has(row.id) && await storedDiscoveryAgeMs(row.id) < DISCOVERY_REFRESH_INTERVAL_MS) continue;
+    await runDiscoveryRefresh(row.id);
+    return;
+  }
+}
+
+/** Stored rows hold the outside candidates and what they earned. Local videos
+ * are never persisted here: they are re-ranked live on every request. */
+async function persistExternalCandidateScores(uid: number, candidates: ExternalCandidateScore[]) {
   const tx = database.transaction(async () => {
     await database.prepare("DELETE FROM discovery_recommendations WHERE user_id = ?").run(uid);
     const insert = database.prepare(`
       INSERT INTO discovery_recommendations (user_id, video_id, score, reasons_json, query, rank, generated_at)
       VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
     `);
-    for (const [index, recommendation] of recommendations.entries()) {
-      const videoId = recommendation.video?.video_id;
-      if (!videoId) continue;
-      await insert.run(
-        uid,
-        videoId,
-        recommendation.score,
-        JSON.stringify(recommendation.reasons),
-        recommendation.query ?? null,
-        index,
-      );
+    for (const [index, candidate] of candidates.entries()) {
+      await insert.run(uid, candidate.videoId, candidate.score, JSON.stringify(candidate.reasons), candidate.query, index);
     }
     await setDiscoveryGeneratedAt(uid);
   });
   await tx();
+}
+
+/** The co-watch evidence collected for this profile, keyed by video. */
+async function readStoredDiscoveryScores(uid: number): Promise<Map<string, { score: number; reasons: string[] }>> {
+  const rows = await database.prepare(
+    "SELECT video_id, score, reasons_json FROM discovery_recommendations WHERE user_id = ?",
+  ).all(uid) as { video_id: string; score: number; reasons_json: string }[];
+  return new Map(rows.map((row) => [row.video_id, { score: Number(row.score) || 0, reasons: parseReasons(row.reasons_json) }]));
 }
 
 async function invalidateDiscoveryRecommendations(uid: number) {
@@ -1040,19 +971,38 @@ export interface RecommendationFeedOptions {
   downloadsOnly?: boolean;
 }
 
-async function rankedRecommendationQueue(uid: number, options: Pick<RecommendationFeedOptions, "downloadsOnly"> = {}): Promise<DiscoveryRecommendation[]> {
+async function rankedRecommendationQueue(
+  uid: number,
+  options: Pick<RecommendationFeedOptions, "downloadsOnly" | "allowExternal"> = {},
+): Promise<DiscoveryRecommendation[]> {
   if (!pluginEnabled("discovery")) return [];
   const settings = await discoverySettings(uid);
   const rotation = await activeRotation(uid, zonedDayHour().hour);
+  const allowExternal = options.allowExternal !== false && await externalDiscoveryEnabled(uid);
   const local = await localRecommendations(
     uid,
     300,
     // The scorer stays a pure function of (video, settings); the rotation
     // reaches it as one more tuning value rather than as extra state.
     { ...settings, rotation_strength: rotation?.strength ?? 0 },
-    { allowExternal: false, downloadsOnly: options.downloadsOnly, rotation },
+    { allowExternal, downloadsOnly: options.downloadsOnly, rotation },
   );
-  return mixRecommendations(local, 300, settings);
+  if (!allowExternal) return mixRecommendations(local, 300, settings);
+
+  // Outside candidates already reach the pool through the ownership predicate,
+  // so their co-watch score is added to what the local scorer found rather than
+  // replacing it. The external tier stays below a current-hour Pulse match.
+  const stored = await readStoredDiscoveryScores(uid);
+  const merged = local.map((recommendation) => {
+    const extra = recommendation.video?.video_id ? stored.get(recommendation.video.video_id) : undefined;
+    if (!extra) return recommendation;
+    return {
+      ...recommendation,
+      score: recommendation.score + extra.score,
+      reasons: [...new Set([...recommendation.reasons, ...extra.reasons])],
+    };
+  });
+  return mixRecommendations(merged, 300, settings);
 }
 
 export async function recommendationQueueVideoIds(uid: number, options: Pick<RecommendationFeedOptions, "downloadsOnly"> = {}): Promise<string[]> {
@@ -1070,16 +1020,34 @@ export async function recommendationFeed(uid: number, options: RecommendationFee
     enabled: false, external_enabled: false, recommendations: [], page, limit,
     has_more: false, summary: await recommendationSummary(uid),
   };
+  const externalEnabled = options.allowExternal !== false && await externalDiscoveryEnabled(uid);
+  if (externalEnabled) {
+    if (options.refresh) {
+      // An explicit refresh may wait, but never long enough to hold the page
+      // hostage to a slow or silent YouTube.
+      let capTimer: ReturnType<typeof setTimeout> | undefined;
+      await Promise.race([
+        runDiscoveryRefresh(uid).catch(() => {}),
+        new Promise((resolve) => { capTimer = setTimeout(resolve, 20_000); }),
+      ]).finally(() => clearTimeout(capTimer));
+    } else if (page === 0 && await storedDiscoveryAgeMs(uid) >= DISCOVERY_REFRESH_INTERVAL_MS) {
+      // Opening the page is a hint for the worker, not a reason to fetch here.
+      markDiscoveryDirty(uid);
+    }
+  }
 
   // Rank and diversify the complete bounded pool before slicing pages. This
   // keeps page boundaries deterministic and lets lower-ranked channels fill
   // slots left by the per-channel cap.
-  const ranked = await rankedRecommendationQueue(uid, { downloadsOnly: options.downloadsOnly });
+  const ranked = await rankedRecommendationQueue(uid, {
+    downloadsOnly: options.downloadsOnly,
+    allowExternal: options.allowExternal,
+  });
   const offset = page * limit;
   const recommendations = ranked.slice(offset, offset + limit);
   return {
     enabled,
-    external_enabled: false,
+    external_enabled: externalEnabled,
     recommendations,
     page,
     limit,
@@ -1097,7 +1065,12 @@ function mixRecommendations(recommendations: DiscoveryRecommendation[], limit: n
   );
 }
 
-export async function dismissDiscoveryRecommendation(_uid: number, _videoId: string) {
-  // Kept as a no-op for older clients. The current recommendation surface is
-  // deliberately passive and does not maintain per-video decision state.
+/** "Not for me" is the only negative signal the viewer can state outright, so
+ * it is kept even when the video itself is later pruned. */
+export async function dismissDiscoveryRecommendation(uid: number, videoId: string) {
+  await database.prepare(`
+    INSERT INTO recommendation_feedback (user_id, video_id, action, created_at)
+    VALUES (?, ?, 'dismiss', datetime('now'))
+    ON CONFLICT(user_id, video_id) DO UPDATE SET action = 'dismiss', created_at = datetime('now')
+  `).run(uid, videoId);
 }

@@ -6,6 +6,7 @@ import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
+import { discoveryExternalMessages } from "./discoveryExternal";
 import { feedTuningMessages } from "./feedTuning";
 export const pl: Locale = {
   messages: {

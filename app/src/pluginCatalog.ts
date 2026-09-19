@@ -184,6 +184,16 @@ export const DISCOVERY_SETTINGS: PluginSettingSource[] = [
   { key: "already_watched_points", label: { en: "Opened before", pl: "Wcześniej otwarte", de: "Zuvor geöffnet" }, description: { en: "Gives a small boost to videos you opened but did not complete.", pl: "Lekko podbija filmy otwarte wcześniej, ale niedokończone.", de: "Gewichtet zuvor geöffnete, aber nicht beendete Videos leicht höher." }, min: 0, max: 50, step: 1, defaultValue: 10 },
   { key: "started_points", label: { en: "Started videos", pl: "Rozpoczęte filmy", de: "Begonnene Videos" }, description: { en: "Raises videos where you watched part of the material.", pl: "Podbija filmy, które były już częściowo oglądane.", de: "Hebt Videos an, von denen du bereits einen Teil gesehen hast." }, min: 0, max: 80, step: 1, defaultValue: 15 },
   { key: "recency_points", label: { en: "Freshness", pl: "Świeżość", de: "Aktualität" }, description: { en: "Raises newer videos so the list does not feel stale.", pl: "Podbija nowsze filmy, żeby lista nie była zbyt stara.", de: "Hebt neuere Videos an, damit die Liste aktuell bleibt." }, min: 0, max: 60, step: 1, defaultValue: 18 },
+  { key: "external_enabled", type: "toggle", label: { en: "Look outside your subscriptions", pl: "Szukaj poza subskrypcjami", de: "Außerhalb deiner Abos suchen" }, description: { en: "Asks YouTube which videos people watched next after the ones you finished, and mixes the best of them into Recommendations.", pl: "Pyta YouTube, co ludzie oglądali po filmach, które skończyłeś, i miesza najlepsze z nich w Rekomendacjach.", de: "Fragt YouTube, was Zuschauer nach deinen beendeten Videos gesehen haben, und mischt die besten Treffer in die Empfehlungen." }, defaultValue: 0 },
+  { key: "seed_count", label: { en: "Videos used as starting points", pl: "Filmy użyte jako punkty wyjścia", de: "Videos als Ausgangspunkte" }, description: { en: "How many videos from your history are used to ask what to watch next. More starting points cost more requests.", pl: "Ile filmów z historii służy do pytania, co obejrzeć dalej. Więcej punktów wyjścia to więcej zapytań.", de: "Wie viele Videos aus deinem Verlauf als Ausgangspunkt dienen. Mehr Punkte bedeuten mehr Anfragen." }, min: 4, max: 24, step: 1, defaultValue: 12 },
+  { key: "external_limit", label: { en: "Outside videos kept", pl: "Zachowane filmy z zewnątrz", de: "Behaltene externe Videos" }, description: { en: "Upper limit on temporary videos imported from outside your subscriptions in one pass.", pl: "Górny limit tymczasowych filmów importowanych spoza subskrypcji w jednym przebiegu.", de: "Obergrenze für temporär importierte Videos außerhalb deiner Abos pro Durchlauf." }, min: 0, max: 60, step: 1, defaultValue: 24 },
+  { key: "outside_base_points", label: { en: "Outside videos", pl: "Filmy z zewnątrz", de: "Externe Videos" }, description: { en: "Starting weight every video found outside your subscriptions receives.", pl: "Startowa waga każdego filmu znalezionego poza subskrypcjami.", de: "Startgewicht für jedes außerhalb deiner Abos gefundene Video." }, min: 0, max: 2000, step: 50, defaultValue: 600 },
+  { key: "cooccurrence_points", label: { en: "Appears next to several of your videos", pl: "Pojawia się obok kilku Twoich filmów", de: "Taucht neben mehreren deiner Videos auf" }, description: { en: "The strongest outside signal: a video YouTube links to several things you watched.", pl: "Najmocniejszy sygnał z zewnątrz: film, który YouTube łączy z kilkoma obejrzanymi przez Ciebie.", de: "Das stärkste externe Signal: ein Video, das YouTube mit mehreren deiner Videos verknüpft." }, min: 0, max: 3000, step: 50, defaultValue: 1200 },
+  { key: "outside_seed_points", label: { en: "Strength of the starting points", pl: "Siła punktów wyjścia", de: "Stärke der Ausgangspunkte" }, description: { en: "How much it matters that the videos leading here were ones you actually finished.", pl: "Jak bardzo liczy się to, że filmy prowadzące tutaj zostały przez Ciebie dokończone.", de: "Wie stark zählt, dass die hinführenden Videos tatsächlich zu Ende gesehen wurden." }, min: 0, max: 1000, step: 25, defaultValue: 300 },
+  { key: "novelty_penalty", label: { en: "Prefer unfamiliar channels", pl: "Preferuj nieznane kanały", de: "Unbekannte Kanäle bevorzugen" }, description: { en: "Lowers outside videos from channels you already follow, because your feed covers those already.", pl: "Obniża filmy z zewnątrz z kanałów, które już subskrybujesz, bo pokrywa je Twój feed.", de: "Senkt externe Videos von Kanälen, denen du bereits folgst, weil dein Feed diese schon abdeckt." }, min: 0, max: 2000, step: 50, defaultValue: 400 },
+  { key: "external_adjustment", label: { en: "Outside video adjustment", pl: "Korekta filmów z zewnątrz", de: "Korrektur für externe Videos" }, description: { en: "Final nudge applied to every temporary video, up or down.", pl: "Końcowa korekta stosowana do każdego tymczasowego filmu, w górę lub w dół.", de: "Letzte Korrektur für jedes temporäre Video, nach oben oder unten." }, min: -500, max: 500, step: 25, defaultValue: 0 },
+  { key: "min_view_count", label: { en: "Minimum views", pl: "Minimalna liczba wyświetleń", de: "Mindestaufrufe" }, description: { en: "Skips outside videos almost nobody has watched.", pl: "Pomija filmy z zewnątrz, których prawie nikt nie obejrzał.", de: "Überspringt externe Videos, die fast niemand gesehen hat." }, min: 0, max: 10000, step: 100, defaultValue: 500 },
+  { key: "min_duration_minutes", label: { en: "Minimum length", pl: "Minimalna długość", de: "Mindestlänge" }, description: { en: "Skips outside videos shorter than this, in minutes.", pl: "Pomija filmy z zewnątrz krótsze niż tyle minut.", de: "Überspringt externe Videos, die kürzer als diese Minutenzahl sind." }, min: 0, max: 30, step: 1, defaultValue: 4 },
   { key: "random_pick_count", label: { en: "Variety near the top", pl: "Różnorodność na początku", de: "Abwechslung am Anfang" }, description: { en: "Mixes in a few strong suggestions so the list changes between reloads.", pl: "Miesza kilka mocnych propozycji, żeby lista zmieniała się po przeładowaniu.", de: "Mischt starke Vorschläge ein, damit die Liste beim Neuladen variiert." }, min: 0, max: 10, step: 1, defaultValue: 3 },
   { key: "high_pick_count", label: { en: "Top matches after variety", pl: "Najlepsze po miksie", de: "Beste Treffer nach dem Mix" }, description: { en: "How many strongest matches should follow the first mixed items.", pl: "Ile najmocniejszych dopasowań ma iść po pierwszych wymieszanych pozycjach.", de: "Wie viele stärkste Treffer nach den gemischten Einträgen folgen." }, min: 0, max: 20, step: 1, defaultValue: 6 },
 ];
@@ -193,11 +203,11 @@ export const PLUGINS: PluginManifest[] = [
   {
     id: "discovery",
     name: "Recommendations",
-    version: "0.2.0",
-    description: "Ranks eligible videos already stored in your local library.",
+    version: "0.3.0",
+    description: "Ranks your library and, when asked, looks outside your subscriptions for what to watch next.",
     route: "/recommendations",
     icon: "Sparkles",
-    permissions: ["read:library", "read:history"],
+    permissions: ["read:library", "read:history", "fetch:youtube"],
   },
   {
     id: "social",
@@ -233,13 +243,14 @@ export const PLUGIN_TEXT: Record<string, { name: LocalizedText; description: Loc
   discovery: {
     name: { en: "Recommendations", pl: "Rekomendacje", de: "Empfehlungen" },
     description: {
-      en: "Ranks eligible videos already stored in your local library.",
-      pl: "Porządkuje pasujące filmy, które są już zapisane w lokalnej bibliotece.",
-      de: "Sortiert passende Videos, die bereits in deiner lokalen Bibliothek gespeichert sind.",
+      en: "Ranks your library and, when asked, looks outside your subscriptions for what to watch next.",
+      pl: "Porządkuje bibliotekę, a na życzenie szuka poza subskrypcjami, co obejrzeć dalej.",
+      de: "Sortiert deine Bibliothek und sucht auf Wunsch außerhalb deiner Abos nach dem nächsten Video.",
     },
     permissions: {
       "read:library": { en: "reads your local library", pl: "czyta lokalną bibliotekę", de: "liest deine lokale Bibliothek" },
       "read:history": { en: "uses your watch history", pl: "używa historii oglądania", de: "nutzt deinen Verlauf" },
+      "fetch:youtube": { en: "asks YouTube for related videos when enabled", pl: "pyta YouTube o powiązane filmy, gdy jest włączone", de: "fragt YouTube nach verwandten Videos, wenn aktiviert" },
     },
   },
   social: {
