@@ -1,25 +1,25 @@
 import { localeFormats } from "../localeFormats";
-import { featureMessages } from "./featureMessages";
+import { featureMessagesHu } from "./featureMessages.hu";
 import { surfaceMessagesHu } from "./surfaceMessages.hu";
 import { publicSharingMessagesHu } from "./publicSharing.hu";
-import { feedBuilderMessages } from "./feedBuilder";
-import { dailyRotationMessages } from "./dailyRotation";
-import { discoveryExternalMessages } from "./discoveryExternal";
-import { feedTuningMessages } from "./feedTuning";
-import { clusterMessages } from "./cluster";
-import { notificationMessages } from "./notifications";
+import { feedBuilderMessagesHu } from "./feedBuilder.hu";
+import { dailyRotationMessagesHu } from "./dailyRotation.hu";
+import { discoveryExternalMessagesHu } from "./discoveryExternal.hu";
+import { feedTuningMessagesHu } from "./feedTuning.hu";
+import { clusterMessagesHu } from "./cluster.hu";
+import { notificationMessagesHu } from "./notifications.hu";
 import type { Locale } from "../types";
 
 export const hu: Locale = {
   messages: {
     ...surfaceMessagesHu,
     ...publicSharingMessagesHu,
-    ...feedBuilderMessages.hu,
-    ...dailyRotationMessages.hu,
-    ...discoveryExternalMessages.hu,
-    ...feedTuningMessages.hu,
-    ...clusterMessages.hu,
-    ...notificationMessages.hu,
+    ...feedBuilderMessagesHu,
+    ...dailyRotationMessagesHu,
+    ...discoveryExternalMessagesHu,
+    ...feedTuningMessagesHu,
+    ...clusterMessagesHu,
+    ...notificationMessagesHu,
     navToday: "Kezdőlap",
     navSocial: "Közösség",
     navDiscovery: "Felfedezés",
@@ -126,7 +126,7 @@ export const hu: Locale = {
     socialSettingsHowHint: "Az ezen a felületen regisztrált felhasználók megoszthatják a könyvtár videóit, bármilyen emoji-reakciót hozzáadhatnak, helyi lájkolással ellátott hozzászólásokkal vitathatják meg azokat, valamint az @felhasználónév beírásával megemlíthetik más felhasználókat. Az adminisztrációs beállítások mindenkire vonatkoznak; az értesítési beállítások viszont csak a saját profilodra vonatkoznak.",
     socialResetHint: "Visszaállítás az alapértelmezett beállításokra, és véglegesen törli az összes közösségi média-bejegyzést, hozzászólást, reakciót, lájkot és említést.",
     socialResetConfirm: "Visszaállítod a közösségi beállításokat, és véglegesen törölni minden megosztott bejegyzést, hozzászólást, reakciót, lájkolást és említést az összes profil esetében?",
-    ...featureMessages.hu,
+    ...featureMessagesHu,
     insightsEyebrow: "Elemzések megtekintése",
     insightsTitle: "Impulzus",
     insightsView: "Megtekintés",

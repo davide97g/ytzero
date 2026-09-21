@@ -1,11 +1,13 @@
-import { channelSyncMessages } from "./channelSync";
-import { watchTogetherMessages } from "./watchTogether";
-import { keyboardShortcutMessages } from "./keyboardShortcuts";
-import { hungarianFeatureMessages } from "./hungarianFeatureMessages";
+// Aggregate view of the per-language modules. Application code imports the
+// single language it needs; this stays for catalogue tests and tooling.
+import { featureMessagesEn } from "./featureMessages.en";
+import { featureMessagesPl } from "./featureMessages.pl";
+import { featureMessagesDe } from "./featureMessages.de";
+import { featureMessagesHu } from "./featureMessages.hu";
 
 export const featureMessages = {
-  en: { ...watchTogetherMessages.en, ...channelSyncMessages.en, ...keyboardShortcutMessages.en },
-  pl: { ...watchTogetherMessages.pl, ...channelSyncMessages.pl, ...keyboardShortcutMessages.pl },
-  de: { ...watchTogetherMessages.de, ...channelSyncMessages.de, ...keyboardShortcutMessages.de },
-  hu: hungarianFeatureMessages,
+  en: featureMessagesEn,
+  pl: featureMessagesPl,
+  de: featureMessagesDe,
+  hu: featureMessagesHu,
 } as const;

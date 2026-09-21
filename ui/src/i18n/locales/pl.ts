@@ -1,24 +1,24 @@
 import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
-import { featureMessages } from "./featureMessages";
+import { featureMessagesPl } from "./featureMessages.pl";
 import { surfaceMessagesPl } from "./surfaceMessages.pl";
 import { publicSharingMessagesPl } from "./publicSharing.pl";
-import { clusterMessages } from "./cluster";
-import { notificationMessages } from "./notifications";
-import { feedBuilderMessages } from "./feedBuilder";
-import { dailyRotationMessages } from "./dailyRotation";
-import { discoveryExternalMessages } from "./discoveryExternal";
-import { feedTuningMessages } from "./feedTuning";
+import { clusterMessagesPl } from "./cluster.pl";
+import { notificationMessagesPl } from "./notifications.pl";
+import { feedBuilderMessagesPl } from "./feedBuilder.pl";
+import { dailyRotationMessagesPl } from "./dailyRotation.pl";
+import { discoveryExternalMessagesPl } from "./discoveryExternal.pl";
+import { feedTuningMessagesPl } from "./feedTuning.pl";
 export const pl: Locale = {
   messages: {
     ...surfaceMessagesPl,
     ...publicSharingMessagesPl,
-    ...clusterMessages.pl,
-    ...notificationMessages.pl,
-    ...feedBuilderMessages.pl,
-    ...dailyRotationMessages.pl,
-    ...discoveryExternalMessages.pl,
-    ...feedTuningMessages.pl,
+    ...clusterMessagesPl,
+    ...notificationMessagesPl,
+    ...feedBuilderMessagesPl,
+    ...dailyRotationMessagesPl,
+    ...discoveryExternalMessagesPl,
+    ...feedTuningMessagesPl,
     navToday: "Główna",
     navSocial: "Social",
     navDiscovery: "Odkrywanie",
@@ -125,7 +125,7 @@ export const pl: Locale = {
     socialSettingsHowHint: "Profile w tej instalacji mogą udostępniać filmy z biblioteki, dodawać dowolne reakcje emoji, rozmawiać w komentarzach z lokalnymi polubieniami i oznaczać profile przez @nazwa. Ustawienia administracyjne dotyczą wszystkich, a powiadomienia tylko Twojego profilu.",
     socialResetHint: "Przywraca wartości domyślne i trwale usuwa wszystkie posty, komentarze, reakcje, polubienia i oznaczenia Social.",
     socialResetConfirm: "Zresetować Social i trwale usunąć wszystkie udostępnione posty, komentarze, reakcje, polubienia komentarzy i oznaczenia wszystkich profili?",
-    ...featureMessages.pl,
+    ...featureMessagesPl,
     insightsEyebrow: "Wnioski z oglądania",
     insightsTitle: "Puls",
     insightsView: "Widok",

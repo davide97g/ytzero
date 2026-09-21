@@ -1,24 +1,24 @@
 import { localeFormats } from "../localeFormats";
-import { featureMessages } from "./featureMessages";
+import { featureMessagesEn } from "./featureMessages.en";
 import { surfaceMessagesEn } from "./surfaceMessages.en";
 import { publicSharingMessagesEn } from "./publicSharing.en";
-import { clusterMessages } from "./cluster";
-import { notificationMessages } from "./notifications";
-import { feedBuilderMessages } from "./feedBuilder";
-import { dailyRotationMessages } from "./dailyRotation";
-import { discoveryExternalMessages } from "./discoveryExternal";
-import { feedTuningMessages } from "./feedTuning";
+import { clusterMessagesEn } from "./cluster.en";
+import { notificationMessagesEn } from "./notifications.en";
+import { feedBuilderMessagesEn } from "./feedBuilder.en";
+import { dailyRotationMessagesEn } from "./dailyRotation.en";
+import { discoveryExternalMessagesEn } from "./discoveryExternal.en";
+import { feedTuningMessagesEn } from "./feedTuning.en";
 // English defines the message keys; `pl` and `de` are type-checked against them.
 export const en = {
   messages: {
     ...surfaceMessagesEn,
     ...publicSharingMessagesEn,
-    ...clusterMessages.en,
-    ...notificationMessages.en,
-    ...feedBuilderMessages.en,
-    ...dailyRotationMessages.en,
-    ...discoveryExternalMessages.en,
-    ...feedTuningMessages.en,
+    ...clusterMessagesEn,
+    ...notificationMessagesEn,
+    ...feedBuilderMessagesEn,
+    ...dailyRotationMessagesEn,
+    ...discoveryExternalMessagesEn,
+    ...feedTuningMessagesEn,
     navToday: "Main",
     navSocial: "Social",
     navDiscovery: "Discovery",
@@ -125,7 +125,7 @@ export const en = {
     socialSettingsHowHint: "Profiles on this installation can share library videos, add any emoji reaction, discuss them with locally liked comments, and mention profiles by typing @username. Administrative controls apply to everyone; notification preferences apply only to your profile.",
     socialResetHint: "Restore defaults and permanently remove all Social posts, comments, reactions, likes and mentions.",
     socialResetConfirm: "Reset Social and permanently delete every shared post, comment, reaction, comment like and mention for all profiles?",
-    ...featureMessages.en,
+    ...featureMessagesEn,
     insightsEyebrow: "Viewing insights",
     insightsTitle: "Pulse",
     insightsView: "View",

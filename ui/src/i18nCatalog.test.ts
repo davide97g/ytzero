@@ -61,6 +61,33 @@ describe("UI language catalogue", () => {
     }
   });
 
+  // A catalogue module holding every language cannot be tree-shaken, so
+  // importing one for a single language ships all of them. The aggregates exist
+  // for these tests; shipped code has to import the per-language module.
+  test("ships one language at a time instead of importing a catalogue aggregate", async () => {
+    const aggregates = [
+      "surfaceMessages", "publicSharing", "cluster", "notifications", "feedBuilder",
+      "feedTuning", "discoveryExternal", "dailyRotation", "channelSync",
+      "keyboardShortcuts", "watchTogether", "featureMessages",
+    ];
+    const files = new Bun.Glob("**/*.{ts,tsx}");
+    for await (const file of files.scan({ cwd: import.meta.dir })) {
+      if (file.endsWith(".test.ts") || file.endsWith(".test.tsx")) continue;
+      const name = file.split("/").pop()!.replace(/\.tsx?$/, "");
+      if (aggregates.includes(name)) continue;
+      const source = await Bun.file(`${import.meta.dir}/${file}`).text();
+      const insideCatalogue = file.startsWith("i18n/locales/");
+      for (const aggregate of aggregates) {
+        // Outside the catalogue only a locales/ path counts: some of these names
+        // (channelSync) also belong to unrelated domain modules in src/.
+        const imported = insideCatalogue
+          ? new RegExp(`from "\\./${aggregate}"`).test(source)
+          : new RegExp(`from "[^"]*locales/${aggregate}"`).test(source);
+        expect([file, aggregate, imported]).toEqual([file, aggregate, false]);
+      }
+    }
+  });
+
   test("does not select interface copy with positional language branches", async () => {
     const files = new Bun.Glob("**/*.{ts,tsx}");
     for await (const file of files.scan({ cwd: import.meta.dir })) {

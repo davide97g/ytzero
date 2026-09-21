@@ -2,23 +2,23 @@ import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
 import { surfaceMessagesJa } from "./surfaceMessages.ja";
 import { publicSharingMessagesJa } from "./publicSharing.ja";
-import { feedBuilderMessages } from "./feedBuilder";
-import { dailyRotationMessages } from "./dailyRotation";
-import { discoveryExternalMessages } from "./discoveryExternal";
-import { feedTuningMessages } from "./feedTuning";
-import { clusterMessages } from "./cluster";
-import { notificationMessages } from "./notifications";
+import { feedBuilderMessagesJa } from "./feedBuilder.ja";
+import { dailyRotationMessagesJa } from "./dailyRotation.ja";
+import { discoveryExternalMessagesJa } from "./discoveryExternal.ja";
+import { feedTuningMessagesJa } from "./feedTuning.ja";
+import { clusterMessagesJa } from "./cluster.ja";
+import { notificationMessagesJa } from "./notifications.ja";
 
 export const ja: Locale = {
   messages: {
     ...surfaceMessagesJa,
     ...publicSharingMessagesJa,
-    ...feedBuilderMessages.ja,
-    ...dailyRotationMessages.ja,
-    ...discoveryExternalMessages.ja,
-    ...feedTuningMessages.ja,
-    ...clusterMessages.ja,
-    ...notificationMessages.ja,
+    ...feedBuilderMessagesJa,
+    ...dailyRotationMessagesJa,
+    ...discoveryExternalMessagesJa,
+    ...feedTuningMessagesJa,
+    ...clusterMessagesJa,
+    ...notificationMessagesJa,
     "navToday": "メインページ",
     "navSocial": "社会招聘",
     "navDiscovery": "ディスカバリー",

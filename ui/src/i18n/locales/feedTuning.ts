@@ -1,163 +1,23 @@
-const en = {
-  displayFeedTuning: "Feed tuning",
-  feedTuningHint: "How far into a video counts as watched, and what Main reloads when you refresh it. The same thresholds decide what Continue watching offers and what Recommendations treats as already seen; the recommendation scoring sliders live in Settings → Plugins → Recommendations.",
-  feedCompleteRatio: "Counts as seen at",
-  feedCompleteRatioHint: "Past this point a video leaves Continue watching and never returns to Main, even if you never marked it watched.",
-  feedProgressMinSeconds: "Resume point starts after",
-  feedProgressMinSecondsHint: "Less than this is a glance, not a watch, and leaves no resume point.",
-  feedProgressMinDuration: "Shortest video that can resume",
-  feedProgressMinDurationHint: "Clips under this length are always treated as watched in one go.",
-  feedContinueLimit: "Videos in Continue watching",
-  feedContinueLimitHint: "How many unfinished videos the shelf offers at once.",
-  feedRefreshScope: "Refresh reloads",
-  feedRefreshScopeHint: "What the refresh button on Main rebuilds after fetching new uploads.",
-  feedRefreshScopeVideos: "The video grid",
-  feedRefreshScopeEverything: "The whole page",
-  feedTuningSortHint: "The order Main uses, including right after a refresh.",
-};
+// Aggregate view of the per-language modules. Application code imports the
+// single language it needs; this stays for catalogue tests and tooling.
+import { feedTuningMessagesEn } from "./feedTuning.en";
+import { feedTuningMessagesPl } from "./feedTuning.pl";
+import { feedTuningMessagesDe } from "./feedTuning.de";
+import { feedTuningMessagesFr } from "./feedTuning.fr";
+import { feedTuningMessagesEs } from "./feedTuning.es";
+import { feedTuningMessagesPtBR } from "./feedTuning.pt-BR";
+import { feedTuningMessagesRu } from "./feedTuning.ru";
+import { feedTuningMessagesJa } from "./feedTuning.ja";
+import { feedTuningMessagesHu } from "./feedTuning.hu";
 
-const pl: typeof en = {
-  displayFeedTuning: "Strojenie feedu",
-  feedTuningHint: "Ile filmu liczy się jako obejrzane i co odświeżanie przeładowuje na Głównej. Te same progi decydują, co pokazuje Kontynuuj oglądanie i co Rekomendacje uznają za już widziane; suwaki punktacji rekomendacji są w Ustawienia → Wtyczki → Rekomendacje.",
-  feedCompleteRatio: "Uznaj za obejrzane od",
-  feedCompleteRatioHint: "Po tym punkcie film znika z Kontynuuj oglądanie i nie wraca na Główną, nawet bez oznaczenia jako obejrzany.",
-  feedProgressMinSeconds: "Punkt wznowienia od",
-  feedProgressMinSecondsHint: "Krócej to rzut oka, nie oglądanie — nie zostawia punktu wznowienia.",
-  feedProgressMinDuration: "Najkrótszy film z wznowieniem",
-  feedProgressMinDurationHint: "Krótsze filmy zawsze traktujemy jako obejrzane za jednym razem.",
-  feedContinueLimit: "Filmy w Kontynuuj oglądanie",
-  feedContinueLimitHint: "Ile nieskończonych filmów pokazuje półka naraz.",
-  feedRefreshScope: "Odświeżanie przeładowuje",
-  feedRefreshScopeHint: "Co przycisk odświeżania na Głównej odbudowuje po pobraniu nowych filmów.",
-  feedRefreshScopeVideos: "Siatkę filmów",
-  feedRefreshScopeEverything: "Całą stronę",
-  feedTuningSortHint: "Kolejność na Głównej, także zaraz po odświeżeniu.",
-};
-
-const de: typeof en = {
-  displayFeedTuning: "Feed-Feinabstimmung",
-  feedTuningHint: "Ab wann ein Video als gesehen gilt und was die Startseite beim Aktualisieren neu lädt. Dieselben Schwellen bestimmen, was „Weiterschauen“ anbietet und was Empfehlungen als gesehen behandeln; die Bewertungsregler stehen unter Einstellungen → Plugins → Empfehlungen.",
-  feedCompleteRatio: "Gilt als gesehen ab",
-  feedCompleteRatioHint: "Danach verlässt ein Video „Weiterschauen“ und kehrt nicht mehr in die Startseite zurück, auch ohne Markierung.",
-  feedProgressMinSeconds: "Fortsetzungspunkt ab",
-  feedProgressMinSecondsHint: "Kürzer ist ein Blick, kein Ansehen, und hinterlässt keinen Fortsetzungspunkt.",
-  feedProgressMinDuration: "Kürzestes fortsetzbares Video",
-  feedProgressMinDurationHint: "Kürzere Clips gelten immer als in einem Zug gesehen.",
-  feedContinueLimit: "Videos in „Weiterschauen“",
-  feedContinueLimitHint: "Wie viele unbeendete Videos die Leiste gleichzeitig anbietet.",
-  feedRefreshScope: "Aktualisieren lädt neu",
-  feedRefreshScopeHint: "Was die Aktualisieren-Schaltfläche der Startseite nach dem Abruf neuer Uploads neu aufbaut.",
-  feedRefreshScopeVideos: "Das Videoraster",
-  feedRefreshScopeEverything: "Die ganze Seite",
-  feedTuningSortHint: "Die Reihenfolge der Startseite, auch direkt nach dem Aktualisieren.",
-};
-
-const fr: typeof en = {
-  displayFeedTuning: "Réglage du flux",
-  feedTuningHint: "À partir de quand une vidéo compte comme vue, et ce que l'accueil recharge lors d'une actualisation. Les mêmes seuils décident de ce que propose « Continuer à regarder » et de ce que les recommandations considèrent comme déjà vu ; les curseurs de score sont dans Paramètres → Extensions → Recommandations.",
-  feedCompleteRatio: "Considérée comme vue à",
-  feedCompleteRatioHint: "Au-delà, la vidéo quitte « Continuer à regarder » et ne revient plus dans l'accueil, même sans marquage.",
-  feedProgressMinSeconds: "Point de reprise après",
-  feedProgressMinSecondsHint: "En dessous, c'est un coup d'œil, pas un visionnage : aucun point de reprise.",
-  feedProgressMinDuration: "Vidéo la plus courte reprenable",
-  feedProgressMinDurationHint: "Les vidéos plus courtes sont toujours considérées comme vues d'une traite.",
-  feedContinueLimit: "Vidéos dans « Continuer à regarder »",
-  feedContinueLimitHint: "Combien de vidéos inachevées l'étagère propose à la fois.",
-  feedRefreshScope: "L'actualisation recharge",
-  feedRefreshScopeHint: "Ce que le bouton d'actualisation de l'accueil reconstruit après avoir récupéré les nouvelles vidéos.",
-  feedRefreshScopeVideos: "La grille de vidéos",
-  feedRefreshScopeEverything: "Toute la page",
-  feedTuningSortHint: "L'ordre de l'accueil, y compris juste après une actualisation.",
-};
-
-const es: typeof en = {
-  displayFeedTuning: "Ajuste del feed",
-  feedTuningHint: "A partir de qué punto un vídeo cuenta como visto y qué recarga la portada al actualizar. Los mismos umbrales deciden qué ofrece «Seguir viendo» y qué dan por visto las recomendaciones; los controles de puntuación están en Ajustes → Complementos → Recomendaciones.",
-  feedCompleteRatio: "Cuenta como visto en el",
-  feedCompleteRatioHint: "Pasado ese punto el vídeo sale de «Seguir viendo» y no vuelve a la portada, aunque no lo marques como visto.",
-  feedProgressMinSeconds: "El punto de reanudación empieza tras",
-  feedProgressMinSecondsHint: "Menos que esto es un vistazo, no una visualización, y no deja punto de reanudación.",
-  feedProgressMinDuration: "Vídeo más corto que se puede reanudar",
-  feedProgressMinDurationHint: "Los vídeos más cortos siempre se tratan como vistos de una sentada.",
-  feedContinueLimit: "Vídeos en «Seguir viendo»",
-  feedContinueLimitHint: "Cuántos vídeos sin terminar ofrece la fila a la vez.",
-  feedRefreshScope: "Al actualizar se recarga",
-  feedRefreshScopeHint: "Qué reconstruye el botón de actualizar de la portada tras buscar vídeos nuevos.",
-  feedRefreshScopeVideos: "La cuadrícula de vídeos",
-  feedRefreshScopeEverything: "La página entera",
-  feedTuningSortHint: "El orden de la portada, también justo después de actualizar.",
-};
-
-const ptBR: typeof en = {
-  displayFeedTuning: "Ajuste do feed",
-  feedTuningHint: "A partir de quanto um vídeo conta como assistido e o que a página inicial recarrega ao atualizar. Os mesmos limites decidem o que «Continuar assistindo» oferece e o que as recomendações tratam como já visto; os controles de pontuação ficam em Configurações → Plugins → Recomendações.",
-  feedCompleteRatio: "Conta como assistido em",
-  feedCompleteRatioHint: "Depois disso o vídeo sai de «Continuar assistindo» e não volta à página inicial, mesmo sem marcação.",
-  feedProgressMinSeconds: "Ponto de retomada começa após",
-  feedProgressMinSecondsHint: "Menos que isso é uma olhada, não uma sessão, e não deixa ponto de retomada.",
-  feedProgressMinDuration: "Vídeo mais curto que pode retomar",
-  feedProgressMinDurationHint: "Vídeos mais curtos são sempre tratados como assistidos de uma vez.",
-  feedContinueLimit: "Vídeos em «Continuar assistindo»",
-  feedContinueLimitHint: "Quantos vídeos inacabados a prateleira oferece por vez.",
-  feedRefreshScope: "Atualizar recarrega",
-  feedRefreshScopeHint: "O que o botão de atualizar da página inicial reconstrói depois de buscar novos vídeos.",
-  feedRefreshScopeVideos: "A grade de vídeos",
-  feedRefreshScopeEverything: "A página inteira",
-  feedTuningSortHint: "A ordem da página inicial, inclusive logo após uma atualização.",
-};
-
-const ru: typeof en = {
-  displayFeedTuning: "Настройка ленты",
-  feedTuningHint: "С какого момента видео считается просмотренным и что перезагружает главная при обновлении. Те же пороги определяют, что предлагает «Продолжить просмотр» и что рекомендации считают уже увиденным; ползунки оценки — в Настройки → Плагины → Рекомендации.",
-  feedCompleteRatio: "Считать просмотренным с",
-  feedCompleteRatioHint: "После этого видео уходит из «Продолжить просмотр» и не возвращается в ленту, даже без пометки.",
-  feedProgressMinSeconds: "Точка возобновления после",
-  feedProgressMinSecondsHint: "Меньше — это взгляд, а не просмотр, и точки возобновления не остаётся.",
-  feedProgressMinDuration: "Самое короткое возобновляемое видео",
-  feedProgressMinDurationHint: "Более короткие ролики всегда считаются просмотренными за один раз.",
-  feedContinueLimit: "Видео в «Продолжить просмотр»",
-  feedContinueLimitHint: "Сколько незаконченных видео полка показывает сразу.",
-  feedRefreshScope: "Обновление перезагружает",
-  feedRefreshScopeHint: "Что кнопка обновления на главной перестраивает после загрузки новых видео.",
-  feedRefreshScopeVideos: "Сетку видео",
-  feedRefreshScopeEverything: "Всю страницу",
-  feedTuningSortHint: "Порядок на главной, в том числе сразу после обновления.",
-};
-
-const ja: typeof en = {
-  displayFeedTuning: "フィード調整",
-  feedTuningHint: "どこまで見たら視聴済みとするか、更新時にホームが何を読み直すか。同じしきい値が「続きを見る」の内容と、おすすめが視聴済みとみなす基準を決めます。おすすめのスコア調整は 設定 → プラグイン → おすすめ にあります。",
-  feedCompleteRatio: "視聴済みとみなす位置",
-  feedCompleteRatioHint: "これを超えた動画は「続きを見る」から外れ、視聴済みにしていなくてもホームには戻りません。",
-  feedProgressMinSeconds: "再生位置を記録する最小秒数",
-  feedProgressMinSecondsHint: "これ未満は視聴ではなく一瞥とみなし、再生位置を残しません。",
-  feedProgressMinDuration: "再開できる最短の動画",
-  feedProgressMinDurationHint: "これより短い動画は常に一度で見終えたものとして扱います。",
-  feedContinueLimit: "「続きを見る」の本数",
-  feedContinueLimitHint: "見終えていない動画を一度に何本並べるか。",
-  feedRefreshScope: "更新時に読み直す範囲",
-  feedRefreshScopeHint: "新着を取得したあと、ホームの更新ボタンが何を作り直すか。",
-  feedRefreshScopeVideos: "動画のグリッド",
-  feedRefreshScopeEverything: "ページ全体",
-  feedTuningSortHint: "ホームの並び順。更新直後も同じ順序です。",
-};
-
-const hu: typeof en = {
-  displayFeedTuning: "Hírfolyam hangolása",
-  feedTuningHint: "Meddig kell eljutni ahhoz, hogy egy videó megtekintettnek számítson, és mit tölt újra a főoldal frissítéskor. Ugyanezek a küszöbök döntik el, mit kínál a „Folytatás” és mit tekint az ajánló már látottnak; az ajánló pontozói a Beállítások → Bővítmények → Ajánlások alatt vannak.",
-  feedCompleteRatio: "Megtekintettnek számít ettől",
-  feedCompleteRatioHint: "Ezen túl a videó kikerül a „Folytatás” sorból, és jelölés nélkül sem tér vissza a főoldalra.",
-  feedProgressMinSeconds: "Folytatási pont ennyi után",
-  feedProgressMinSecondsHint: "Ennél kevesebb csak belenézés, nem megtekintés, és nem hagy folytatási pontot.",
-  feedProgressMinDuration: "A legrövidebb folytatható videó",
-  feedProgressMinDurationHint: "A rövidebb videókat mindig egyben megnézettnek tekintjük.",
-  feedContinueLimit: "Videók a „Folytatás” sorban",
-  feedContinueLimitHint: "Hány befejezetlen videót kínál egyszerre a sor.",
-  feedRefreshScope: "A frissítés újratölti",
-  feedRefreshScopeHint: "Mit épít újra a főoldal frissítés gombja az új videók letöltése után.",
-  feedRefreshScopeVideos: "A videórácsot",
-  feedRefreshScopeEverything: "Az egész oldalt",
-  feedTuningSortHint: "A főoldal sorrendje, közvetlenül frissítés után is.",
-};
-
-export const feedTuningMessages = { en, pl, de, fr, es, "pt-BR": ptBR, ru, ja, hu } as const;
+export const feedTuningMessages = {
+  en: feedTuningMessagesEn,
+  pl: feedTuningMessagesPl,
+  de: feedTuningMessagesDe,
+  fr: feedTuningMessagesFr,
+  es: feedTuningMessagesEs,
+  "pt-BR": feedTuningMessagesPtBR,
+  ru: feedTuningMessagesRu,
+  ja: feedTuningMessagesJa,
+  hu: feedTuningMessagesHu,
+} as const;

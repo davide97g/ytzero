@@ -1,0 +1,17 @@
+export const feedTuningMessagesEn = {
+  displayFeedTuning: "Feed tuning",
+  feedTuningHint: "How far into a video counts as watched, and what Main reloads when you refresh it. The same thresholds decide what Continue watching offers and what Recommendations treats as already seen; the recommendation scoring sliders live in Settings → Plugins → Recommendations.",
+  feedCompleteRatio: "Counts as seen at",
+  feedCompleteRatioHint: "Past this point a video leaves Continue watching and never returns to Main, even if you never marked it watched.",
+  feedProgressMinSeconds: "Resume point starts after",
+  feedProgressMinSecondsHint: "Less than this is a glance, not a watch, and leaves no resume point.",
+  feedProgressMinDuration: "Shortest video that can resume",
+  feedProgressMinDurationHint: "Clips under this length are always treated as watched in one go.",
+  feedContinueLimit: "Videos in Continue watching",
+  feedContinueLimitHint: "How many unfinished videos the shelf offers at once.",
+  feedRefreshScope: "Refresh reloads",
+  feedRefreshScopeHint: "What the refresh button on Main rebuilds after fetching new uploads.",
+  feedRefreshScopeVideos: "The video grid",
+  feedRefreshScopeEverything: "The whole page",
+  feedTuningSortHint: "The order Main uses, including right after a refresh.",
+} as const;

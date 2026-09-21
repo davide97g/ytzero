@@ -1,24 +1,24 @@
 import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
-import { featureMessages } from "./featureMessages";
+import { featureMessagesDe } from "./featureMessages.de";
 import { surfaceMessagesDe } from "./surfaceMessages.de";
 import { publicSharingMessagesDe } from "./publicSharing.de";
-import { clusterMessages } from "./cluster";
-import { notificationMessages } from "./notifications";
-import { feedBuilderMessages } from "./feedBuilder";
-import { dailyRotationMessages } from "./dailyRotation";
-import { discoveryExternalMessages } from "./discoveryExternal";
-import { feedTuningMessages } from "./feedTuning";
+import { clusterMessagesDe } from "./cluster.de";
+import { notificationMessagesDe } from "./notifications.de";
+import { feedBuilderMessagesDe } from "./feedBuilder.de";
+import { dailyRotationMessagesDe } from "./dailyRotation.de";
+import { discoveryExternalMessagesDe } from "./discoveryExternal.de";
+import { feedTuningMessagesDe } from "./feedTuning.de";
 export const de: Locale = {
   messages: {
     ...surfaceMessagesDe,
     ...publicSharingMessagesDe,
-    ...clusterMessages.de,
-    ...notificationMessages.de,
-    ...feedBuilderMessages.de,
-    ...dailyRotationMessages.de,
-    ...discoveryExternalMessages.de,
-    ...feedTuningMessages.de,
+    ...clusterMessagesDe,
+    ...notificationMessagesDe,
+    ...feedBuilderMessagesDe,
+    ...dailyRotationMessagesDe,
+    ...discoveryExternalMessagesDe,
+    ...feedTuningMessagesDe,
     navToday: "Start",
     navSocial: "Social",
     navDiscovery: "Entdecken",
@@ -125,7 +125,7 @@ export const de: Locale = {
     socialSettingsHowHint: "Profile dieser Installation können Videos aus der Bibliothek teilen, mit beliebigen Emojis reagieren, sie in lokal gelikten Kommentaren besprechen und Profile mit @Benutzername erwähnen. Administrative Einstellungen gelten für alle, Benachrichtigungen nur für dein Profil.",
     socialResetHint: "Setzt die Standardwerte zurück und entfernt dauerhaft alle Social-Beiträge, Kommentare, Reaktionen, Likes und Erwähnungen.",
     socialResetConfirm: "Social zurücksetzen und alle geteilten Beiträge, Kommentare, Reaktionen, Kommentar-Likes und Erwähnungen aller Profile dauerhaft löschen?",
-    ...featureMessages.de,
+    ...featureMessagesDe,
     insightsEyebrow: "Einblicke ins Sehverhalten",
     insightsTitle: "Puls",
     insightsView: "Ansicht",

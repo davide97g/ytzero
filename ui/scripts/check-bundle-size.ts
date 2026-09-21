@@ -7,7 +7,7 @@ const assets = await readdir(assetsDirectory);
 
 const budgets: Array<{ pattern: RegExp; maximumBytes: number; label: string }> = [
   { pattern: /^index-.*\.js$/, maximumBytes: 100_000, label: "entry JavaScript" },
-  { pattern: /^watch-player-.*\.js$/, maximumBytes: 395_000, label: "watch player" },
+  { pattern: /^watch-player-.*\.js$/, maximumBytes: 275_000, label: "watch player" },
   { pattern: /^watch-controller-.*\.js$/, maximumBytes: 75_000, label: "watch controller" },
   { pattern: /^SettingsPage-.*\.js$/, maximumBytes: 150_000, label: "settings route" },
   { pattern: /^WatchPage-.*\.js$/, maximumBytes: 150_000, label: "watch route" },
@@ -19,7 +19,7 @@ const budgets: Array<{ pattern: RegExp; maximumBytes: number; label: string }> =
 // Everything the document pulls before the app renders: the entry plus every
 // chunk and stylesheet it preloads. A per-chunk budget cannot see this number,
 // which is the one a cold visit actually pays.
-const INITIAL_PAYLOAD_MAX_BYTES = 1_180_000;
+const INITIAL_PAYLOAD_MAX_BYTES = 1_040_000;
 
 const failures: string[] = [];
 for (const budget of budgets) {

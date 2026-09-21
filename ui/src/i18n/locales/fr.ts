@@ -2,23 +2,23 @@ import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
 import { surfaceMessagesFr } from "./surfaceMessages.fr";
 import { publicSharingMessagesFr } from "./publicSharing.fr";
-import { feedBuilderMessages } from "./feedBuilder";
-import { dailyRotationMessages } from "./dailyRotation";
-import { discoveryExternalMessages } from "./discoveryExternal";
-import { feedTuningMessages } from "./feedTuning";
-import { clusterMessages } from "./cluster";
-import { notificationMessages } from "./notifications";
+import { feedBuilderMessagesFr } from "./feedBuilder.fr";
+import { dailyRotationMessagesFr } from "./dailyRotation.fr";
+import { discoveryExternalMessagesFr } from "./discoveryExternal.fr";
+import { feedTuningMessagesFr } from "./feedTuning.fr";
+import { clusterMessagesFr } from "./cluster.fr";
+import { notificationMessagesFr } from "./notifications.fr";
 
 export const fr: Locale = {
   messages: {
     ...surfaceMessagesFr,
     ...publicSharingMessagesFr,
-    ...feedBuilderMessages.fr,
-    ...dailyRotationMessages.fr,
-    ...discoveryExternalMessages.fr,
-    ...feedTuningMessages.fr,
-    ...clusterMessages.fr,
-    ...notificationMessages.fr,
+    ...feedBuilderMessagesFr,
+    ...dailyRotationMessagesFr,
+    ...discoveryExternalMessagesFr,
+    ...feedTuningMessagesFr,
+    ...clusterMessagesFr,
+    ...notificationMessagesFr,
     "navToday": "Accueil",
     "navSocial": "Social",
     "navDiscovery": "Découverte",

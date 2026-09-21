@@ -32,13 +32,16 @@ automation, database, plugins, and backup/restore are collected in
 still consume them only through `useI18n().t(...)`. Locale-specific plural
 forms and time units live in `ui/src/i18n/localeFormats.ts`.
 
-Those two groups are stored one file per language —
-`surfaceMessages.en.ts`, `surfaceMessages.pl.ts`, and so on — because a module
+Every shared catalogue group is stored one file per language —
+`surfaceMessages.en.ts`, `surfaceMessages.pl.ts`, and so on, for
+`surfaceMessages`, `publicSharing`, `cluster`, `notifications`, `feedBuilder`,
+`feedTuning`, `discoveryExternal`, `dailyRotation`, `channelSync`,
+`keyboardShortcuts`, `watchTogether` and `featureMessages` — because a module
 holding every language cannot be tree-shaken: importing it for one language
 ships all nine. Each locale module imports only its own slice, so a visitor
-downloads English plus, on demand, their own language. `surfaceMessages.ts` and
-`publicSharing.ts` remain as aggregate views for catalogue tests and tooling;
-application code must not import them. A non-English slice is type-checked
+downloads English plus, on demand, their own language. Each group keeps an aggregate module as a view for
+catalogue tests and tooling; application code must not import one, and
+`i18nCatalog.test.ts` fails if it does. A non-English slice is type-checked
 against the English one through
 `satisfies Record<keyof typeof surfaceMessagesEn, string>`, which keeps the key
 contract without a runtime dependency. New copy for these groups goes in the

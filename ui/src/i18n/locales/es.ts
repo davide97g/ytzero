@@ -1,24 +1,24 @@
 import { localeFormats } from "../localeFormats";
 import { surfaceMessagesEs } from "./surfaceMessages.es";
 import { publicSharingMessagesEs } from "./publicSharing.es";
-import { feedBuilderMessages } from "./feedBuilder";
-import { dailyRotationMessages } from "./dailyRotation";
-import { discoveryExternalMessages } from "./discoveryExternal";
-import { feedTuningMessages } from "./feedTuning";
-import { clusterMessages } from "./cluster";
-import { notificationMessages } from "./notifications";
+import { feedBuilderMessagesEs } from "./feedBuilder.es";
+import { dailyRotationMessagesEs } from "./dailyRotation.es";
+import { discoveryExternalMessagesEs } from "./discoveryExternal.es";
+import { feedTuningMessagesEs } from "./feedTuning.es";
+import { clusterMessagesEs } from "./cluster.es";
+import { notificationMessagesEs } from "./notifications.es";
 import type { Locale } from "../types";
 
 export const es: Locale = {
   messages: {
     ...surfaceMessagesEs,
     ...publicSharingMessagesEs,
-    ...feedBuilderMessages.es,
-    ...dailyRotationMessages.es,
-    ...discoveryExternalMessages.es,
-    ...feedTuningMessages.es,
-    ...clusterMessages.es,
-    ...notificationMessages.es,
+    ...feedBuilderMessagesEs,
+    ...dailyRotationMessagesEs,
+    ...discoveryExternalMessagesEs,
+    ...feedTuningMessagesEs,
+    ...clusterMessagesEs,
+    ...notificationMessagesEs,
     navToday: "Inicio",
     navSocial: "Social",
     navDiscovery: "Descubrir",

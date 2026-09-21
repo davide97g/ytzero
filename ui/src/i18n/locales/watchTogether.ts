@@ -1,68 +1,11 @@
-const enWatchTogetherMessages = {
-  watchTogetherTitle: "Watch together",
-  watchTogetherAction: "Watch together",
-  watchTogetherHost: "Host",
-  watchTogetherParticipants: "Participants",
-  watchTogetherEmptyChatTitle: "It's quiet here",
-  watchTogetherEmptyChatHint: "Send the first message and react to the video together.",
-  watchTogetherMessagePlaceholder: "Message the room…",
-  watchTogetherSend: "Send",
-  watchTogetherCopyInvite: "Copy invite link",
-  watchTogetherCopied: "Invite link copied",
-  watchTogetherLeave: "Leave room",
-  watchTogetherEnd: "End room",
-  watchTogetherConnecting: "Connecting to the watch room…",
-  watchTogetherConnectionError: "The connection to the watch room was lost.",
-  watchTogetherJoinError: "Could not join the watch room.",
-  watchTogetherStartError: "Could not start a watch room.",
-  watchTogetherHostControls: "The host controls playback for everyone.",
-  watchTogetherClosed: "This watch room has ended.",
-} as const;
-
-type WatchTogetherMessages = {
-  [Key in keyof typeof enWatchTogetherMessages]: string;
-};
+// Aggregate view of the per-language modules. Application code imports the
+// single language it needs; this stays for catalogue tests and tooling.
+import { watchTogetherMessagesEn } from "./watchTogether.en";
+import { watchTogetherMessagesPl } from "./watchTogether.pl";
+import { watchTogetherMessagesDe } from "./watchTogether.de";
 
 export const watchTogetherMessages = {
-  en: enWatchTogetherMessages,
-  pl: {
-    watchTogetherTitle: "Wspólne oglądanie",
-    watchTogetherAction: "Oglądaj wspólnie",
-    watchTogetherHost: "Gospodarz",
-    watchTogetherParticipants: "Uczestnicy",
-    watchTogetherEmptyChatTitle: "Jeszcze tu cicho",
-    watchTogetherEmptyChatHint: "Napisz pierwszą wiadomość i komentujcie film razem.",
-    watchTogetherMessagePlaceholder: "Napisz wiadomość…",
-    watchTogetherSend: "Wyślij",
-    watchTogetherCopyInvite: "Kopiuj link z zaproszeniem",
-    watchTogetherCopied: "Skopiowano link z zaproszeniem",
-    watchTogetherLeave: "Opuść pokój",
-    watchTogetherEnd: "Zakończ pokój",
-    watchTogetherConnecting: "Łączenie z pokojem…",
-    watchTogetherConnectionError: "Utracono połączenie z pokojem wspólnego oglądania.",
-    watchTogetherJoinError: "Nie udało się dołączyć do pokoju.",
-    watchTogetherStartError: "Nie udało się rozpocząć wspólnego oglądania.",
-    watchTogetherHostControls: "Gospodarz steruje odtwarzaniem dla wszystkich.",
-    watchTogetherClosed: "Ten pokój wspólnego oglądania został zakończony.",
-  } satisfies WatchTogetherMessages,
-  de: {
-    watchTogetherTitle: "Gemeinsam ansehen",
-    watchTogetherAction: "Gemeinsam ansehen",
-    watchTogetherHost: "Gastgeber",
-    watchTogetherParticipants: "Teilnehmende",
-    watchTogetherEmptyChatTitle: "Noch ist es ruhig",
-    watchTogetherEmptyChatHint: "Schreibe die erste Nachricht und reagiert gemeinsam auf das Video.",
-    watchTogetherMessagePlaceholder: "Nachricht an den Raum…",
-    watchTogetherSend: "Senden",
-    watchTogetherCopyInvite: "Einladungslink kopieren",
-    watchTogetherCopied: "Einladungslink kopiert",
-    watchTogetherLeave: "Raum verlassen",
-    watchTogetherEnd: "Raum beenden",
-    watchTogetherConnecting: "Verbindung zum Wiedergaberaum wird hergestellt…",
-    watchTogetherConnectionError: "Die Verbindung zum Wiedergaberaum wurde unterbrochen.",
-    watchTogetherJoinError: "Dem Wiedergaberaum konnte nicht beigetreten werden.",
-    watchTogetherStartError: "Ein Wiedergaberaum konnte nicht gestartet werden.",
-    watchTogetherHostControls: "Der Gastgeber steuert die Wiedergabe für alle.",
-    watchTogetherClosed: "Dieser Wiedergaberaum wurde beendet.",
-  } satisfies WatchTogetherMessages,
+  en: watchTogetherMessagesEn,
+  pl: watchTogetherMessagesPl,
+  de: watchTogetherMessagesDe,
 } as const;

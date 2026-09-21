@@ -2,23 +2,23 @@ import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
 import { surfaceMessagesRu } from "./surfaceMessages.ru";
 import { publicSharingMessagesRu } from "./publicSharing.ru";
-import { feedBuilderMessages } from "./feedBuilder";
-import { dailyRotationMessages } from "./dailyRotation";
-import { discoveryExternalMessages } from "./discoveryExternal";
-import { feedTuningMessages } from "./feedTuning";
-import { clusterMessages } from "./cluster";
-import { notificationMessages } from "./notifications";
+import { feedBuilderMessagesRu } from "./feedBuilder.ru";
+import { dailyRotationMessagesRu } from "./dailyRotation.ru";
+import { discoveryExternalMessagesRu } from "./discoveryExternal.ru";
+import { feedTuningMessagesRu } from "./feedTuning.ru";
+import { clusterMessagesRu } from "./cluster.ru";
+import { notificationMessagesRu } from "./notifications.ru";
 
 export const ru: Locale = {
   messages: {
     ...surfaceMessagesRu,
     ...publicSharingMessagesRu,
-    ...feedBuilderMessages.ru,
-    ...dailyRotationMessages.ru,
-    ...discoveryExternalMessages.ru,
-    ...feedTuningMessages.ru,
-    ...clusterMessages.ru,
-    ...notificationMessages.ru,
+    ...feedBuilderMessagesRu,
+    ...dailyRotationMessagesRu,
+    ...discoveryExternalMessagesRu,
+    ...feedTuningMessagesRu,
+    ...clusterMessagesRu,
+    ...notificationMessagesRu,
     "navToday": "Главная",
     "navSocial": "Общение",
     "navDiscovery": "Открытия",

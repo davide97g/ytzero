@@ -2,23 +2,23 @@ import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
 import { surfaceMessagesPtBR } from "./surfaceMessages.pt-BR";
 import { publicSharingMessagesPtBR } from "./publicSharing.pt-BR";
-import { feedBuilderMessages } from "./feedBuilder";
-import { dailyRotationMessages } from "./dailyRotation";
-import { discoveryExternalMessages } from "./discoveryExternal";
-import { feedTuningMessages } from "./feedTuning";
-import { clusterMessages } from "./cluster";
-import { notificationMessages } from "./notifications";
+import { feedBuilderMessagesPtBR } from "./feedBuilder.pt-BR";
+import { dailyRotationMessagesPtBR } from "./dailyRotation.pt-BR";
+import { discoveryExternalMessagesPtBR } from "./discoveryExternal.pt-BR";
+import { feedTuningMessagesPtBR } from "./feedTuning.pt-BR";
+import { clusterMessagesPtBR } from "./cluster.pt-BR";
+import { notificationMessagesPtBR } from "./notifications.pt-BR";
 
 export const ptBR: Locale = {
   messages: {
     ...surfaceMessagesPtBR,
     ...publicSharingMessagesPtBR,
-    ...feedBuilderMessages["pt-BR"],
-    ...dailyRotationMessages["pt-BR"],
-    ...discoveryExternalMessages["pt-BR"],
-    ...feedTuningMessages["pt-BR"],
-    ...clusterMessages["pt-BR"],
-    ...notificationMessages["pt-BR"],
+    ...feedBuilderMessagesPtBR,
+    ...dailyRotationMessagesPtBR,
+    ...discoveryExternalMessagesPtBR,
+    ...feedTuningMessagesPtBR,
+    ...clusterMessagesPtBR,
+    ...notificationMessagesPtBR,
     "navToday": "Principal",
     "navSocial": "Social",
     "navDiscovery": "Descoberta",
