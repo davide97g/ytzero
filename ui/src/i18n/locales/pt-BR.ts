@@ -1,6 +1,7 @@
 import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
-import { surfaceMessages } from "./surfaceMessages";
+import { surfaceMessagesPtBR } from "./surfaceMessages.pt-BR";
+import { publicSharingMessagesPtBR } from "./publicSharing.pt-BR";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
 import { discoveryExternalMessages } from "./discoveryExternal";
@@ -10,7 +11,8 @@ import { notificationMessages } from "./notifications";
 
 export const ptBR: Locale = {
   messages: {
-    ...surfaceMessages["pt-BR"],
+    ...surfaceMessagesPtBR,
+    ...publicSharingMessagesPtBR,
     ...feedBuilderMessages["pt-BR"],
     ...dailyRotationMessages["pt-BR"],
     ...discoveryExternalMessages["pt-BR"],

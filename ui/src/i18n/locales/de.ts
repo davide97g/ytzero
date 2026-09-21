@@ -1,7 +1,8 @@
 import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
 import { featureMessages } from "./featureMessages";
-import { surfaceMessages } from "./surfaceMessages";
+import { surfaceMessagesDe } from "./surfaceMessages.de";
+import { publicSharingMessagesDe } from "./publicSharing.de";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 import { feedBuilderMessages } from "./feedBuilder";
@@ -10,7 +11,8 @@ import { discoveryExternalMessages } from "./discoveryExternal";
 import { feedTuningMessages } from "./feedTuning";
 export const de: Locale = {
   messages: {
-    ...surfaceMessages.de,
+    ...surfaceMessagesDe,
+    ...publicSharingMessagesDe,
     ...clusterMessages.de,
     ...notificationMessages.de,
     ...feedBuilderMessages.de,

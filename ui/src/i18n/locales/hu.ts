@@ -1,6 +1,7 @@
 import { localeFormats } from "../localeFormats";
 import { featureMessages } from "./featureMessages";
-import { surfaceMessages } from "./surfaceMessages";
+import { surfaceMessagesHu } from "./surfaceMessages.hu";
+import { publicSharingMessagesHu } from "./publicSharing.hu";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
 import { discoveryExternalMessages } from "./discoveryExternal";
@@ -11,7 +12,8 @@ import type { Locale } from "../types";
 
 export const hu: Locale = {
   messages: {
-    ...surfaceMessages.hu,
+    ...surfaceMessagesHu,
+    ...publicSharingMessagesHu,
     ...feedBuilderMessages.hu,
     ...dailyRotationMessages.hu,
     ...discoveryExternalMessages.hu,

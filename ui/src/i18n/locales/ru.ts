@@ -1,6 +1,7 @@
 import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
-import { surfaceMessages } from "./surfaceMessages";
+import { surfaceMessagesRu } from "./surfaceMessages.ru";
+import { publicSharingMessagesRu } from "./publicSharing.ru";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
 import { discoveryExternalMessages } from "./discoveryExternal";
@@ -10,7 +11,8 @@ import { notificationMessages } from "./notifications";
 
 export const ru: Locale = {
   messages: {
-    ...surfaceMessages.ru,
+    ...surfaceMessagesRu,
+    ...publicSharingMessagesRu,
     ...feedBuilderMessages.ru,
     ...dailyRotationMessages.ru,
     ...discoveryExternalMessages.ru,

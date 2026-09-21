@@ -28,9 +28,21 @@ supported language has a matching, complete module in `ui/src/i18n/locales/`.
 Feature groups shared by several locale modules are composed through
 `ui/src/i18n/locales/featureMessages.ts`. Messages used by downloads,
 automation, database, plugins, and backup/restore are collected in
-`ui/src/i18n/locales/surfaceMessages.ts`; screens still consume them only
-through `useI18n().t(...)`. Locale-specific plural forms and time units live in
-`ui/src/i18n/localeFormats.ts`.
+`surfaceMessages.*`, and public-sharing copy in `publicSharing.*`; screens
+still consume them only through `useI18n().t(...)`. Locale-specific plural
+forms and time units live in `ui/src/i18n/localeFormats.ts`.
+
+Those two groups are stored one file per language —
+`surfaceMessages.en.ts`, `surfaceMessages.pl.ts`, and so on — because a module
+holding every language cannot be tree-shaken: importing it for one language
+ships all nine. Each locale module imports only its own slice, so a visitor
+downloads English plus, on demand, their own language. `surfaceMessages.ts` and
+`publicSharing.ts` remain as aggregate views for catalogue tests and tooling;
+application code must not import them. A non-English slice is type-checked
+against the English one through
+`satisfies Record<keyof typeof surfaceMessagesEn, string>`, which keeps the key
+contract without a runtime dependency. New copy for these groups goes in the
+per-language files, one entry per language.
 
 The server owns the labels and descriptions returned with download settings
 and plugin manifests. Their source definitions contain English, Polish, and

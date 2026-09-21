@@ -1,6 +1,7 @@
 import { localeFormats } from "../localeFormats";
 import { featureMessages } from "./featureMessages";
-import { surfaceMessages } from "./surfaceMessages";
+import { surfaceMessagesEn } from "./surfaceMessages.en";
+import { publicSharingMessagesEn } from "./publicSharing.en";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 import { feedBuilderMessages } from "./feedBuilder";
@@ -10,7 +11,8 @@ import { feedTuningMessages } from "./feedTuning";
 // English defines the message keys; `pl` and `de` are type-checked against them.
 export const en = {
   messages: {
-    ...surfaceMessages.en,
+    ...surfaceMessagesEn,
+    ...publicSharingMessagesEn,
     ...clusterMessages.en,
     ...notificationMessages.en,
     ...feedBuilderMessages.en,

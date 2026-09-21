@@ -1,7 +1,8 @@
 import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
 import { featureMessages } from "./featureMessages";
-import { surfaceMessages } from "./surfaceMessages";
+import { surfaceMessagesPl } from "./surfaceMessages.pl";
+import { publicSharingMessagesPl } from "./publicSharing.pl";
 import { clusterMessages } from "./cluster";
 import { notificationMessages } from "./notifications";
 import { feedBuilderMessages } from "./feedBuilder";
@@ -10,7 +11,8 @@ import { discoveryExternalMessages } from "./discoveryExternal";
 import { feedTuningMessages } from "./feedTuning";
 export const pl: Locale = {
   messages: {
-    ...surfaceMessages.pl,
+    ...surfaceMessagesPl,
+    ...publicSharingMessagesPl,
     ...clusterMessages.pl,
     ...notificationMessages.pl,
     ...feedBuilderMessages.pl,

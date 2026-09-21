@@ -1,6 +1,7 @@
 import type { Locale } from "../types";
 import { localeFormats } from "../localeFormats";
-import { surfaceMessages } from "./surfaceMessages";
+import { surfaceMessagesFr } from "./surfaceMessages.fr";
+import { publicSharingMessagesFr } from "./publicSharing.fr";
 import { feedBuilderMessages } from "./feedBuilder";
 import { dailyRotationMessages } from "./dailyRotation";
 import { discoveryExternalMessages } from "./discoveryExternal";
@@ -10,7 +11,8 @@ import { notificationMessages } from "./notifications";
 
 export const fr: Locale = {
   messages: {
-    ...surfaceMessages.fr,
+    ...surfaceMessagesFr,
+    ...publicSharingMessagesFr,
     ...feedBuilderMessages.fr,
     ...dailyRotationMessages.fr,
     ...discoveryExternalMessages.fr,
