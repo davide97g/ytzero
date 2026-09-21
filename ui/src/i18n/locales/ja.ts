@@ -36,6 +36,7 @@ export const ja: Locale = {
     "backupRestoreHint": "ポータブルなアーカイブをエクスポートするか、ドライランレビュー後に安全に復元します。",
     "backupRestoreOpen": "バックアップと復元を開く",
     "navInsights": "パルス",
+    "navMore": "その他",
     "bookmarksTitle": "ブックマーク",
     "bookmarksDescription": "残った場所を正確に拾うために十分なコンテキストで時間を節約。",
     "bookmarksGroupBy": "グループ別",

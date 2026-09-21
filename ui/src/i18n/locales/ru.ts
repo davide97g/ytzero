@@ -36,6 +36,7 @@ export const ru: Locale = {
     "backupRestoreHint": "Экспортируйте переносимый архив или безопасно восстановите его после пробной проверки.",
     "backupRestoreOpen": "Открыть резервное копирование",
     "navInsights": "Пульс",
+    "navMore": "Ещё",
     "bookmarksTitle": "Закладки",
     "bookmarksDescription": "Сохранённые моменты с контекстом, чтобы легко продолжить с нужного места.",
     "bookmarksGroupBy": "Группировать по",

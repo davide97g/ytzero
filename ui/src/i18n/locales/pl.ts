@@ -36,6 +36,7 @@ export const pl: Locale = {
     backupRestoreHint: "Wyeksportuj przenośne archiwum lub bezpiecznie przywróć je po podglądzie zmian.",
     backupRestoreOpen: "Otwórz kopie zapasowe",
     navInsights: "Puls",
+    navMore: "Więcej",
     bookmarksTitle: "Zakładki",
     bookmarksDescription: "Zapisane momenty z kontekstem, który pozwala wrócić dokładnie tam, gdzie chcesz.",
     bookmarksGroupBy: "Grupuj według",

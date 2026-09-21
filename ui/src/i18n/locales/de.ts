@@ -36,6 +36,7 @@ export const de: Locale = {
     backupRestoreHint: "Ein portables Archiv exportieren oder nach einer Vorschau sicher wiederherstellen.",
     backupRestoreOpen: "Sichern und wiederherstellen",
     navInsights: "Puls",
+    navMore: "Mehr",
     bookmarksTitle: "Lesezeichen",
     bookmarksDescription: "Gespeicherte Momente mit genügend Kontext, um genau dort weiterzumachen.",
     bookmarksGroupBy: "Gruppieren nach",

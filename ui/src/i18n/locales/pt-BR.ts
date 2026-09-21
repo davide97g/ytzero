@@ -36,6 +36,7 @@ export const ptBR: Locale = {
     "backupRestoreHint": "Exportar um arquivo portátil ou restaurar um com segurança após uma revisão de execução a seco.",
     "backupRestoreOpen": "Abrir backup e restaurar",
     "navInsights": "Pulso",
+    "navMore": "Mais",
     "bookmarksTitle": "Favoritos",
     "bookmarksDescription": "Momentos salvos com contexto suficiente para retomar exactamente de onde parou.",
     "bookmarksGroupBy": "Agrupar por",

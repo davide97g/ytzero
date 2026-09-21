@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import "./ProfileMenu.css";
 import { createPortal } from "react-dom";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Check, ChevronRight, Eraser, EyeOff, Lock, LogOut, Puzzle, Settings, SlidersHorizontal, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Check, Lock, LogOut, Puzzle, Settings, X } from "lucide-react";
 import { api, type AppSettings, type AuthStatus, type Profile, type ProfilePermissions } from "../api";
 import { emit, subscribe } from "../events";
 import { useI18n } from "../i18n";
-import { parseVideoCardSize, persistVideoCardSize } from "../videoCardSize";
-import { Button, IconButton, Menu, MenuItem, MenuSeparator, Popover, ScrollArea, SegmentedControl, SettingRow, SteppedSlider, Switch } from "./ui";
-import NotificationCenter from "./NotificationCenter";
+import { Button, IconButton, Menu, MenuItem, MenuSeparator, Popover, ScrollArea, SettingRow, Switch } from "./ui";
 import Tooltip from "./Tooltip";
 import { ENHANCE_EXTENSION_STATUS } from "../enhanceBridge";
 import { setIncognitoMode } from "../incognitoMode";
@@ -29,22 +27,15 @@ export function ProfileAvatar({ profile, size = 32 }: { profile: Pick<Profile, "
   );
 }
 
-export default function ProfileMenu({ isAdmin, isChildProfile, profilePermissions, feedSort, onFeedSortChange, incognito, onIncognitoChange }: {
+export default function ProfileMenu({ isAdmin, isChildProfile, profilePermissions }: {
   isAdmin: boolean;
   isChildProfile: boolean;
   profilePermissions: ProfilePermissions;
-  feedSort: "published" | "arrival";
-  onFeedSortChange: (next: "published" | "arrival") => void;
-  incognito: boolean;
-  onIncognitoChange: (next: boolean) => void;
 }) {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const location = useLocation();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [open, setOpen] = useState(false);
-  const [cardSizeOpen, setCardSizeOpen] = useState(false);
-  const [cardSize, setCardSize] = useState(248);
   const [pinFor, setPinFor] = useState<Profile | null>(null);
   const [pin, setPin] = useState("");
   const [childLockPin, setChildLockPin] = useState("");
@@ -61,7 +52,6 @@ export default function ProfileMenu({ isAdmin, isChildProfile, profilePermission
     api.authStatus().then(setAuth).catch(() => {});
     api.childLock().then((r) => setChildLockEnabled(r.child_lock.enabled)).catch(() => {});
     api.settings().then((r) => {
-      setCardSize(parseVideoCardSize(r.settings.grid_size));
       setEnhanceEnabled(r.settings.enhance_enabled !== "0");
       setEnhanceReplaceControls(r.settings.enhance_replace_controls !== "0");
     }).catch(() => {});
@@ -73,7 +63,6 @@ export default function ProfileMenu({ isAdmin, isChildProfile, profilePermission
   // Until auth status is known, expose only the active profile. This avoids a
   // brief flash of other profile names when the administrator hid the list.
   const pickerProfiles = auth && !auth.hide_other_profiles ? profiles : profiles.filter((profile) => profile.active);
-  const cardSizeSteps = [180, 220, 260, 300, 372, 480] as const;
   // Leaving a child profile is gated by the app-wide child lock PIN.
   const needsChildLock = Boolean(active?.is_child && childLockEnabled);
   const canManageArea = (area: ProfilePermissions["admin_only_areas"][number]) => isAdmin || !profilePermissions.admin_only_areas.includes(area);
@@ -154,7 +143,7 @@ export default function ProfileMenu({ isAdmin, isChildProfile, profilePermission
         surface="menu"
         rootClassName="profile-picker-anchor"
         open={open}
-        onOpenChange={(next) => { setOpen(next); if (!next) setCardSizeOpen(false); }}
+        onOpenChange={setOpen}
         className="profile-picker-popover"
         trigger={<Button variant="ghost" iconOnly className="profile-trigger" aria-label={t("profiles")}>
         <ProfileAvatar profile={active} size={32} />
@@ -228,58 +217,6 @@ export default function ProfileMenu({ isAdmin, isChildProfile, profilePermission
         </Popover>
         <span className="profile-enhance-extension-badge" aria-hidden="true" />
       </div>}
-      <div className="profile-card-size-wrap">
-        <Popover
-          open={cardSizeOpen}
-          onOpenChange={setCardSizeOpen}
-          align="end"
-          title={t("videoCardSize")}
-          className="profile-card-size-popover"
-          trigger={<IconButton variant="ghost" size="sm" className="profile-card-size-trigger" label={t("videoCardSize")} icon={<SlidersHorizontal />} />}
-        >
-          {canManageArea("appearance") && <SteppedSlider value={cardSize} steps={cardSizeSteps} ariaLabel={t("videoCardSize")} onChange={(next) => {
-            setCardSize(next);
-            persistVideoCardSize(next);
-          }} />}
-          {location.pathname === "/" && (
-            <>
-              {canManageArea("appearance") && <MenuSeparator />}
-              <SettingRow label={t("feedSortLabel")} className="profile-feed-sort-row">
-                <SegmentedControl
-                  className="profile-feed-sort-control"
-                  value={feedSort}
-                  onChange={onFeedSortChange}
-                  label={t("feedSortLabel")}
-                  options={[
-                    { value: "published", label: t("feedSortUploaded") },
-                    { value: "arrival", label: t("feedSortFound") },
-                  ]}
-                />
-              </SettingRow>
-            </>
-          )}
-          {!isChildProfile && (
-            <>
-              <MenuSeparator />
-              <SettingRow
-                label={t("incognitoMode")}
-                description={t("incognitoModeHint")}
-                className={`profile-incognito-row${incognito ? " profile-incognito-row--active" : ""}`}
-              >
-                <span className="profile-incognito-control">
-                  <EyeOff size={17} aria-hidden="true" />
-                  <Switch checked={incognito} ariaLabel={t("incognitoMode")} onCheckedChange={onIncognitoChange} />
-                </span>
-              </SettingRow>
-            </>
-          )}
-          <MenuSeparator />
-          <Menu>
-            <MenuItem icon={<Eraser size={16} />} suffix={<ChevronRight size={15} className="cleanup-menu-item-chevron" />} onClick={() => { setCardSizeOpen(false); navigate("/cleanup"); }}>{t("cleanupFeed")}</MenuItem>
-          </Menu>
-        </Popover>
-      </div>
-      <NotificationCenter />
 
       {reloginFor && createPortal(
         <div className="profile-pin-backdrop" onClick={() => setReloginFor(null)}>

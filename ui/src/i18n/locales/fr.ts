@@ -36,6 +36,7 @@ export const fr: Locale = {
     "backupRestoreHint": "Exportez une archive portable ou restaurez-en une en toute sécurité après une simulation.",
     "backupRestoreOpen": "Ouvrir la sauvegarde et la restauration",
     "navInsights": "Pulse",
+    "navMore": "Plus",
     "bookmarksTitle": "Signets",
     "bookmarksDescription": "Moments enregistrés avec assez de contexte pour reprendre exactement là où vous vous étiez arrêté.",
     "bookmarksGroupBy": "Regrouper par",

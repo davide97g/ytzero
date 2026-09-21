@@ -237,9 +237,14 @@
 .child-watching-collapsed-copy small { color: var(--text-3); font-size: 9.5px; }
 .child-watching-collapsed > .child-watching-pulse { margin-left: 2px; }
 
+@media (max-width: 760px) {
+  body:not(.sidebar-hidden) .child-watching-monitor,
+  body:not(.sidebar-hidden) .child-watching-collapsed { display: none; }
+}
+
 @media (max-width: 600px) {
-  .child-watching-monitor { left: 8px; bottom: 8px; width: calc(100vw - 16px); }
-  .child-watching-collapsed { left: 10px; bottom: 10px; }
+  .child-watching-monitor { left: 8px; bottom: calc(8px + var(--mobile-tabbar-h) + var(--safe-bottom)); width: calc(100vw - 16px); }
+  .child-watching-collapsed { left: 10px; bottom: calc(10px + var(--mobile-tabbar-h) + var(--safe-bottom)); }
   .child-watching-card { padding: 10px; }
   .child-watching-video { grid-template-columns: 84px minmax(0, 1fr); }
   .child-watching-thumb { width: 84px; }

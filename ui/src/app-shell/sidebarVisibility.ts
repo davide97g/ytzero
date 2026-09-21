@@ -1,13 +1,16 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 const SIDEBAR_KEY = "sidebar_open";
 export const MOBILE_SIDEBAR_QUERY = "(max-width: 760px)";
 
 export const resolveSidebarHidden = (isMobile: boolean, storedPreference: string | null): boolean => isMobile || storedPreference === "0";
 
+function isMobileViewport(): boolean {
+  return window.matchMedia(MOBILE_SIDEBAR_QUERY).matches;
+}
+
 function syncSidebarVisibility(): void {
-  const isMobile = window.matchMedia(MOBILE_SIDEBAR_QUERY).matches;
-  document.body.classList.toggle("sidebar-hidden", resolveSidebarHidden(isMobile, localStorage.getItem(SIDEBAR_KEY)));
+  document.body.classList.toggle("sidebar-hidden", resolveSidebarHidden(isMobileViewport(), localStorage.getItem(SIDEBAR_KEY)));
 }
 export function restoreSidebarVisibility(): void {
   document.body.classList.remove("cinema");
@@ -15,7 +18,21 @@ export function restoreSidebarVisibility(): void {
 }
 export function toggleSidebar() {
   const hidden = document.body.classList.toggle("sidebar-hidden");
-  if (!window.matchMedia(MOBILE_SIDEBAR_QUERY).matches) localStorage.setItem(SIDEBAR_KEY, hidden ? "0" : "1");
+  if (!isMobileViewport()) localStorage.setItem(SIDEBAR_KEY, hidden ? "0" : "1");
+}
+export function setMobileSidebarOpen(open: boolean) {
+  if (!isMobileViewport()) return;
+  document.body.classList.toggle("sidebar-hidden", !open);
+}
+export function useMobileChrome(): boolean {
+  const [mobile, setMobile] = useState(() => isMobileViewport());
+  useEffect(() => {
+    const media = window.matchMedia(MOBILE_SIDEBAR_QUERY);
+    const onChange = () => setMobile(media.matches);
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+  return mobile;
 }
 export function useSidebarVisibility(pathname: string) {
   useLayoutEffect(() => {
@@ -25,6 +42,6 @@ export function useSidebarVisibility(pathname: string) {
     return () => media.removeEventListener("change", syncSidebarVisibility);
   }, []);
   useEffect(() => {
-    if (window.matchMedia(MOBILE_SIDEBAR_QUERY).matches) document.body.classList.add("sidebar-hidden");
+    if (isMobileViewport()) document.body.classList.add("sidebar-hidden");
   }, [pathname]);
 }

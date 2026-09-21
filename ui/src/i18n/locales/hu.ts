@@ -37,6 +37,7 @@ export const hu: Locale = {
     backupRestoreHint: "Exportálj egy hordozható archívumot, vagy állítsd vissza azt biztonságosan egy áttekintés után.",
     backupRestoreOpen: "Mentés és visszaállítás megnyitása",
     navInsights: "Impulzus",
+    navMore: "Több",
     bookmarksTitle: "Könyvjelzők",
     bookmarksDescription: "Elmentett pillanatok, amelyekhez elegendő kontextus tartozik ahhoz, hogy pontosan ott folytathasd, ahol abbahagytad.",
     bookmarksGroupBy: "Csoportosítás",

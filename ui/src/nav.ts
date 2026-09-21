@@ -84,3 +84,24 @@ export function splitNavItems(config: NavConfigEntry[]): { visible: NavItem[]; h
   }
   return { visible, hidden };
 }
+
+/** Primary tab slots on the mobile footer. Overflow plus library surfaces live under More. */
+export const MOBILE_TAB_COUNT = 4;
+
+const MOBILE_MORE_PREFIXES = ["/channel", "/subscriptions", "/playlists", "/playlist", "/cleanup", "/import", "/restore"];
+
+export function splitMobileNavItems(visible: NavItem[]): { tabs: NavItem[]; overflow: NavItem[] } {
+  if (visible.length <= MOBILE_TAB_COUNT) return { tabs: visible, overflow: [] };
+  return { tabs: visible.slice(0, MOBILE_TAB_COUNT), overflow: visible.slice(MOBILE_TAB_COUNT) };
+}
+
+export function isNavItemActive(item: NavItem, pathname: string): boolean {
+  if (item.end) return pathname === item.to;
+  return pathname === item.to || pathname.startsWith(`${item.to}/`);
+}
+
+export function isMobileMoreActive(tabs: NavItem[], overflow: NavItem[], hidden: NavItem[], pathname: string): boolean {
+  if (tabs.some((item) => isNavItemActive(item, pathname))) return false;
+  if ([...overflow, ...hidden].some((item) => isNavItemActive(item, pathname))) return true;
+  return MOBILE_MORE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}

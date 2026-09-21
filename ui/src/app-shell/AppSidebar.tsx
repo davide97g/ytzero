@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { AlertTriangle, Check, ChevronDown, Download } from "lucide-react";
 import type { DownloadSummary } from "../api";
@@ -15,6 +15,8 @@ type AppSidebarProps = {
   liveCount: number;
   navItems: NavItem[];
   newCompletedDownloads: number;
+  tools?: ReactNode;
+  onClose?: () => void;
 };
 
 export default function AppSidebar({
@@ -23,6 +25,8 @@ export default function AppSidebar({
   liveCount,
   navItems,
   newCompletedDownloads,
+  tools,
+  onClose,
 }: AppSidebarProps) {
   const { t } = useI18n();
   const [showHidden, setShowHidden] = useState(false);
@@ -68,7 +72,13 @@ export default function AppSidebar({
 
   return (
     <>
-      <aside className="sidebar">
+      <aside className="sidebar" aria-label={t("Menu")}>
+        {tools && (
+          <div className="sidebar-sheet-chrome">
+            <div className="sidebar-sheet-handle" aria-hidden="true" />
+            {tools}
+          </div>
+        )}
         {navItems.map(renderNavLink)}
         {hiddenNavItems.length > 0 && (
           <>
@@ -90,7 +100,10 @@ export default function AppSidebar({
         type="button"
         className="sidebar-backdrop"
         aria-label={t("close")}
-        onClick={() => document.body.classList.add("sidebar-hidden")}
+        onClick={() => {
+          document.body.classList.add("sidebar-hidden");
+          onClose?.();
+        }}
       />
     </>
   );

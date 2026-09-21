@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { type Video } from "../api";
 import AppRoutes from "../AppRoutes";
@@ -8,18 +8,20 @@ import SunBackdrop from "../components/SunBackdrop";
 import { Toast } from "../components/ui";
 import { DeArrowProvider } from "../dearrow";
 import { ENHANCE_CONFIGURATION_ELEMENT_ID, serializeEnhanceConfiguration } from "../enhanceBridge";
-import { splitNavItems } from "../nav";
+import { isMobileMoreActive, splitMobileNavItems, splitNavItems } from "../nav";
 import type { PlaybackQueueContext } from "../playbackQueue";
 import { AppNameContext } from "../useDocumentTitle";
 import AppBootstrap from "./AppBootstrap";
 import AppSidebar from "./AppSidebar";
 import AppTopBar from "./AppTopBar";
+import ChromeTools from "./ChromeTools";
+import MobileTabBar from "./MobileTabBar";
 import { useAppPreferences } from "./useAppPreferences";
 import { useAppToast } from "./useAppToast";
 import { useNavigationActivity } from "./useNavigationActivity";
 import { usePluginRoutes } from "./usePluginRoutes";
 import { useProfileSession } from "./useProfileSession";
-import { useSidebarVisibility } from "./sidebarVisibility";
+import { setMobileSidebarOpen, useMobileChrome, useSidebarVisibility } from "./sidebarVisibility";
 import { useI18n } from "../i18n";
 import { createWatchRoutePreview } from "../pages/watchRuntime";
 import "../AppShell.css";
@@ -33,8 +35,25 @@ export default function AppShell({ isAdmin }: { isAdmin: boolean }) {
   const profile = useProfileSession();
   const activity = useNavigationActivity();
   const { showToast, toast } = useAppToast();
+  const mobile = useMobileChrome();
+  const [moreOpen, setMoreOpen] = useState(false);
 
   useSidebarVisibility(location.pathname);
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [location.pathname, mobile]);
+
+  const closeMore = useCallback(() => {
+    setMoreOpen(false);
+    setMobileSidebarOpen(false);
+  }, []);
+  const toggleMore = useCallback(() => {
+    setMoreOpen((open) => {
+      const next = !open;
+      setMobileSidebarOpen(next);
+      return next;
+    });
+  }, []);
 
   const play = useCallback((video: Video, playbackQueue?: PlaybackQueueContext) => navigate(
     `/watch/${video.video_id}`,
@@ -55,6 +74,18 @@ export default function AppShell({ isAdmin }: { isAdmin: boolean }) {
   const shortsRouteVisible = (path: string) => shortsEnabled || path !== "/shorts";
   const navItems = allNavItems.filter((item) => pluginRouteVisible(item.to) && childRouteVisible(item.to) && shortsRouteVisible(item.to));
   const hiddenNavItems = allHiddenNavItems.filter((item) => pluginRouteVisible(item.to) && childRouteVisible(item.to) && shortsRouteVisible(item.to));
+  const { tabs: mobileTabs, overflow: mobileOverflow } = splitMobileNavItems(navItems);
+  const chromeTools = (
+    <ChromeTools
+      isAdmin={isAdmin}
+      isChildProfile={profile.childStatus?.is_child === true}
+      profilePermissions={preferences.profilePermissions}
+      feedSort={preferences.feedSort}
+      onFeedSortChange={preferences.changeFeedSort}
+      incognito={profile.incognito}
+      onIncognitoChange={profile.changeIncognito}
+    />
+  );
 
   return (
     <AppNameContext.Provider value={preferences.appName}>
@@ -75,18 +106,19 @@ export default function AppShell({ isAdmin }: { isAdmin: boolean }) {
             isAdmin={isAdmin}
             isChildProfile={profile.childStatus?.is_child === true}
             profilePermissions={preferences.profilePermissions}
-            feedSort={preferences.feedSort}
-            onFeedSortChange={preferences.changeFeedSort}
             incognito={profile.incognito}
-            onIncognitoChange={profile.changeIncognito}
+            showSidebarToggle={!mobile}
+            tools={mobile ? null : chromeTools}
           />
           <div className="layout-body">
             <AppSidebar
               downloadSummary={activity.downloadSummary}
-              hiddenNavItems={hiddenNavItems}
+              hiddenNavItems={mobile ? [] : hiddenNavItems}
               liveCount={activity.liveCount}
-              navItems={navItems}
+              navItems={mobile ? [...mobileOverflow, ...hiddenNavItems] : navItems}
               newCompletedDownloads={activity.newCompletedDownloads}
+              tools={mobile ? chromeTools : undefined}
+              onClose={closeMore}
             />
             <main className="main">
               <div className="content">
@@ -104,6 +136,17 @@ export default function AppShell({ isAdmin }: { isAdmin: boolean }) {
               </div>
             </main>
           </div>
+          {mobile && (
+            <MobileTabBar
+              tabs={mobileTabs}
+              moreActive={isMobileMoreActive(mobileTabs, mobileOverflow, hiddenNavItems, location.pathname)}
+              moreOpen={moreOpen}
+              onMore={toggleMore}
+              liveCount={activity.liveCount}
+              downloadSummary={activity.downloadSummary}
+              newCompletedDownloads={activity.newCompletedDownloads}
+            />
+          )}
           {toast && <Toast message={toast.message} variant={toast.variant} />}
           {preferences.appSettings && preferences.appSettings.child_watching_monitor_enabled !== "0" && <ChildNowWatching />}
           {profile.childStatus?.locked && <ChildLockScreen status={profile.childStatus} />}

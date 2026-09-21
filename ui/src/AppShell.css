@@ -61,31 +61,36 @@ body.sidebar-hidden .sidebar { width: 0; padding: 0; }
   .sidebar,
   body.sidebar-hidden .sidebar {
     position: fixed;
-    top: calc(var(--topbar-h) + var(--safe-top));
+    top: auto;
+    bottom: calc(var(--mobile-tabbar-h) + var(--safe-bottom));
     left: 0;
+    right: 0;
     z-index: 46;
-    width: min(286px, calc(100vw - 42px));
-    height: calc(100dvh - var(--topbar-h) - var(--safe-top));
-    padding: 10px 10px calc(20px + var(--safe-bottom)) calc(10px + var(--safe-left));
-    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    width: 100%;
+    max-width: none;
+    height: min(78dvh, calc(100dvh - var(--topbar-h) - var(--safe-top) - var(--mobile-tabbar-h) - var(--safe-bottom)));
+    overscroll-behavior: contain;
+    padding: 0 calc(10px + var(--safe-right)) 16px calc(10px + var(--safe-left));
+    background: color-mix(in srgb, var(--bg) 96%, transparent);
     backdrop-filter: blur(18px);
-    box-shadow: 14px 0 34px rgba(0, 0, 0, 0.42);
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.45);
     opacity: 1;
     visibility: visible;
-    transform: translateX(0);
+    transform: translateY(0);
     transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), opacity 160ms ease, visibility 0s;
   }
   body.sidebar-hidden .sidebar {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translateX(calc(-100% - var(--safe-left)));
+    transform: translateY(calc(100% + var(--mobile-tabbar-h) + var(--safe-bottom)));
     transition: transform 180ms ease, opacity 140ms ease, visibility 0s linear 180ms;
   }
   .sidebar-backdrop {
     display: block;
     position: fixed;
-    inset: calc(var(--topbar-h) + var(--safe-top)) 0 0;
+    inset: 0 0 calc(var(--mobile-tabbar-h) + var(--safe-bottom));
     z-index: 45;
     padding: 0;
     border: 0;
@@ -101,7 +106,40 @@ body.sidebar-hidden .sidebar { width: 0; padding: 0; }
     pointer-events: none;
     transition: opacity 140ms ease, visibility 0s linear 140ms;
   }
+  .sidebar-sheet-chrome {
+    background: color-mix(in srgb, var(--bg) 96%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 calc(-10px - var(--safe-right)) 6px calc(-10px - var(--safe-left));
+    padding: 8px calc(12px + var(--safe-right)) 10px calc(12px + var(--safe-left));
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  .sidebar-sheet-handle {
+    align-self: center;
+    background: var(--surface-3);
+    border-radius: 99px;
+    height: 4px;
+    width: 36px;
+  }
+  .sidebar-sheet-chrome .chrome-tools { justify-content: flex-end; }
   .topbar-logo .logo-text { display: none; }
+  .sidebar-toggle-btn { display: none; }
+  .search-wrap {
+    flex: 1;
+    height: 40px;
+    margin-inline: 0;
+    max-width: none;
+    width: auto;
+  }
+  .search-wrap input {
+    font-size: 16px;
+    padding-inline: 14px;
+  }
+  .search-btn { width: 48px; }
+  .profile-enhance-extension[data-extension-status="active"] { display: none; }
 }
 
 .logo-mark {
@@ -455,7 +493,7 @@ body.sidebar-hidden .sidebar { width: 0; padding: 0; }
 }
 /* ---------- main & topbar ---------- */
 .main { flex: 1; min-width: 0; overflow-x: clip; }
-.content { padding: 18px calc(32px + var(--safe-right)) calc(80px + var(--safe-bottom)) calc(32px + var(--safe-left)); }
+.content { padding: 18px calc(32px + var(--safe-right)) calc(80px + var(--safe-bottom) + var(--mobile-tabbar-h)) calc(32px + var(--safe-left)); }
 
 .topbar {
   position: sticky;
@@ -477,7 +515,7 @@ body.sidebar-hidden .sidebar { width: 0; padding: 0; }
    the bar's height, so retracting it would open a gap beside the rail. */
 @media (max-width: 760px) {
   .topbar--retracted { transform: translateY(calc(-100% - 4px)); }
-  /* The navigation drawer sits directly under the bar — keep them together. */
+  /* The library sheet sits over the feed — keep the bar put while it is open. */
   body:not(.sidebar-hidden) .topbar--retracted { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -693,7 +731,7 @@ body.cinema .topbar.topbar--solid {
 
 @media (max-width: 760px) {
   .content {
-    padding: 12px calc(8px + var(--safe-right)) calc(60px + var(--safe-bottom)) calc(8px + var(--safe-left));
+    padding: 12px calc(8px + var(--safe-right)) calc(16px + var(--safe-bottom) + var(--mobile-tabbar-h)) calc(8px + var(--safe-left));
   }
 }
 

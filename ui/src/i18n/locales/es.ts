@@ -36,6 +36,7 @@ export const es: Locale = {
     backupRestoreHint: "Exporta un archivo portable o restaura uno de forma segura tras revisar la simulación.",
     backupRestoreOpen: "Abrir copia de seguridad y restauración",
     navInsights: "Pulso",
+    navMore: "Más",
     bookmarksTitle: "Marcadores",
     bookmarksDescription: "Momentos guardados con contexto suficiente para retomarlos justo donde los dejaste.",
     bookmarksGroupBy: "Agrupar por",

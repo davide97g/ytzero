@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { NAV_ITEMS, parseNavConfig, splitNavItems } from "./nav";
+import { NAV_ITEMS, isMobileMoreActive, isNavItemActive, parseNavConfig, splitMobileNavItems, splitNavItems } from "./nav";
 
 describe("recommendations navigation", () => {
   test("uses the first-class recommendations route", () => {
@@ -62,5 +62,39 @@ describe("recommendations navigation", () => {
     expect(split.visible.some((item) => item.to === "/history")).toBe(false);
     expect(split.hidden.some((item) => item.to === "/history")).toBe(false);
     expect(parsed.find((entry) => entry.key === "/history")?.disabled).toBe(true);
+  });
+});
+
+describe("mobile footer navigation", () => {
+  test("keeps four or fewer visible items on the tab bar", () => {
+    const items = NAV_ITEMS.slice(0, 3);
+    expect(splitMobileNavItems(items)).toEqual({ tabs: items, overflow: [] });
+  });
+
+  test("pins the first four visible items and sends the rest to More", () => {
+    const items = NAV_ITEMS.slice(0, 6);
+    expect(splitMobileNavItems(items)).toEqual({
+      tabs: items.slice(0, 4),
+      overflow: items.slice(4),
+    });
+  });
+
+  test("treats exact home matches as active only for the Main tab", () => {
+    const home = NAV_ITEMS[0];
+    expect(isNavItemActive(home, "/")).toBe(true);
+    expect(isNavItemActive(home, "/history")).toBe(false);
+  });
+
+  test("highlights More on overflow, hidden, and library destinations", () => {
+    const byPath = (path: string) => NAV_ITEMS.find((item) => item.to === path)!;
+    const tabs = [byPath("/"), byPath("/social"), byPath("/downloads"), byPath("/settings")];
+    const overflow = [byPath("/history")];
+    const hidden = [byPath("/recommendations")];
+    expect(isMobileMoreActive(tabs, overflow, hidden, "/")).toBe(false);
+    expect(isMobileMoreActive(tabs, overflow, hidden, "/history")).toBe(true);
+    expect(isMobileMoreActive(tabs, overflow, hidden, "/recommendations")).toBe(true);
+    expect(isMobileMoreActive(tabs, overflow, hidden, "/channel/abc")).toBe(true);
+    expect(isMobileMoreActive(tabs, overflow, hidden, "/watch/abc")).toBe(false);
+    expect(isMobileMoreActive(tabs, overflow, hidden, "/search")).toBe(false);
   });
 });

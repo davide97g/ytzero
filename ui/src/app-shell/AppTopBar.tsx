@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Menu, Play, RefreshCw, Search } from "lucide-react";
 import type { ProfilePermissions } from "../api";
@@ -7,7 +7,6 @@ import ProfileMenu from "../components/ProfileMenu";
 import { useI18n } from "../i18n";
 import { toggleSidebar } from "./sidebarVisibility";
 import { useTopbarScrollHidden } from "./topbarScrollVisibility";
-import SessionPlayQueueMenu from "./SessionPlayQueueMenu";
 
 function SpyLogo() {
   return (
@@ -29,10 +28,9 @@ type AppTopBarProps = {
   isAdmin: boolean;
   isChildProfile: boolean;
   profilePermissions: ProfilePermissions;
-  feedSort: "published" | "arrival";
-  onFeedSortChange: (next: "published" | "arrival") => void;
   incognito: boolean;
-  onIncognitoChange: (next: boolean) => void;
+  showSidebarToggle: boolean;
+  tools: ReactNode;
 };
 
 export default function AppTopBar({
@@ -41,10 +39,9 @@ export default function AppTopBar({
   isAdmin,
   isChildProfile,
   profilePermissions,
-  feedSort,
-  onFeedSortChange,
   incognito,
-  onIncognitoChange,
+  showSidebarToggle,
+  tools,
 }: AppTopBarProps) {
   const { t } = useI18n();
   const navigate = useNavigate();
@@ -109,9 +106,11 @@ export default function AppTopBar({
       className={`topbar${solid ? " topbar--solid" : ""}${incognito ? " topbar--incognito" : ""}${feedRefreshing ? " topbar--feed-refreshing" : ""}${scrolledAway && !feedRefreshing ? " topbar--retracted" : ""}`}
       aria-busy={feedRefreshing}
     >
-      <button className="sidebar-toggle-btn" aria-label={t("Menu")} onClick={toggleSidebar}>
-        <Menu size={20} />
-      </button>
+      {showSidebarToggle && (
+        <button className="sidebar-toggle-btn" aria-label={t("Menu")} onClick={toggleSidebar}>
+          <Menu size={20} />
+        </button>
+      )}
       <Link
         to="/"
         className="topbar-logo"
@@ -149,15 +148,11 @@ export default function AppTopBar({
           <Search />
         </button>
       </form>
-      <SessionPlayQueueMenu />
+      {tools}
       <ProfileMenu
         isAdmin={isAdmin}
         isChildProfile={isChildProfile}
         profilePermissions={profilePermissions}
-        feedSort={feedSort}
-        onFeedSortChange={onFeedSortChange}
-        incognito={incognito}
-        onIncognitoChange={onIncognitoChange}
       />
     </div>
   );

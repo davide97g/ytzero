@@ -36,6 +36,7 @@ export const en = {
     backupRestoreHint: "Export a portable archive or safely restore one after a dry-run review.",
     backupRestoreOpen: "Open backup and restore",
     navInsights: "Pulse",
+    navMore: "More",
     bookmarksTitle: "Bookmarks",
     bookmarksDescription: "Saved moments with enough context to pick up exactly where you left off.",
     bookmarksGroupBy: "Group by",

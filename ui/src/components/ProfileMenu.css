@@ -77,7 +77,7 @@
   opacity: 1;
   transform: scale(1);
 }
-.ui-popover__content.profile-card-size-popover { min-width: min(220px, calc(100vw - 24px)); }
+.ui-floating-popover__content.profile-card-size-popover { min-width: min(220px, calc(100vw - 24px)); }
 .profile-card-size-popover > .stepped-slider { margin-bottom: 10px; }
 .profile-card-size-popover .ui-popover__title,
 .profile-feed-sort-row .ui-control-label {
