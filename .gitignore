@@ -14,3 +14,5 @@ data/
 !.env.example
 # Neutralizes a developer's own .env for the test suite; belongs in the repo.
 !.env.test
+
+**/continual-learning-index.json

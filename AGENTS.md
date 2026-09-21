@@ -35,3 +35,14 @@
 ## Verification commands
 
 - Never run `bun run check:precommit`, `bun run check:validate`, or an equivalent command that executes the entire precommit validation chain. These commands are reserved for the repository owner. Run only the specific tests, typechecks, builds, or validation scripts needed for the current change.
+
+## Learned User Preferences
+
+- Keep this fork homelab-only: do not add or restore Heroku, Railway, Render, DigitalOcean, Fly, Unraid, Proxmox, native installers, GHCR publish, or other one-click cloud packaging.
+- On mobile (max-width 760px), use a bottom tab bar with a More sheet; keep the top bar as search plus profile only, without the hamburger drawer or header tool icons.
+
+## Learned Workspace Facts
+
+- Production is Dokploy on a mini PC. A green push to `main` rebuilds this repo's `Dockerfile`; PRs, local commits, and `workflow_dispatch` do not deploy. Dokploy auto-deploy is off.
+- Live instance is https://ytzero.davideghiotto.it. Local Docker builds from source with `docker compose up --build -d`, not the upstream GHCR image.
+- Origin is https://github.com/davide97g/ytzero (standalone, not a GitHub fork). `upstream` remains https://github.com/Pelski/ytzero for pulling original changes.
