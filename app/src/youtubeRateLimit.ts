@@ -72,6 +72,17 @@ export class YouTubeRefusalGate {
   }
 
   releaseProbe(): void { this.probing = false; }
+
+  /** Drops refusal state without the lifted log. The gate is process-wide, so
+   * a test that drove it into a refusal would otherwise pause YouTube lookups
+   * for every test that runs after it. */
+  reset(): void {
+    this.consecutive = 0;
+    this.retryAt = 0;
+    this.probing = false;
+    this.activeSince = 0;
+  }
+
   nextRetryAt(): number { return this.retryAt; }
 }
 
