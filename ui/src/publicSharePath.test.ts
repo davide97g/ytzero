@@ -11,8 +11,9 @@ describe("public share bootstrap boundary", () => {
   });
 
   test("selects a supported browser language and falls back to English", () => {
-    expect(browserLanguage(["pl-PL", "en-US"])).toBe("pl");
-    expect(browserLanguage(["pt-PT"])).toBe("pt-BR");
+    expect(browserLanguage(["it-IT", "en-US"])).toBe("it");
+    expect(browserLanguage(["it-CH"])).toBe("it");
+    expect(browserLanguage(["pl-PL"])).toBe("en");
     expect(browserLanguage(["xx-ZZ"])).toBe("en");
   });
 });

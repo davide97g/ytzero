@@ -6,7 +6,7 @@ import { SERVER_MESSAGES, type BaseLocalizedText, type ServerCatalogueLanguage }
 function collectLocalizedText(value: unknown, messages = new Map<string, BaseLocalizedText>()): Map<string, BaseLocalizedText> {
   if (!value || typeof value !== "object") return messages;
   const candidate = value as Partial<BaseLocalizedText>;
-  if (typeof candidate.en === "string" && typeof candidate.pl === "string" && typeof candidate.de === "string") {
+  if (typeof candidate.en === "string") {
     messages.set(candidate.en, candidate as BaseLocalizedText);
     return messages;
   }
@@ -19,7 +19,7 @@ function placeholders(value: string): string[] {
 }
 
 describe("server-owned localization catalogues", () => {
-  test("cover every download and plugin string in every additional UI language", () => {
+  test("cover every download and plugin string in every maintained non-English language", () => {
     const source = collectLocalizedText([
       DOWNLOADS_SETTINGS,
       SOCIAL_SETTINGS,

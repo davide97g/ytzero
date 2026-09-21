@@ -233,13 +233,17 @@ archive with no such capability restores with public sharing denied.
 - `user_settings`: registered settings for selected profiles.
   The interface language is portable per-profile presentation configuration. It
   is a bounded code from the application language catalogue; restore accepts
-  older archives and normalizes an unknown code to English. The expanded
-  catalogue is recorded by `profile.settings` schema v7, while schemas 1–6
-  remain readable.
+  older archives and normalizes an unknown code to English. The catalogue is
+  `en` and `it` only, so an archive written when a now-retired language was
+  supported still restores — that profile simply lands on English. The
+  serialized shape is unchanged, so no schema bump is needed: the expanded
+  catalogue is still recorded by `profile.settings` schema v7, while schemas
+  1–6 remain readable.
   The YouTube video-title language is portable per-profile presentation
   configuration. It is either `profile` (the default, dynamically following
   the interface language) or a bounded language from the same catalogue.
-  Invalid restored values normalize to `profile`. This setting is recorded by
+  Invalid restored values — including a retired language code from an older
+  archive — normalize to `profile`. This setting is recorded by
   `profile.settings` schema v8; schemas 1–7 remain readable and retain the
   default when the key is absent.
   The custom playback-speed option list is bounded portable per-profile

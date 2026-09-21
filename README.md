@@ -86,11 +86,11 @@ YT Zero removes that layer. It keeps subscriptions, watch progress, playlists, t
 - **Comments and list continuation** — optionally load comments on demand and continue through whichever list opened the player, automatically or after confirmation.
 - **Playback and display controls** — theater view, captions, quality, display customization, and optional auto-fullscreen when a phone rotates to landscape.
 - **Audio mode** — switch regular videos and active livestreams to an audio-only player with Media Session controls, background playback, seeking, volume control, and per-profile browser persistence. It uses yt-dlp directly and does not require downloads to be enabled.
-- **Internationalization** — complete UI catalogues for English (`en`), Polish
-  (`pl`), German (`de`), French (`fr`), Spanish (`es`), Brazilian Portuguese
-  (`pt-BR`), Russian (`ru`), Japanese (`ja`), and Hungarian (`hu`). Language is selected per
-  profile. See the [localization guide](docs/localization.md) for native names,
-  locale behavior, and contribution notes.
+- **Internationalization** — complete UI catalogues for the two maintained and
+  supported languages: English (`en`) and Italian (`it`). No other language is
+  maintained in this fork. Language is selected per profile. See the
+  [localization guide](docs/localization.md) for native names, locale behavior,
+  and contribution notes.
 
 See the full list with screens in the **[Features](wiki/Features.md)** wiki page.
 

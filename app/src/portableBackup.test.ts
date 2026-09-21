@@ -495,7 +495,7 @@ describe("portable backup classification and restore", () => {
     setUserSetting(1, "enhance_frame_fps", "60");
     setUserSetting(1, "player_speed_options", '["2.3","2.75"]');
     setUserSetting(1, "feed_sort", "arrival");
-    setUserSetting(1, "youtube_title_language", "fr");
+    setUserSetting(1, "youtube_title_language", "it");
     setUserSetting(1, "video_card_actions", "delay");
     const cardActionButtons = '{"version":1,"actions":[{"id":"playlist","hidden":false},{"id":"schedule","hidden":true},{"id":"download","hidden":false},{"id":"archive","hidden":false},{"id":"watched","hidden":false},{"id":"restore","hidden":false},{"id":"remove","hidden":false}]}';
     setUserSetting(1, "video_card_action_buttons", cardActionButtons);
@@ -601,7 +601,7 @@ describe("portable backup classification and restore", () => {
     expect(getUserSetting(1, "enhance_frame_fps")).toBe("60");
     expect(getUserSetting(1, "player_speed_options")).toBe('["2.3","2.75"]');
     expect(getUserSetting(1, "feed_sort")).toBe("arrival");
-    expect(getUserSetting(1, "youtube_title_language")).toBe("fr");
+    expect(getUserSetting(1, "youtube_title_language")).toBe("it");
     expect(getUserSetting(1, "video_card_actions")).toBe("delay");
     expect(getUserSetting(1, "video_card_action_buttons")).toBe(videoCardActions.normalizeVideoCardActionConfig(cardActionButtons));
     expect(JSON.parse(getUserSetting(1, "video_card_action_buttons")!).actions[0]).toEqual({ id: "schedule", hidden: true });

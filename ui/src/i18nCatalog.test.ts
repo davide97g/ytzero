@@ -20,7 +20,7 @@ function placeholders(value: string): string[] {
 
 describe("UI language catalogue", () => {
   test("has an Intl locale and a native picker name for every supported language", () => {
-    expect(LANGUAGE_CODES).toEqual(["en", "pl", "de", "fr", "es", "pt-BR", "ru", "ja", "hu"]);
+    expect(LANGUAGE_CODES).toEqual(["en", "it"]);
     for (const code of LANGUAGE_CODES) {
       expect(UI_LANGUAGES[code].nativeName.length > 0).toBe(true);
       expect(new Intl.NumberFormat(LOCALE_TAGS[code]).format(1).length > 0).toBe(true);
@@ -34,7 +34,8 @@ describe("UI language catalogue", () => {
   });
 
   test("normalizes unknown persisted values to English", () => {
-    expect(normalizeLanguage("fr")).toBe("fr");
+    expect(normalizeLanguage("it")).toBe("it");
+    expect(normalizeLanguage("fr")).toBe("en");
     expect(normalizeLanguage("unknown")).toBe("en");
     expect(normalizeLanguage(null)).toBe("en");
   });

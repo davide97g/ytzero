@@ -42,8 +42,8 @@ The app is designed around a few primary workflows:
 - **Video context and sharing** — inspect creators and collaborators, copy or share a local/YouTube link, and capture frames with the local player or YT Zero Enhance.
 - **Public sharing** — optional, default-off bearer links for individual videos, personal playlists, and followed YouTube playlists. Public links bypass normal sign-in and require careful proxy and logging configuration; read [Public Sharing](Public-Sharing) before enabling them.
 - **Theater view** — distraction-light player layout for watching.
-- **Internationalization** — English, Polish, German, French, Spanish,
-  Brazilian Portuguese, Russian, Japanese, and Hungarian UI, with saved user preference.
+- **Internationalization** — English and Italian UI, with saved user preference.
+  These are the only two maintained and supported languages.
 - **Player preferences** — captions, player language, caption language, preferred quality, default playback speed, and Shorts visibility.
 - **List continuation** — after a video ends, continue from the feed, history, liked videos, a playlist, or another compatible list that opened it; either play automatically or wait for confirmation and choose the list direction.
 - **Comments** — an optional, default-off watch-page section loaded on demand through yt-dlp only after the viewer reaches it.

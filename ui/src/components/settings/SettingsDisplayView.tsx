@@ -462,7 +462,7 @@ export function SettingsDisplayView({ controller, showToast }: { controller: Set
             <SelectMenu
               label={t("playerLanguage")}
               value={playerHl}
-              options={[{ value: "pl", label: "polski" }, { value: "en", label: "English" }, { value: "de", label: "Deutsch" }, { value: "es", label: "español" }, { value: "fr", label: "français" }, { value: "uk", label: "українська" }, { value: "ja", label: "日本語" }]}
+              options={[{ value: "en", label: "English" }, { value: "it", label: "italiano" }, { value: "de", label: "Deutsch" }, { value: "es", label: "español" }, { value: "fr", label: "français" }, { value: "pl", label: "polski" }, { value: "uk", label: "українська" }, { value: "ja", label: "日本語" }]}
               onChange={(next) => {
                 setPlayerHl(next);
                 savePlayer({ player_hl: next, player_cc_lang: next });

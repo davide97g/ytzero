@@ -1,19 +1,14 @@
 /**
  * Canonical UI-language contract shared by the browser and the server.
  *
- * Keep this module dependency-free: both independently built applications import
- * it, and deployment packaging copies it alongside their source trees.
+ * This fork maintains and supports exactly two interface languages: English and
+ * Italian. Keep this module dependency-free: both independently built
+ * applications import it, and deployment packaging copies it alongside their
+ * source trees.
  */
 export const UI_LANGUAGES = {
   en: { locale: "en-US", nativeName: "English", base: "en" },
-  pl: { locale: "pl-PL", nativeName: "polski", base: "pl" },
-  de: { locale: "de-DE", nativeName: "Deutsch", base: "de" },
-  fr: { locale: "fr-FR", nativeName: "Français", base: "fr" },
-  es: { locale: "es-ES", nativeName: "Español", base: "es" },
-  "pt-BR": { locale: "pt-BR", nativeName: "Português (Brasil)", base: "pt" },
-  ru: { locale: "ru-RU", nativeName: "Русский", base: "ru" },
-  ja: { locale: "ja-JP", nativeName: "日本語", base: "ja" },
-  hu: { locale: "hu-HU", nativeName: "Magyar", base: "hu" },
+  it: { locale: "it-IT", nativeName: "Italiano", base: "it" },
 } as const;
 
 export type Language = keyof typeof UI_LANGUAGES;

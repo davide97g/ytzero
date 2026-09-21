@@ -854,7 +854,7 @@ Jeżeli menu jest w kontenerze z `overflow`, tę samą zawartość przenieś do 
 
 ## 9. Treść i lokalizacja
 
-Obsługiwane języki: `en`, `pl`, `de`, `fr`, `es`, `pt-BR`, `ru`, `ja`, `hu`.
+Obsługiwane języki: `en`, `it`. Tylko te dwa języki są utrzymywane i wspierane.
 
 - `ui/src/i18n/locales/en.ts` definiuje kontrakt kluczy.
 - Każdy nowy lub zmieniony string musi zostać przetłumaczony we wszystkich katalogach w tym samym zestawie zmian.

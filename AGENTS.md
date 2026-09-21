@@ -13,7 +13,7 @@
 ## Localization
 
 - Treat localization as part of every feature, not as follow-up work. Before completing any UI feature or user-visible behavior change, identify every added or changed string and update the translation catalogue in the same change.
-- Do not add hard-coded user-facing copy in components when an i18n message is appropriate. English in `ui/src/i18n/locales/en.ts` defines the key contract; add complete translations for every supported locale listed in `shared/uiLanguages.ts`.
+- Do not add hard-coded user-facing copy in components when an i18n message is appropriate. English in `ui/src/i18n/locales/en.ts` defines the key contract; add a complete Italian translation for every key. `shared/uiLanguages.ts` lists the two supported locales.
 - English fallback values, empty strings, and placeholder translations are not completed localization. Preserve interpolation placeholders such as `{count}`, `{name}`, and `{time}` exactly in every locale. Product names and genuinely language-independent technical terms may remain unchanged.
 - When feature messages are shared or likely to grow together, extend the appropriate feature catalogue under `ui/src/i18n/locales/` instead of scattering keys. Follow `docs/localization.md` for catalogue structure and language-addition requirements.
 - Run the focused catalogue and formatting tests after changing UI copy: `bun test ui/src/i18nCatalog.test.ts ui/src/i18nFormatting.test.ts`. Also run the UI typecheck when message keys or locale modules change.
@@ -38,6 +38,7 @@
 
 ## Learned User Preferences
 
+- English (`en`) and Italian (`it`) are the only maintained and supported UI languages. Do not add, restore, or accept another locale; every user-visible string ships in both, and in nothing else.
 - Keep this fork homelab-only: do not add or restore Heroku, Railway, Render, DigitalOcean, Fly, Unraid, Proxmox, native installers, GHCR publish, or other one-click cloud packaging.
 - On mobile (max-width 760px), use a bottom tab bar with a More sheet; keep the top bar as search plus profile only, without the hamburger drawer or header tool icons.
 

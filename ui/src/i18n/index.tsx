@@ -17,14 +17,7 @@ const supportedLanguages: readonly Language[] = LANGUAGE_CODES;
 const loadedLocales: Partial<Record<Language, Locale>> = { en };
 const pendingLocales: Partial<Record<Language, Promise<Locale>>> = {};
 export const localeLoaders: Record<Exclude<Language, "en">, () => Promise<Locale>> = {
-  pl: () => import("./locales/pl").then((module) => module.pl),
-  de: () => import("./locales/de").then((module) => module.de),
-  fr: () => import("./locales/fr").then((module) => module.fr),
-  es: () => import("./locales/es").then((module) => module.es),
-  "pt-BR": () => import("./locales/pt-BR").then((module) => module.ptBR),
-  ru: () => import("./locales/ru").then((module) => module.ru),
-  ja: () => import("./locales/ja").then((module) => module.ja),
-  hu: () => import("./locales/hu").then((module) => module.hu),
+  it: () => import("./locales/it").then((module) => module.it),
 };
 
 function localeFor(language: Language): Locale {
@@ -54,7 +47,7 @@ export { LOCALE_TAGS } from "../../../shared/uiLanguages";
 
 export type SettingsWithLanguage = AppSettings & { language: Language };
 
-/** Native (endonym) name of a language, e.g. "Deutsch", "polski" — for the language picker. */
+/** Native (endonym) name of a language, e.g. "Italiano" — for the language picker. */
 export function languageName(code: Language): string {
   return UI_LANGUAGES[code].nativeName;
 }
