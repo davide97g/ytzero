@@ -7,13 +7,13 @@ updates:
       interval: "weekly"
 
   # Backend (Bun/Hono) dependencies
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/app"
     schedule:
       interval: "weekly"
 
   # Frontend (React/Vite) dependencies
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/ui"
     schedule:
       interval: "weekly"

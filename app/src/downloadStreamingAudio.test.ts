@@ -44,6 +44,8 @@ function factory(overrides: Partial<Parameters<typeof createDownloadStreaming>[0
     readLines: async () => {},
     ytdlpStatus: async () => "test",
     audioDiagnostic: () => {},
+    // The retry ladder is about the sequence of attempts, not the wall clock.
+    freshUrlRetryDelaysMs: [0, 0, 0, 0],
     ...overrides,
   });
 }

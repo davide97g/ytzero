@@ -19,6 +19,8 @@ interface DownloadAudioStreamingDependencies {
   audioDiagnostic?: AudioDiagnostic;
   fetchImpl?: typeof fetch;
   spawn?: typeof Bun.spawn;
+  /** Overridden in tests so the fresh-url retry ladder does not sleep for real. */
+  freshUrlRetryDelaysMs?: readonly number[];
 }
 
 const AUDIO_REQUEST_TIMEOUT_MS = 45_000;
@@ -28,7 +30,11 @@ const FRESH_URL_WINDOW_MS = 5_000;
 const FRESH_URL_RETRY_DELAYS_MS = [250, 400, 650, 1_000];
 
 export function createDownloadAudioStreaming(dependencies: DownloadAudioStreamingDependencies) {
-  const { audioDiagnostic = defaultAudioDiagnostic, fetchImpl = fetch } = dependencies;
+  const {
+    audioDiagnostic = defaultAudioDiagnostic,
+    fetchImpl = fetch,
+    freshUrlRetryDelaysMs = FRESH_URL_RETRY_DELAYS_MS,
+  } = dependencies;
   const {
     discardAudioSource,
     invalidateAudioSources: invalidateResolvedAudioSources,
@@ -140,7 +146,7 @@ export function createDownloadAudioStreaming(dependencies: DownloadAudioStreamin
     userId: number, videoId: string, source: AudioSource, range: AudioByteRange, signal: AbortSignal,
   ): Promise<Response | null> {
     if (!source.issuedAt || Date.now() - source.issuedAt > FRESH_URL_WINDOW_MS) return null;
-    for (const delay of FRESH_URL_RETRY_DELAYS_MS) {
+    for (const delay of freshUrlRetryDelaysMs) {
       if (!await waitForFreshUrlRetry(delay, signal)) return null;
       const retry = await fetchAudioUpstream(userId, videoId, source, range, signal);
       if (!retry || retry.status !== 403) return retry;

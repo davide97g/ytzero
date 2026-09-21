@@ -11,7 +11,7 @@
     "build:prepared": "bun run check:css && vite build && bun scripts/check-bundle-size.ts",
     "build": "bun run check:css && bun run generate:changelog && vite build && bun scripts/check-bundle-size.ts",
     "test": "bun test",
-    "typecheck": "bun x tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
