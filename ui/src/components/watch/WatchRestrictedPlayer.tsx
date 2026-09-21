@@ -1,5 +1,6 @@
 import { ExternalLink, Lock, Star } from "lucide-react";
 import { ButtonAnchor } from "../ui";
+import "./WatchSourcePanels.css";
 
 interface WatchRestrictedPlayerProps {
   actionHref?: string;

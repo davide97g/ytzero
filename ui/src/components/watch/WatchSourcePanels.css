@@ -1,0 +1,100 @@
+/* Watch source panels: the choice, waiting and restricted states that stand in
+   for the player. Rendered by WatchRestrictedPlayer, WatchPage and PublicSharePage. */
+.wp-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Browsers that block the iframe's autoplay leave the video paused, so the
+   whole overlay is the play affordance: a click anywhere over the video
+   starts playback instead of only the centred cue. */
+.wp-autoplay-blocked {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.42);
+  color: var(--bg);
+  cursor: pointer;
+  font: inherit;
+}
+.wp-autoplay-blocked:hover { background: rgba(0, 0, 0, 0.36); }
+.wp-autoplay-blocked:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+.wp-autoplay-blocked-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 15px;
+  border-radius: 999px;
+  background: var(--text);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.wp-autoplay-blocked:hover .wp-autoplay-blocked-cue { background: #d9d9d9; }
+.wp-panel-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(6px);
+}
+.wp-panel-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  color: var(--text);
+  padding: 24px;
+  max-width: 460px;
+}
+.wp-panel-content h3 { margin: 0; font-size: 17px; font-weight: 600; }
+.wp-panel-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.wp-panel-error { color: #ff6b76; max-width: 420px; overflow: hidden; text-overflow: ellipsis; }
+.wp-panel-hint { margin: 0; font-size: 12px; color: var(--text-3); }
+.wp-panel--members .wp-panel-sub {
+  display: block;
+  max-width: 430px;
+  line-height: 1.55;
+}
+.wp-members-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f5c542;
+  color: #3c2900;
+  box-shadow: 0 5px 22px rgba(0, 0, 0, 0.5), 0 0 28px rgba(245, 197, 66, 0.32);
+}
+.wp-members-icon svg { width: 25px; height: 25px; stroke-width: 2; }
+.wp-choice-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.wp-wait-bar {
+  width: min(320px, 70vw);
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+}
+.wp-wait-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}

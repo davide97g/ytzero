@@ -661,3 +661,27 @@ html[data-video-card-actions="on_demand"] .video-card .thumb-actions-peek {
   transform: none;
   opacity: 1;
 }
+
+/* Download progress on thumbnails: thin accent bar pinned to the TOP edge
+   (the bottom edge belongs to the watch-progress bar). */
+.dl-progress-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(62, 166, 255, 0.25);
+  z-index: 4;
+  overflow: hidden;
+}
+.dl-progress-top-fill {
+  height: 100%;
+  background: var(--accent);
+}
+/* Queued: a calm, static dimmed bar — no motion. */
+.dl-progress-top-fill.queued {
+  width: 100%;
+  opacity: 0.35;
+}
+/* Plugin setting "thumb_progress" off → bars disappear app-wide. */
+:root[data-dl-thumb-progress="0"] .dl-progress-top { display: none; }

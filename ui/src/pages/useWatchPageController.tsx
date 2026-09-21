@@ -20,7 +20,6 @@ import { isPlaybackQueueContext, type PlaybackQueueContext } from "../playbackQu
 import { sessionPlayQueueContext, useSessionPlayQueue } from "../sessionPlayQueue";
 import { effectivePlaybackQueue } from "../sessionPlayQueuePlayback";
 import { isContinuousPlaylistQueue, playbackEndAction } from "../playlistPlayback";
-import { restoreSidebarVisibility } from "../app-shell/sidebarVisibility";
 import { canAutoArchiveVideo, isMissingVideoError, loadYouTubeApi, resolveShareTimestamp, resolveWatchPlayerTarget, resolveWatchRoutePreview } from "./watchRuntime";
 import { useWatchTogetherPlayback } from "./useWatchTogetherPlayback";
 import { useYouTubeKeyboardShortcuts, type WatchShortcutKind } from "./useYouTubeKeyboardShortcuts";
@@ -31,13 +30,12 @@ import type { WatchPlayerHandle } from "../playerHandle";
 import { canUseWatchAudioMode } from "./watchAudioMode";
 import { useWatchPlaybackPosition } from "./useWatchPlaybackPosition";
 import { useYouTubeMediaSession } from "./useYouTubeMediaSession";
-import { resolveShortcutBindings, SHORTCUT_CLOSE_EVENT, shortcutActionMatches } from "../keyboardShortcuts";
+import { resolveShortcutBindings, shortcutActionMatches } from "../keyboardShortcuts";
 import { normalizeWatchCommentsMode } from "../../../shared/watchComments";
 import { applyEmbeddedPlayerCommand } from "./embeddedPlayerCommand";
 import { useImmersiveChrome } from "./useImmersiveChrome";
+import { useWatchModes } from "./useWatchModes";
 
-const CINEMA_MODE_KEY = "watchCinemaMode";
-const IMMERSIVE_MODE_KEY = "watchImmersiveMode";
 export function useWatchPageController(audioModeRequested: boolean = false) {
   const { t, language } = useI18n();
   const { id, playlistId } = useParams<{ id: string; playlistId?: string }>();
@@ -156,9 +154,11 @@ export function useWatchPageController(audioModeRequested: boolean = false) {
   const [playlistsLoading, setPlaylistsLoading] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState("");
   const [newPlaylistIcon, setNewPlaylistIcon] = useState("ListMusic");
-  const [cinemaMode, setCinemaMode] = useState(() => localStorage.getItem(CINEMA_MODE_KEY) === "1");
-  const [cinemaVisible, setCinemaVisible] = useState(() => localStorage.getItem(CINEMA_MODE_KEY) === "1");
-  const [immersiveMode, setImmersiveMode] = useState(() => localStorage.getItem(IMMERSIVE_MODE_KEY) === "1");
+  const {
+    cinemaMode, cinemaVisible, immersiveMode,
+    setCinemaMode, setImmersiveMode,
+    toggleCinemaMode, toggleImmersiveMode, closeWatchMode,
+  } = useWatchModes();
   const { chromeVisible: immersiveChromeVisible, holdChrome: holdImmersiveChrome } = useImmersiveChrome(immersiveMode);
   const [sbSegments, setSbSegments] = useState<SponsorSegment[]>([]);
   const [appUrl, setAppUrl] = useState("");
@@ -718,30 +718,6 @@ export function useWatchPageController(audioModeRequested: boolean = false) {
     nextPlaylistPath || queueEndAction !== "stop",
   );
   const canPlayPreviousVideo = !watchTogetherRoomId && Boolean(previousPlaylistPath || hasPreviousQueueVideo);
-  // Theater and immersive are two presentations of the same player, so entering
-  // one always leaves the other: the layout never carries both sets of rules.
-  const cinemaModeRef = useRef(cinemaMode);
-  cinemaModeRef.current = cinemaMode;
-  const immersiveModeRef = useRef(immersiveMode);
-  immersiveModeRef.current = immersiveMode;
-  const toggleCinemaMode = useCallback((next?: boolean) => {
-    const value = next ?? !cinemaModeRef.current;
-    setCinemaMode(value);
-    if (value) setImmersiveMode(false);
-  }, []);
-  const toggleImmersiveMode = useCallback((next?: boolean) => {
-    const value = next ?? !immersiveModeRef.current;
-    setImmersiveMode(value);
-    if (value) setCinemaMode(false);
-  }, []);
-  const closeWatchMode = useCallback(() => {
-    if (document.querySelector(".ui-dialog")) document.dispatchEvent(new Event(SHORTCUT_CLOSE_EVENT));
-    else if (document.fullscreenElement) void document.exitFullscreen?.();
-    else if ((document as any).pictureInPictureElement) void (document as any).exitPictureInPicture?.();
-    else if (immersiveModeRef.current) setImmersiveMode(false);
-    else setCinemaMode(false);
-  }, []);
-
   const toggleFeedAutoplay = useCallback((next: boolean) => {
     const behavior = next ? "autoplay" : "prompt";
     setSettings((s) => s ? { ...s, feed_autoplay_behavior: behavior } : s);
@@ -1091,37 +1067,6 @@ export function useWatchPageController(audioModeRequested: boolean = false) {
       setVideo((prev) => (prev ? { ...prev, channel_playback_speed: v } : prev));
     }
   };
-
-  // Cinema class lifecycle — separated from key listener so cleanup doesn't
-  // prematurely remove the class when transitioning out.
-  useEffect(() => {
-    localStorage.setItem(CINEMA_MODE_KEY, cinemaMode ? "1" : "0");
-    if (cinemaMode) {
-      document.body.classList.add("cinema", "sidebar-hidden");
-      requestAnimationFrame(() => requestAnimationFrame(() => setCinemaVisible(true)));
-    } else {
-      setCinemaVisible(false);
-      const t = setTimeout(() => {
-        restoreSidebarVisibility();
-      }, 400);
-      return () => {
-        clearTimeout(t);
-        restoreSidebarVisibility();
-      };
-    }
-  }, [cinemaMode]);
-
-  // Immersive owns the whole viewport: the app chrome is hidden by CSS on the
-  // body class, so leaving the mode (or the page) only has to drop the class.
-  useEffect(() => {
-    localStorage.setItem(IMMERSIVE_MODE_KEY, immersiveMode ? "1" : "0");
-    if (!immersiveMode) return;
-    document.body.classList.add("immersive");
-    return () => document.body.classList.remove("immersive");
-  }, [immersiveMode]);
-
-  // Unmount: clean cinema mode without overriding the user's saved sidebar state.
-  useEffect(() => restoreSidebarVisibility, []);
 
   // Mobile: rotating to landscape enters player fullscreen (opt-in setting).
   // Chrome for Android permits requestFullscreen() inside a user-generated

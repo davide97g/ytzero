@@ -13,6 +13,7 @@ import { useI18n } from "../i18n";
 import { resolveShortcutBindings, shortcutActionMatches } from "../keyboardShortcuts";
 import WatchPlayerFeedback from "./WatchPlayerFeedback";
 import "./WatchPage.css";
+import "../components/watch/WatchSourcePanels.css";
 import "./PublicSharePage.css";
 
 const KEYBOARD_SEEK_SECONDS = 5;

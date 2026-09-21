@@ -41,49 +41,12 @@ const AuthSettings = lazy(() => import("../components/AuthSettings"));
 const TubeArchivistSettings = lazy(() => import("../components/settings/TubeArchivistSettings")
   .then((module) => ({ default: module.TubeArchivistSettings })));
 const NotificationSettings = lazy(() => import("../components/settings/NotificationSettings"));
-type Tab = "channels" | "tags" | "playlists" | "display" | "notifications" | "plugins" | "sharing" | "advanced" | "profiles" | "auth" | "cluster";
-const TIME_ZONES = (() => {
-  const intl = Intl as typeof Intl & { supportedValuesOf?: (key: "timeZone") => string[] };
-  const supported = intl.supportedValuesOf?.("timeZone") ?? [
-    "Europe/London", "Europe/Warsaw", "America/New_York", "America/Chicago",
-    "America/Denver", "America/Los_Angeles", "Asia/Tokyo", "Australia/Sydney",
-  ];
-  return [...new Set(["UTC", ...supported])];
-})();
-// Areas unavailable to a profile are omitted entirely, not shown as dead ends.
-const SETTINGS_AREAS: { id: Tab; primaryOnly?: boolean }[] = [
-  { id: "channels" },
-  { id: "tags" },
-  { id: "playlists" },
-  { id: "display" },
-  { id: "notifications" },
-  { id: "plugins" },
-  { id: "sharing" },
-  { id: "advanced", primaryOnly: true },
-  { id: "profiles" },
-  { id: "auth", primaryOnly: true },
-  { id: "cluster", primaryOnly: true },
-];
-const DISPLAY_PERMISSION_AREAS: ProfilePermissionArea[] = ["appearance", "feed", "navigation", "playback"];
-const GITHUB_RELEASES_URL = "https://github.com/Pelski/ytzero/releases";
-const PIN_PROTECTED_PERMISSION_AREAS = new Set<ProfilePermissionArea>(["channels", "followed_playlists", "imports", ...DISPLAY_PERMISSION_AREAS, "plugins", "profiles", "public_sharing"]);
-function permissionAreaForTab(tab: Tab): ProfilePermissionArea | null {
-  if (tab === "sharing") return "public_sharing";
-  if (tab === "channels" || tab === "tags" || tab === "playlists" || tab === "plugins" || tab === "profiles") return tab;
-  if (tab === "advanced") return null;
-  return null;
-}
-// Feed age limit: "off" lives in the unit select so the whole control stays two
-// dropdowns (the value select is disabled while the limit is off).
-type FeedMaxAgeUnit = "days" | "weeks" | "months" | "years" | "off";
-const FEED_MAX_AGE_UNITS: Exclude<FeedMaxAgeUnit, "off">[] = ["days", "weeks", "months", "years"];
-const FEED_MAX_AGE_VALUES = Array.from({ length: 30 }, (_, i) => String(i + 1));
-const LOG_LINE_LIMIT = 300;
-const PLUGIN_SETTING_SAVE_DEBOUNCE_MS = 300;
-
-function isFeedMaxAgeUnit(value: unknown): value is FeedMaxAgeUnit {
-  return typeof value === "string" && (FEED_MAX_AGE_UNITS as string[]).includes(value);
-}
+import {
+  DISPLAY_PERMISSION_AREAS, FEED_MAX_AGE_UNITS, FEED_MAX_AGE_VALUES, GITHUB_RELEASES_URL,
+  isFeedMaxAgeUnit, LOG_LINE_LIMIT, permissionAreaForTab, PIN_PROTECTED_PERMISSION_AREAS,
+  PLUGIN_SETTING_SAVE_DEBOUNCE_MS, SETTINGS_AREAS, TIME_ZONES,
+  type FeedMaxAgeUnit, type Tab,
+} from "./settingsPageAreas";
 
 export default function SettingsPage({ showToast }: { showToast: (m: string) => void }) {
   const [pluginSearchTarget, setPluginSearchTarget] = useState<string | null>(null);

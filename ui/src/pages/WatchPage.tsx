@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useRef, useState, type CSSProperties } from "react";
 import "./WatchPage.css";
+import "../components/watch/WatchSourcePanels.css";
 import { emitToast } from "../events";
 import { Link } from "react-router-dom";
 import {
