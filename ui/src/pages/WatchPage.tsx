@@ -63,6 +63,7 @@ import WatchPlaylistPanel from "../components/watch/WatchPlaylistPanel";
 import WatchPlayerModeToggle from "../components/watch/WatchPlayerModeToggle";
 import WatchRestrictedPlayer from "../components/watch/WatchRestrictedPlayer";
 import WatchImmersiveChrome from "../components/watch/WatchImmersiveChrome";
+import PlayerGlow from "../components/watch/PlayerGlow";
 import { colonDurationToSeconds, formatWatchTime } from "./watchRuntime";
 import { resolveWatchAudioSources } from "./watchAudioMode";
 import { useWatchPageController } from "./useWatchPageController";
@@ -260,9 +261,10 @@ export default function WatchPage() {
         <div className={`watch-player-stage${watchTogether.room ? " watch-player-stage--together" : ""}`}>
           <div className="cinema-player-wrap">
           {video && (
-            <div
-              className="player-glow"
-              style={{ backgroundImage: `url(${videoThumbnail(video.thumbnail)})`, opacity: immersiveMode ? 0.78 : cinemaVisible ? 0.6 : 0 }}
+            <PlayerGlow
+              thumbnailUrl={videoThumbnail(video.thumbnail)}
+              opacity={immersiveMode ? 0.78 : cinemaVisible ? 0.6 : 0}
+              active={immersiveMode || cinemaMode}
             />
           )}
           <div className="watch-player-shell">

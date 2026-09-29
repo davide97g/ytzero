@@ -413,21 +413,6 @@
   transition: background 0.4s ease;
 }
 
-/* Ambient glow — blurred thumbnail colours behind the player. Keep this
-   static: animating a large filtered layer makes Firefox repaint it while the
-   embedded video is composited, which can severely reduce playback FPS. */
-.player-glow {
-  position: absolute;
-  inset: -60px;
-  background-size: 110%;
-  background-position: center;
-  filter: blur(60px) saturate(2.5) brightness(0.65);
-  opacity: 0;
-  z-index: -1;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-
 /* ---------- immersive mode ---------- */
 /* Theater keeps the page and trims it; immersive replaces it. The layout takes
    over the viewport, floats the player off every edge and lets the ambient glow
@@ -467,6 +452,7 @@
   background-size: 125%;
   filter: blur(92px) saturate(2.7) brightness(0.72);
 }
+.watch-layout.immersive .player-glow--live { filter: blur(80px) saturate(1.6) brightness(0.8); }
 /* The audio-mode toggle would collide with the immersive bar's exit button. */
 .watch-layout.immersive .watch-player-mode-toggle--overlay.ui-button { display: none; }
 @media (max-width: 900px) {

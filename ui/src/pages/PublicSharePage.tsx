@@ -7,6 +7,7 @@ import VideoCreators from "../components/VideoCreators";
 import { Button, EmptyState, IconButton } from "../components/ui";
 import WatchChapterPanel from "../components/watch/WatchChapterPanel";
 import WatchPlaylistPanel from "../components/watch/WatchPlaylistPanel";
+import PlayerGlow from "../components/watch/PlayerGlow";
 import PublicYouTubePlayer from "../components/watch/PublicYouTubePlayer";
 import WatchVideoDescription from "../components/watch/WatchVideoDescription";
 import { useI18n } from "../i18n";
@@ -183,10 +184,7 @@ function PublicShareView() {
         <div>
           <div className="watch-player-stage">
             <div className="cinema-player-wrap">
-              {video && <div
-                className="player-glow"
-                style={{ backgroundImage: `url(${video.thumbnail})`, opacity: cinemaVisible ? 0.6 : 0 }}
-              />}
+              {video && <PlayerGlow thumbnailUrl={video.thumbnail} opacity={cinemaVisible ? 0.6 : 0} active={cinemaVisible} />}
               <div ref={playerShellRef} className="watch-player-shell">
                 {video && data.playback?.kind === "local" && <div className="watch-player watch-player--local">
                   <LocalPlayer
